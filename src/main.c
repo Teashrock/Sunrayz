@@ -27,7 +27,7 @@ int main()
     Rectangle panel = {0, 0,            DYN_WIDTH, uniValues[0]};
     Rectangle menu  = {0, uniValues[0], 260,       DYN_HEIGHT};
     
-    Font calibri = CreateSDFFont("calibri.ttf", 28, 95);
+    Font calibri = CreateFont("calibri.ttf", 28, 95);
     TextButton* fileMenuButton = CreateButton(
         "File",
         0, 0,
@@ -54,7 +54,7 @@ int main()
 
             DrawRectangleRec(panel, WHITE);
             UpdateRec(&panel);
-            DrawButton(fileMenuButton);
+            DrawButton(fileMenuButton, false);
             DrawRectangleRec(menu, ORANGE);
             UpdateRec(&menu);
 

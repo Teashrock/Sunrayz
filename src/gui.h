@@ -42,7 +42,7 @@ TextButton* CreateButton(
     Color fontPressedColor
     );
 
-void DrawButton(TextButton*);
+void DrawButton(TextButton*, bool);
 void FreeFreeables();
 Font CreateFont(char* fontFile, int baseSize, int charsCount);
 Font CreateSDFFont(char* fontFile, int baseSize, int charsCount);

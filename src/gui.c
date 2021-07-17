@@ -73,7 +73,7 @@ TextButton* CreateButton(
     return ptr;
 }
 
-void DrawButton(TextButton* btn)
+void DrawButton(TextButton* btn, bool sdf)
 {
     Rectangle rec = {btn->posX, btn->posY, btn->width, btn->height};
     bool mouse_in = CheckCollisionPointRec(GetMousePosition(), rec);
@@ -88,9 +88,9 @@ void DrawButton(TextButton* btn)
     rec.x += 5;
     rec.y += 7;
     Shader shader = LoadShaderFromMemory(NULL, btn->fontShader);
-    BeginShaderMode(shader);
+    if (sdf) BeginShaderMode(shader);
         DrawTextRec(btn->font, btn->text, rec, btn->fontSize, 0, false, btn->fontIdleColor);
-    EndShaderMode();
+    if (sdf) EndShaderMode();
 }
 
 void FreeFreeables()

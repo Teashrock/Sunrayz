@@ -1,0 +1,21 @@
+{
+	"files.exclude": {
+		"**/.git": true,
+		"**/.svn": true,
+		"**/.hg": true,
+		"**/CVS": true,
+		"**/.DS_Store": true,
+		"**/*.o": true,
+		"**/*.exe": true,
+	},
+	"files.associations": {
+		"raylib.h": "c",
+		"rline.h": "c",
+		"windows.h": "c",
+		"*._h": "c"
+	},
+	"python.analysis.extraPaths": [
+		"./waf3-2.0.22-aaee2b4cd084b3f1e699ecd3fe442edd"
+	],
+	"python.languageServer": "Pylance"
+}

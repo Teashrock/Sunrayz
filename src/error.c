@@ -1,5 +1,7 @@
 #ifdef _WIN32
 #include <windows.h>
+#else
+#include <stddef.h>
 #endif
 
 void AllocError(void* ptr, const char* text)

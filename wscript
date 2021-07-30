@@ -84,16 +84,20 @@ def configure(conf):
     Logs.warn("Patching Raylib Makefile... ")
     with open("deps/raylib/src/Makefile", "r") as rf:
         p = rf.read().replace("RAYLIB_LIBTYPE       ?= STATIC", "RAYLIB_LIBTYPE       ?= SHARED", 1)
+        if platform.system() == "Haiku":
+            Logs.warn("Haiku OS was detected, switching OpenGL to version 2.1...")
+            p = rf.read().replace("GRAPHICS ?= GRAPHICS_API_OPENGL_33", "GRAPHICS = GRAPHICS_API_OPENGL_21", 1)
+            Logs.warn("Embedded Raylib GLFW is of no use on Haiku, applying external...")
+            p = rf.read().replace("USE_EXTERNAL_GLFW    ?= FALSE", "USE_EXTERNAL_GLFW    ?= TRUE", 1)
     with open("deps/raylib/src/Makefile", "w") as rf:
         rf.write(p)
-    Logs.info("Done!")
     if platform.system() == "Haiku":
-        Logs.warn("Your operating system is Haiku, applying special patch for Raylib...")
+        Logs.warn("Applying special patch for Haiku OS...")
         os.chdir("deps/raylib")
         sp = subprocess.Popen(["patch", "-Np1", "-i", BUILD_DIR + "/raylib.diff"])
         sp.wait()
         os.chdir(BUILD_DIR)
-        Logs.info("Done!")
+    Logs.info("All done here!")
 
     if platform.system() == "Windows":
         Logs.warn("Patching Kuroko rline.c... ")

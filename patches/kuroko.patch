@@ -1,0 +1,40 @@
+--- a/Makefile	2021-07-15 01:00:01.162529280 +0000
++++ b/Makefile	2021-07-30 10:30:09.060817408 +0000
+@@ -22,9 +22,6 @@
+ all: ${TARGET} ${MODULES} ${TOOLS} ${GENMODS}
+ 
+ ifeq (,$(findstring mingw,$(CC)))
+-  CFLAGS  += -pthread
+-  LDLIBS  += -ldl -lpthread
+-  BIN_FLAGS = -rdynamic
+   LIBRARY = libkuroko.so
+   ifeq (Darwin,$(shell uname -s))
+     MODLIBS += -undefined dynamic_lookup -DKRK_MEDIOCRE_TLS
+@@ -97,11 +94,11 @@
+ 	${CC} -Itools ${CFLAGS} ${LDFLAGS} -o $@ $< -lkuroko
+ 
+ libkuroko.so: ${SOOBJS} ${HEADERS}
+-	${CC} ${CFLAGS} ${LDFLAGS} -fPIC -shared -o $@ ${SOOBJS} ${LDLIBS}
++	${CC} ${CFLAGS} ${LDFLAGS} -shared -o $@ ${SOOBJS} ${LDLIBS}
+ 
+ WINLIBS= -l:libwinpthread.a
+ libkuroko.dll: ${SOOBJS} ${HEADERS}
+-	${CC} ${CFLAGS} ${LDFLAGS} -fPIC -shared -o $@ ${SOOBJS} ${WINLIBS} -Wl,--export-all-symbols,--out-implib,libkuroko.a
++	${CC} ${CFLAGS} ${LDFLAGS} -shared -o $@ ${SOOBJS} ${WINLIBS} -Wl,--export-all-symbols,--out-implib,libkuroko.a
+ 
+ libkuroko.a: ${OBJS}
+ 	${AR} ${ARFLAGS} $@ ${OBJS}
+@@ -110,11 +107,11 @@
+ 	${CC} ${CFLAGS} -c -o $@ $<
+ 
+ %.lo: %.c ${HEADERS}
+-	${CC} ${CFLAGS} -fPIC -c -o $@ $<
++	${CC} ${CFLAGS} -c -o $@ $<
+ 
+ modules/math.so: MODLIBS += -lm
+ modules/%.so: src/modules/module_%.c ${LIBRARY}
+-	${CC} ${CFLAGS} ${LDFLAGS} -fPIC -shared -o $@ $< ${LDLIBS} ${MODLIBS}
++	${CC} ${CFLAGS} ${LDFLAGS} -shared -o $@ $< ${LDLIBS} ${MODLIBS}
+ 
+ modules/codecs/sbencs.krk: tools/codectools/gen_sbencs.krk tools/codectools/encodings.json tools/codectools/indexes.json | kuroko
+ 	./kuroko tools/codectools/gen_sbencs.krk

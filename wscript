@@ -24,6 +24,7 @@ KUROKO_VERSION = "1.1.2"
 BUILD_DIR = os.getcwd()
 SRC_DIR   = os.path.join(BUILD_DIR, "src")
 
+global EXE_NAME
 EXE_NAME = "main"
 
 if platform.system() == "Windows":
@@ -84,17 +85,20 @@ def configure(conf):
     Logs.warn("Patching Raylib Makefile... ")
     with open("deps/raylib/src/Makefile", "r") as rf:
         p = rf.read().replace("RAYLIB_LIBTYPE       ?= STATIC", "RAYLIB_LIBTYPE       ?= SHARED", 1)
-        if platform.system() == "Haiku":
-            Logs.warn("Haiku OS was detected, switching OpenGL to version 2.1...")
-            p = rf.read().replace("GRAPHICS ?= GRAPHICS_API_OPENGL_33", "GRAPHICS = GRAPHICS_API_OPENGL_21", 1)
-            Logs.warn("Embedded Raylib GLFW is of no use on Haiku, applying external...")
-            p = rf.read().replace("USE_EXTERNAL_GLFW    ?= FALSE", "USE_EXTERNAL_GLFW    ?= TRUE", 1)
+    
     with open("deps/raylib/src/Makefile", "w") as rf:
         rf.write(p)
+    
+    if platform.system() == "Haiku":
+        os.chdir("deps/raylib/src")
+        sp = subprocess.Popen(["patch", "-Np1", "-i", BUILD_DIR + "/patches/raylib_makefile.patch"])
+        sp.wait()
+        os.chdir(BUILD_DIR)
+    
     if platform.system() == "Haiku":
         Logs.warn("Applying special patch for Haiku OS...")
         os.chdir("deps/raylib")
-        sp = subprocess.Popen(["patch", "-Np1", "-i", BUILD_DIR + "/raylib.diff"])
+        sp = subprocess.Popen(["patch", "-Np1", "-i", BUILD_DIR + "/patches/raylib.patch"])
         sp.wait()
         os.chdir(BUILD_DIR)
     Logs.info("All done here!")
@@ -108,11 +112,18 @@ def configure(conf):
         Logs.info("Done!")
     elif platform.system() == "Haiku":
         Logs.warn("Patching Kuroko Makefile... ")
-        with open("deps/kuroko/Makefile", "r") as kf:
-            p = kf.read().replace('CFLAGS  += -Wno-format -static-libgcc -pthread', "CFLAGS  += -Wno-format -static-libgcc", 1)
+        #with open("deps/kuroko/Makefile", "r") as kf:
+        #p = kf.read().replace('CFLAGS  += -Wno-format -static-libgcc -pthread', "CFLAGS  += -Wno-format -static-libgcc", 1)
+        #p = kf.read().replace("\nCFLAGS  += -pthread\nLDLIBS  += -ldl -lpthread\nBIN_FLAGS = -rdynamic", "\n", 1)
+        #p = kf.read().replace('${CC} ${CFLAGS} ${LDFLAGS} -fPIC -shared -o $@ ${SOOBJS} ${LDLIBS}', '${CC} ${CFLAGS} ${LDFLAGS} -shared -o $@ ${SOOBJS} ${LDLIBS}', 1)
+        #p = kf.read().replace('${CC} ${CFLAGS} ${LDFLAGS} -fPIC -shared -o $@ ${SOOBJS} ${WINLIBS} -Wl,--export-all-symbols,--out-implib,libkuroko.a', '${CC} ${CFLAGS} ${LDFLAGS} -shared -o $@ ${SOOBJS} ${WINLIBS} -Wl,--export-all-symbols,--out-implib,libkuroko.a')
+        os.chdir("deps/kuroko")
+        sp = subprocess.Popen(["patch", "-Np1", "-i", BUILD_DIR + "/patches/kuroko.patch"])
+        sp.wait()
         Logs.info("Done!")
 
 def build(ctx):
+    os.chdir(BUILD_DIR)
     if platform.system() == "Windows":
         os.environ["PATH"] = "C:\\mingw32\\bin;C:\\mingw32\\libexec\\gcc\\i686-w64-mingw32\\8.1.0;" + os.environ["PATH"]
     DEPS_DIR = os.path.join(os.getcwd(), "deps")
@@ -143,24 +154,29 @@ def build(ctx):
             krklib_name = "libkuroko.dll"
         else:
             krklib_name = "libkuroko.so"
-        if platform.system() == "Windows":
-                if not os.path.exists(os.path.join(DEPS_DIR, "kuroko", krklib_name)):
-                    # Kuroko build
-                    Logs.warn("Building Kuroko...")
-                    # cd kuroko
-                    os.chdir(os.path.join(DEPS_DIR, "kuroko"))
-                    # set CC=i686-w64-mingw32-gcc
-                    os.environ["CC"] = "i686-w64-mingw32-gcc"
-                    # mingw32-make
-                    sp = subprocess.Popen(MAKE_COMMAND)
-                    sp.wait()
-                    os.chdir(BUILD_DIR)
+        if not os.path.exists(os.path.join(DEPS_DIR, "kuroko", krklib_name)):
+            # Kuroko build
+            Logs.warn("Building Kuroko...")
+            # cd kuroko
+            os.chdir(os.path.join(DEPS_DIR, "kuroko"))
+            if platform.system() == "Windows":
+                # set CC=i686-w64-mingw32-gcc
+                os.environ["CC"] = "i686-w64-mingw32-gcc"
+        # mingw32-make
+        os.environ["KRK_DISABLE_THREADS"] = "1"
+        sp = subprocess.Popen(MAKE_COMMAND)
+        sp.wait()
+        os.chdir(BUILD_DIR)
 
         rllib_name = ""
         if platform.system() == "Windows":
             rllib_name = "raylib.dll"
         else:
-            rllib_name = "libraylib.so"
+            VER_EXT = ""
+            for i in RAYLIB_VERSION:
+                if not i == '.':
+                    VER_EXT += i
+            rllib_name = "libraylib.so." + VER_EXT
         if not os.path.exists(os.path.join(DEPS_DIR, "raylib", "src", rllib_name)):
             # Raylib build
             Logs.warn("\nBuilding Raylib...")
@@ -214,17 +230,23 @@ def build(ctx):
             ldflags      = lflags
         )
 
+        LIB_DIR = ""
+        if platform.system() == "Haiku":
+            LIB_DIR = "lib"
+            #os.mkdir(os.path.join(BUILD_DIR, "result", platform.system() + "-" + BUILD_TYPE, LIB_DIR))
+            
         ctx.install_files(
-            os.path.join(BUILD_DIR, "result", platform.system() + "-" + BUILD_TYPE),
+            os.path.join(BUILD_DIR, "result", platform.system() + "-" + BUILD_TYPE, LIB_DIR),
             ["deps/kuroko/" + krklib_name]
         )
     
         ctx.install_files(
-            os.path.join(BUILD_DIR, "result", platform.system() + "-" + BUILD_TYPE),
+            os.path.join(BUILD_DIR, "result", platform.system() + "-" + BUILD_TYPE, LIB_DIR),
             ["deps/raylib/src/" + rllib_name]
         )
 
 def run(ctx):
+    global EXE_NAME
     os.chdir(os.path.join(BUILD_DIR, "result", platform.system() + "-" + BUILD_TYPE))
     if platform.system() == "Windows":
         EXE_NAME += ".exe"

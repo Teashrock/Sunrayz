@@ -1,5 +1,5 @@
-VERSION    = "0.0.1"
-APPNAME    = "raybook"
+VERSION    = "master"
+APPNAME    = "sunrayz"
 REVISION   = ""
 BUILD_TYPE = "debug"
 

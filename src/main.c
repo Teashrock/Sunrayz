@@ -17,7 +17,7 @@ int main()
     #define screenHeight 600
 
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
-    InitWindow(screenWidth, screenHeight, "Raybook Nova");
+    InitWindow(screenWidth, screenHeight, "Sunrayz");
     SetWindowMinSize(screenWidth, screenHeight);
     SetWindowSize(screenWidth, screenHeight);
     MaximizeWindow();

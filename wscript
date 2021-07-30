@@ -88,9 +88,9 @@ def configure(conf):
         rf.write(p)
     Logs.info("Done!")
     if platform.system() == "Haiku":
-        Logs.warn("You operating system is Haiku, applying special patch for Raylib...")
+        Logs.warn("Your operating system is Haiku, applying special patch for Raylib...")
         os.chdir("deps/raylib")
-        sp = subprocess.Popen("patch", "-Np1", "-i", BUILD_DIR + "/raylib.diff")
+        sp = subprocess.Popen(["patch", "-Np1", "-i", BUILD_DIR + "/raylib.diff"])
         sp.wait()
         os.chdir(BUILD_DIR)
         Logs.info("Done!")

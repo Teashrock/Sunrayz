@@ -201,13 +201,13 @@ def build(ctx):
         if platform.system() == "Windows":
             libs = ["raylib", "kuroko", "opengl32", "gdi32", "winmm"]
         elif platform.system() == "Haiku":
-            libs = ["raylib", "root", "be", "opengl"]
+            libs = ["raylib", "root", "be", "GL"]
 
         ctx.program(
             source       = SRCS,
             target       = EXE_NAME,
             includes     = [".", "deps/raylib/src", "deps/raylib/src/external", "deps/kuroko/src"],
-            lib          = ["raylib", "kuroko", "opengl32", "gdi32", "winmm"],
+            lib          = libs,
             libpath      = [os.path.join(DEPS_DIR, "kuroko"), os.path.join(DEPS_DIR, "raylib", "src")],
             install_path = os.path.join(BUILD_DIR, "result", platform.system() + "-" + BUILD_TYPE),
             cflags       = ccflags,

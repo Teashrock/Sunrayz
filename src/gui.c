@@ -5,6 +5,26 @@
 static void** freeables    = NULL;
 static int freeablesNumber = 0;
 
+#ifdef __HAIKU__
+static char* SDFShader = "#version 140\n\n\
+varying vec2 fragTexCoord;\
+varying vec4 fragColor;\
+uniform sampler2D texture0;\
+uniform vec4 colDiffuse;\
+const float smoothing = 1.0/16.0;\n\n\
+void main()\
+{\
+    // Texel color fetching from texture sampler\
+    // NOTE: Calculate alpha using signed distance field (SDF)\
+    float distance = texture2D(texture0, fragTexCoord).a;\n\n\
+    if (distance > 0.0)\
+        float alpha = 1.0;\
+    else\
+        float alpha = 0.0;\
+    gl_FragColor = vec4(fragColor.rgb, alpha);\
+}\
+\0";
+#else
 static char* SDFShader = "#version 330\n\n\
 in vec2 fragTexCoord;\
 in vec4 fragColor;\
@@ -21,6 +41,7 @@ void main()\
     finalColor = vec4(fragColor.rgb, fragColor.a*alpha);\
 }\
 \0";
+#endif
 
 TextButton* CreateButton(
     char* text,
@@ -107,7 +128,7 @@ Font CreateFont(char* fontFile, int baseSize, int charsCount)
     font.baseSize   = baseSize;
     font.charsCount = charsCount;
     unsigned int fileSize = 0;
-    font.chars = LoadFontData(LoadFileData(fontFile, &fileSize), fileSize, font.baseSize, 0, 0, FONT_DEFAULT);
+    font.chars = LoadFontData(LoadFileData(fontFile, &fileSize), fileSize, font.baseSize, 0, 0, FONT_SDF);
     font.texture = LoadTextureFromImage(GenImageFontAtlas(font.chars, &font.recs, font.charsCount, font.baseSize, 0, 1));
     return font;
 }

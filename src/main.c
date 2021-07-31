@@ -4,17 +4,54 @@
 #include "gui.h"
 #include "error.h"
 
+#ifdef __HAIKU__
+//#include <image.h>
+#include <string.h>
+#endif
+
 const int uniValues[] = {
     80 // Menu and panel collision point
 };
 
-int main()
+#ifdef __HAIKU__
+static char* APP_LOC = NULL;
+
+char *strsep(char **stringp, const char *delim) {
+    char *rv = *stringp;
+    if (rv) {
+        *stringp += strcspn(*stringp, delim);
+        if (**stringp)
+            *(*stringp)++ = '\0';
+        else
+            *stringp = 0; }
+    return rv;
+}
+
+#endif
+
+int main(int argc, char* argv[])
 {
     // Initialization
     //--------------------------------------------------------------------------------------
 
     #define screenWidth  800
     #define screenHeight 600
+    
+    #ifdef __HAIKU__
+    //image_info info;
+    //int cookie = 0;
+    //get_next_image_info(0, &cookie, &info);
+    char* xstr = argv[0];
+    char* buf = NULL;
+    char* tk = "";
+    while((buf = strsep(&xstr, "/"))) {
+    	strcat(APP_LOC, tk);
+    	strcat(APP_LOC, "/");
+    	tk = buf;
+    }
+    //printf("%s\n", APP_LOC);
+    exit(0);
+    #endif
 
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     InitWindow(screenWidth, screenHeight, "Sunrayz");
@@ -27,7 +64,7 @@ int main()
     Rectangle panel = {0, 0,            DYN_WIDTH, uniValues[0]};
     Rectangle menu  = {0, uniValues[0], 260,       DYN_HEIGHT};
     
-    Font calibri = CreateFont("calibri.ttf", 28, 95);
+    Font calibri = CreateFont(strcat(APP_LOC, "/calibri.ttf"), 28, 95);
     TextButton* fileMenuButton = CreateButton(
         "File",
         0, 0,
@@ -54,7 +91,7 @@ int main()
 
             DrawRectangleRec(panel, WHITE);
             UpdateRec(&panel);
-            DrawButton(fileMenuButton, false);
+            DrawButton(fileMenuButton, true);
             DrawRectangleRec(menu, ORANGE);
             UpdateRec(&menu);
 
@@ -68,6 +105,6 @@ int main()
     //--------------------------------------------------------------------------------------
     CloseWindow();        // Close window and OpenGL context
     //--------------------------------------------------------------------------------------
-
+    
     return 0;
 }

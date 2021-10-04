@@ -63,23 +63,23 @@ def configure(conf):
         shutil.move(os.path.join(DEPS_DIR, ("raylib-%s" % RAYLIB_VERSION)), os.path.join(DEPS_DIR, "raylib"))
         Logs.info("Done!")
     
-#    tar_path_name = os.path.join(DEPS_DIR, ("kuroko-%s.tar.gz" % KUROKO_VERSION))
-#    if not os.path.exists(os.path.join(os.path.dirname(tar_path_name), tar_path_name.split(os.path.sep)[-1].split('.')[0].split('-')[0])):
-#        if not os.path.exists(tar_path_name):
-#            with open(tar_path_name, "wb") as tarar:
-#                Logs.warn("Downloading kuroko-%s.tar.gz, this may take a while..." % KUROKO_VERSION)
-#                try:
-#                    import requests
-#                    tarar.write(requests.get(KUROKO_REPO + ("/archive/refs/tags/v%s.tar.gz" % KUROKO_VERSION), allow_redirects=True).content)
-#                except ImportError:
-#                    import urllib.request
-#                    tarar.write(urllib.request.urlopen(KUROKO_REPO + ("/archive/refs/tags/v%s.tar.gz") % KUROKO_VERSION).read())
-#        import tarfile
-#        tf = tarfile.open(tar_path_name, 'r')
-#        Logs.warn("Extracting...")
-#        tf.extractall(DEPS_DIR)
-#        shutil.move(os.path.join(DEPS_DIR, ("kuroko-%s" % KUROKO_VERSION)), os.path.join(DEPS_DIR, "kuroko"))
-#        Logs.info("Done!")
+    tar_path_name = os.path.join(DEPS_DIR, ("kuroko-%s.tar.gz" % KUROKO_VERSION))
+    if not os.path.exists(os.path.join(os.path.dirname(tar_path_name), tar_path_name.split(os.path.sep)[-1].split('.')[0].split('-')[0])):
+        if not os.path.exists(tar_path_name):
+            with open(tar_path_name, "wb") as tarar:
+                Logs.warn("Downloading kuroko-%s.tar.gz, this may take a while..." % KUROKO_VERSION)
+                try:
+                    import requests
+                    tarar.write(requests.get(KUROKO_REPO + ("/archive/refs/tags/v%s.tar.gz" % KUROKO_VERSION), allow_redirects=True).content)
+                except ImportError:
+                    import urllib.request
+                    tarar.write(urllib.request.urlopen(KUROKO_REPO + ("/archive/refs/tags/v%s.tar.gz") % KUROKO_VERSION).read())
+        import tarfile
+        tf = tarfile.open(tar_path_name, 'r')
+        Logs.warn("Extracting...")
+        tf.extractall(DEPS_DIR)
+        shutil.move(os.path.join(DEPS_DIR, ("kuroko-%s" % KUROKO_VERSION)), os.path.join(DEPS_DIR, "kuroko"))
+        Logs.info("Done!")
     
     p = ""
     Logs.warn("Patching Raylib Makefile... ")
@@ -111,7 +111,6 @@ def configure(conf):
             kf.write(p)
         Logs.info("Done!")
     elif platform.system() == "Haiku":
-        pass
         Logs.warn("Patching Kuroko Makefile... ")
         #with open("deps/kuroko/Makefile", "r") as kf:
         #p = kf.read().replace('CFLAGS  += -Wno-format -static-libgcc -pthread', "CFLAGS  += -Wno-format -static-libgcc", 1)
@@ -226,7 +225,6 @@ def build(ctx):
             includes     = [".", "deps/raylib/src", "deps/raylib/src/external", "deps/kuroko/src"],
             lib          = libs,
             libpath      = [os.path.join(DEPS_DIR, "kuroko"), os.path.join(DEPS_DIR, "raylib", "src")],
-            #libpath      = [os.path.join(DEPS_DIR, "raylib", "src")],
             install_path = os.path.join(BUILD_DIR, "result", platform.system() + "-" + BUILD_TYPE),
             cflags       = ccflags,
             ldflags      = lflags
@@ -235,7 +233,7 @@ def build(ctx):
         LIB_DIR = ""
         if platform.system() == "Haiku":
             LIB_DIR = "lib"
-            os.mkdir(os.path.join(BUILD_DIR, "result", platform.system() + "-" + BUILD_TYPE, LIB_DIR))
+            #os.mkdir(os.path.join(BUILD_DIR, "result", platform.system() + "-" + BUILD_TYPE, LIB_DIR))
             
         ctx.install_files(
             os.path.join(BUILD_DIR, "result", platform.system() + "-" + BUILD_TYPE, LIB_DIR),

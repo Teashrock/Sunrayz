@@ -13,7 +13,8 @@
 			"*.m": "c",
 			"stdlib.h": "c",
 			"gui.h": "c",
-			"string_view": "c"
+			"string_view": "c",
+			"string.h": "c"
 		},
 		"activestate.promptRuntimeCreation": false
 	}

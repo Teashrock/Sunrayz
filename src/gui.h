@@ -44,6 +44,6 @@ TextButton* CreateButton(
 
 void DrawButton(TextButton*, bool);
 void FreeFreeables();
-Font CreateFont(char* fontFile, int baseSize, int charsCount);
+Font* CreateFont(char* fontFile, int baseSize, int charsCount);
 Font CreateSDFFont(char* fontFile, int baseSize, int charsCount);
 void UpdateRec(Rectangle*);

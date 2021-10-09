@@ -1,13 +1,9 @@
 #include <raylib.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "gui.h"
 #include "error.h"
-
-#ifdef __HAIKU__
-//#include <image.h>
-#include <string.h>
-#endif
 
 const int uniValues[] = {
     80 // Menu and panel collision point
@@ -26,7 +22,8 @@ char *strsep(char **stringp, const char *delim) {
             *stringp = 0; }
     return rv;
 }
-
+#else
+static char* APP_LOC = NULL;
 #endif
 
 int main(int argc, char* argv[])
@@ -64,7 +61,7 @@ int main(int argc, char* argv[])
     Rectangle panel = {0, 0,            DYN_WIDTH, uniValues[0]};
     Rectangle menu  = {0, uniValues[0], 260,       DYN_HEIGHT};
     
-    Font calibri = CreateFont(strcat(APP_LOC, "/calibri.ttf"), 28, 95);
+    Font* calibri = CreateFont("calibri.ttf", 28, 95);
     TextButton* fileMenuButton = CreateButton(
         "File",
         0, 0,
@@ -72,7 +69,7 @@ int main(int argc, char* argv[])
         WHITE,
         LIGHTGRAY,
         GREEN,
-        &calibri,
+        calibri,
         NULL,
         68,
         BLACK,

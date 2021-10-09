@@ -122,15 +122,17 @@ void FreeFreeables()
     }
 }
 
-Font CreateFont(char* fontFile, int baseSize, int charsCount)
+Font* CreateFont(char* fontFile, int baseSize, int charsCount)
 {
-    Font font = {0};
+    Font font;
     font.baseSize   = baseSize;
     font.charsCount = charsCount;
     unsigned int fileSize = 0;
     font.chars = LoadFontData(LoadFileData(fontFile, &fileSize), fileSize, font.baseSize, 0, 0, FONT_SDF);
     font.texture = LoadTextureFromImage(GenImageFontAtlas(font.chars, &font.recs, font.charsCount, font.baseSize, 0, 1));
-    return font;
+    Font* fontPtr = (Font*)malloc(sizeof(font));
+    *fontPtr = font;
+    return fontPtr;
 }
 
 Font CreateSDFFont(char* fontFile, int baseSize, int charsCount)

@@ -24,9 +24,13 @@
             "intelliSenseMode": "gcc-x64"
         },
         {
-            "name": "Mac",
+            "name": "Haiku",
             "includePath": [
-                "${workspaceFolder}/headers/**"
+                "${workspaceFolder}/src/**",
+                "${workspaceFolder}/deps/kuroko/src",
+                "${workspaceFolder}/deps/raylib/src",
+                "${workspaceFolder}/deps/raylib/src/external/glfw/include",
+                "/boot/system/develop/headers"
             ],
             "defines": [
                 "_DEBUG",
@@ -38,7 +42,7 @@
             "macFrameworkPath": [
                 "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.13.sdk/System/Library/Frameworks"
             ],
-            "compilerPath": "/usr/bin/clang",
+            "compilerPath": "/usr/bin/gcc",
             "cStandard": "c11",
             "cppStandard": "c++14",
             "intelliSenseMode": "clang-x64"
@@ -46,7 +50,11 @@
         {
             "name": "Linux",
             "includePath": [
-                "${workspaceFolder}/headers/**"
+                "${workspaceFolder}/src/**",
+                "${workspaceFolder}/deps/kuroko/src",
+                "${workspaceFolder}/deps/raylib/src",
+                "${workspaceFolder}/deps/raylib/src/external/glfw/include",
+                "/usr/include"
             ],
             "defines": [
                 "_DEBUG",
@@ -55,7 +63,7 @@
                 "GRAPHICS_API_OPENGL_33",
                 "PLATFORM_DESKTOP"
             ],
-            "compilerPath": "usr/bin/clang",
+            "compilerPath": "/usr/bin/gcc",
             "cStandard": "c11",
             "cppStandard": "c++14",
             "intelliSenseMode": "clang-x64"

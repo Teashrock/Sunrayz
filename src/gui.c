@@ -82,7 +82,8 @@ TextButton* CreateButton(
     btn.fontHoverColor   = fontHoverColor;
     btn.fontPressedColor = fontPressedColor;
     
-    TextButton* ptr = (TextButton*)malloc(sizeof(float)*4 + sizeof(Color)*6 + sizeof(Font) + sizeof(int) + sizeof(char*));
+    //TextButton* ptr = (TextButton*)malloc(sizeof(float)*4 + sizeof(Color)*6 + sizeof(Font) + sizeof(int) + sizeof(char*));
+    TextButton* ptr = (TextButton*)malloc(sizeof(btn));
     AllocError(ptr, "Failed to allocate pointer!");
     
     *ptr = btn;

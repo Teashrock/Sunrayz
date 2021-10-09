@@ -61,7 +61,6 @@ int main(int argc, char* argv[])
     Rectangle panel = {0, 0,            DYN_WIDTH, uniValues[0]};
     Rectangle menu  = {0, uniValues[0], 260,       DYN_HEIGHT};
     
-    Font* calibri = CreateFont("calibri.ttf", 28, 95);
     TextButton* fileMenuButton = CreateButton(
         "File",
         0, 0,
@@ -69,7 +68,7 @@ int main(int argc, char* argv[])
         WHITE,
         LIGHTGRAY,
         GREEN,
-        calibri,
+        NULL,
         NULL,
         68,
         BLACK,

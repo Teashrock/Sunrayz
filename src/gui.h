@@ -4,8 +4,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define DYN_WIDTH  -1
-#define DYN_HEIGHT -2
+#include "memory.h"
+
+#define DYN_TO_WINDOW -1
 
 typedef struct
 {
@@ -23,9 +24,18 @@ typedef struct
     Color fontHoverColor;
     Color fontPressedColor;
     char* text;
+    float textXOffset;
+    float textYOffset;
 } TextButton;
 
-TextButton* CreateButton(
+typedef enum
+{
+    FONT_CREATION_METHOD_TTF,
+    FONT_CREATION_METHOD_IMAGE,
+    FONT_CREATION_METHOD_RAW
+} FontCreationMethod;
+
+SzType* CreateTextButton(
     char* text,
     float posX,
     float posY,
@@ -39,11 +49,13 @@ TextButton* CreateButton(
     int fontSize,
     Color fontIdleColor,
     Color fontHoverColor,
-    Color fontPressedColor
-    );
+    Color fontPressedColor,
+    float textXOffset,
+    float textYOffset
+);
 
-void DrawButton(TextButton*, bool);
-void FreeFreeables();
-Font* CreateFont(char* fontFile, int baseSize, int charsCount);
-Font CreateSDFFont(char* fontFile, int baseSize, int charsCount);
-void UpdateRec(Rectangle*);
+void DrawTextButton(TextButton* btn, bool sdf);
+SzType* CreateFont(unsigned char* fontSource, unsigned int sourceSize, int baseSize, int charsCount, FontCreationMethod method);
+SzType* CreateRec(float x, float y, float width, float height);
+void DynHandle(SzType* obj);
+void DynUpdate(void);

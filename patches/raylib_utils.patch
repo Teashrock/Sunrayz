@@ -1,0 +1,32 @@
+--- utils.c.old	2021-11-23 23:47:21.127370706 +0200
++++ utils.c	2021-11-23 23:44:34.013360517 +0200
+@@ -161,7 +161,9 @@
+ // NOTE: Initializes to zero by default
+ void *MemAlloc(int size)
+ {
++    loop:
+     void *ptr = RL_CALLOC(size, 1);
++    if (ptr == NULL) goto loop;
+ 
+     return ptr;
+ }
+@@ -169,7 +171,9 @@
+ // Internal memory reallocator
+ void *MemRealloc(void *ptr, int size)
+ {
++    loop:
+     void *ret = RL_REALLOC(ptr, size);
++    if (ret == NULL) goto loop;
+ 
+     return ret;
+ }
+@@ -177,7 +181,8 @@
+ // Internal memory free
+ void MemFree(void *ptr)
+ {
+-    RL_FREE(ptr);
++    if (ptr != NULL)
++        RL_FREE(ptr);
+ }
+ 
+ // Load data from file into a buffer

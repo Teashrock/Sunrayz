@@ -2,11 +2,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include "gui.h"
 #include "error.h"
+#include "memory.h"
+
+#include "fonts/fonts.h"
 
 const int uniValues[] = {
-    80 // Menu and panel collision point
+    30 // Menu and panel collision point
 };
 
 #ifdef __HAIKU__
@@ -23,7 +27,7 @@ char *strsep(char **stringp, const char *delim) {
     return rv;
 }
 #else
-static char* APP_LOC = NULL;
+//static char* APP_LOC = NULL;
 #endif
 
 int main(int argc, char* argv[])
@@ -58,22 +62,46 @@ int main(int argc, char* argv[])
     SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
     
-    Rectangle panel = {0, 0,            DYN_WIDTH, uniValues[0]};
-    Rectangle menu  = {0, uniValues[0], 260,       DYN_HEIGHT};
+    srand(time(NULL));
+    CreateGroup("freeables", "Rectangle;TextButton;Font");
+
+    SzType* menuPanel = CreateRec(0, 0, DYN_TO_WINDOW, uniValues[0]);
+    DynHandle(menuPanel);
+    EnlistMemory(menuPanel, "freeables");
+    SzType* sceneMenu  = CreateRec(0, uniValues[0], 260, DYN_TO_WINDOW);
+    DynHandle(sceneMenu);
+    EnlistMemory(sceneMenu, "freeables");
+
+    SzType* buttonDefaultFont = CreateFont(
+        GetFontKurintoText_Rg(),
+        GetFontKurintoText_RgSize(),
+        30,
+        0,
+        FONT_CREATION_METHOD_RAW
+    );
+
+    /*Font buttonDefaultFont = LoadFontEx(
+        "KurintoText-Rg.ttf",
+        30,
+        0,
+        0
+    );*/
     
-    TextButton* fileMenuButton = CreateButton(
+    SzType* fileMenuButton = CreateTextButton(
         "File",
         0, 0,
-        100, uniValues[0],
+        45, uniValues[0],
         WHITE,
         LIGHTGRAY,
         GREEN,
+        (Font*)buttonDefaultFont->entity,
         NULL,
-        NULL,
-        68,
+        30,
         BLACK,
         BLACK,
-        BLACK
+        BLACK,
+        5,
+        2.1
     );
 
     // Main game loop
@@ -82,21 +110,20 @@ int main(int argc, char* argv[])
         // Draw
         //----------------------------------------------------------------------------------
         BeginDrawing();
+            //DynUpdate();
 
             ClearBackground(GRAY);
 
-            DrawRectangleRec(panel, WHITE);
-            UpdateRec(&panel);
-            DrawButton(fileMenuButton, true);
-            DrawRectangleRec(menu, ORANGE);
-            UpdateRec(&menu);
+            DrawRectangleRec(*(Rectangle*)menuPanel->entity, WHITE);
+            DrawTextButton((TextButton*)fileMenuButton->entity, false);
+            DrawRectangleRec(*(Rectangle*)sceneMenu->entity, ORANGE);
 
         EndDrawing();
         //----------------------------------------------------------------------------------
     }
 
     // De-Initialization
-    FreeFreeables();
+    //FreeFreeables();
 
     //--------------------------------------------------------------------------------------
     CloseWindow();        // Close window and OpenGL context

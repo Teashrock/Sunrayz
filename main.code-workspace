@@ -14,7 +14,13 @@
 			"stdlib.h": "c",
 			"gui.h": "c",
 			"string_view": "c",
-			"string.h": "c"
+			"string.h": "c",
+			"fonts.h": "c",
+			"memory.h": "c",
+			"*.ipp": "c",
+			"*.inc": "c",
+			"rlgl.h": "c",
+			"cstdlib": "c"
 		},
 		"activestate.promptRuntimeCreation": false
 	}

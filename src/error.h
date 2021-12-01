@@ -1,3 +1,3 @@
 #pragma once
 
-void AllocError(void*, const char*);
+void SzError(char* title, char* text);

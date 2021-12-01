@@ -1,10 +1,6 @@
 #include "gui.h"
 #include "error.h"
 
-// Pool for freeable objects
-static void** freeables    = NULL;
-static int freeablesNumber = 0;
-
 #ifdef __HAIKU__
 static char* SDFShader = "#version 140\n\n\
 varying vec2 fragTexCoord;\
@@ -43,7 +39,21 @@ void main()\
 \0";
 #endif
 
-TextButton* CreateButton(
+typedef struct _DynHandler
+{
+    union
+    {
+        Rectangle* rec;
+    } entity;
+    bool width;
+    bool height;
+    int  type;
+    char* debug;
+    struct _DynHandler* next;
+} DynHandler;
+
+/// Creates a TextButton: a combination of rectangle, text and signals
+SzType* CreateTextButton(
     char* text,
     float posX,
     float posY,
@@ -57,45 +67,46 @@ TextButton* CreateButton(
     int fontSize,
     Color fontIdleColor,
     Color fontHoverColor,
-    Color fontPressedColor
+    Color fontPressedColor,
+    float textXOffset,
+    float textYOffset
     )
 {
-    TextButton btn = {0};
-    btn.text             = text;
-    btn.posX             = posX;
-    btn.posY             = posY;
-    btn.width            = width;
-    btn.height           = height;
-    btn.idleColor        = idleColor;
-    btn.hoverColor       = hoverColor;
-    btn.pressedColor     = pressedColor;
+    SzType* t = CreateType("TextButton");
+
+    TextButton* btn = (TextButton*)MemAlloc(sizeof(TextButton));
+    
+    *btn = (TextButton){0};
+    btn->text             = text;
+    btn->posX             = posX;
+    btn->posY             = posY;
+    btn->width            = width;
+    btn->height           = height;
+    btn->idleColor        = idleColor;
+    btn->hoverColor       = hoverColor;
+    btn->pressedColor     = pressedColor;
     if (font == NULL)
-        btn.font         = GetFontDefault();
+        btn->font         = GetFontDefault();
     else
-        btn.font         = *font;
+        btn->font         = *font;
     if (fontShader == NULL)
-        btn.fontShader   = SDFShader;
+        btn->fontShader   = SDFShader;
     else
-        btn.fontShader   = fontShader;
-    btn.fontSize         = fontSize;
-    btn.fontIdleColor    = fontIdleColor;
-    btn.fontHoverColor   = fontHoverColor;
-    btn.fontPressedColor = fontPressedColor;
+        btn->fontShader   = fontShader;
+    btn->fontSize         = fontSize;
+    btn->fontIdleColor    = fontIdleColor;
+    btn->fontHoverColor   = fontHoverColor;
+    btn->fontPressedColor = fontPressedColor;
+    btn->textXOffset      = textXOffset;
+    btn->textYOffset      = textYOffset;
+
+    t->entity = btn;
     
-    //TextButton* ptr = (TextButton*)malloc(sizeof(float)*4 + sizeof(Color)*6 + sizeof(Font) + sizeof(int) + sizeof(char*));
-    TextButton* ptr = (TextButton*)malloc(sizeof(btn));
-    AllocError(ptr, "Failed to allocate pointer!");
-    
-    *ptr = btn;
-    freeables = malloc(sizeof(TextButton*));
-    AllocError(freeables, "Failed to allocate pointer!");
-    
-    *freeables = ptr;
-    freeablesNumber++;
-    return ptr;
+    return t;
 }
 
-void DrawButton(TextButton* btn, bool sdf)
+/// Draws a TextButton
+void DrawTextButton(TextButton* btn, bool sdf)
 {
     Rectangle rec = {btn->posX, btn->posY, btn->width, btn->height};
     bool mouse_in = CheckCollisionPointRec(GetMousePosition(), rec);
@@ -107,52 +118,146 @@ void DrawButton(TextButton* btn, bool sdf)
         DrawRectangleRec(rec, mouse_in ? btn->hoverColor : btn->idleColor);
     }
     
-    rec.x += 5;
-    rec.y += 7;
-    Shader shader = LoadShaderFromMemory(NULL, btn->fontShader);
-    if (sdf) BeginShaderMode(shader);
-        DrawTextRec(btn->font, btn->text, rec, btn->fontSize, 0, false, btn->fontIdleColor);
-    if (sdf) EndShaderMode();
-}
-
-void FreeFreeables()
-{
-    for (; freeablesNumber > 0; freeablesNumber--)
-    {
-        free(*freeables);
+    if (sdf) {
+        Shader shader = LoadShaderFromMemory(NULL, btn->fontShader);
+        BeginShaderMode(shader);
+    }
+            DrawTextPro(btn->font, btn->text, (Vector2){rec.x + btn->textXOffset, rec.y + btn->textYOffset}, (Vector2){rec.x, rec.y}, 0, btn->fontSize, 0, btn->fontIdleColor);
+    if (sdf) {
+        EndShaderMode();
     }
 }
 
-Font* CreateFont(char* fontFile, int baseSize, int charsCount)
+void UnloadTextButton(TextButton* btn)
 {
-    Font font;
-    font.baseSize   = baseSize;
-    font.charsCount = charsCount;
-    unsigned int fileSize = 0;
-    font.chars = LoadFontData(LoadFileData(fontFile, &fileSize), fileSize, font.baseSize, 0, 0, FONT_SDF);
-    font.texture = LoadTextureFromImage(GenImageFontAtlas(font.chars, &font.recs, font.charsCount, font.baseSize, 0, 1));
-    Font* fontPtr = (Font*)malloc(sizeof(font));
-    *fontPtr = font;
-    return fontPtr;
+    UnloadFont(btn->font);
+    MemFree(btn);
 }
 
-Font CreateSDFFont(char* fontFile, int baseSize, int charsCount)
+/* Methods:
+    0 - Create font from TTF
+    1 - Create font from image
+    2 - Create font from raw code data
+*/ 
+SzType* CreateFont(unsigned char* fontSource, unsigned int sourceSize, int baseSize, int charsCount, FontCreationMethod method)
 {
-    Font font = {0};
-    font.baseSize   = baseSize;
-    font.charsCount = charsCount;
-    unsigned int fileSize = 0;
-    font.chars = LoadFontData(LoadFileData(fontFile, &fileSize), fileSize, font.baseSize, 0, 0, FONT_SDF);
-    font.texture = LoadTextureFromImage(GenImageFontAtlas(font.chars, &font.recs, font.charsCount, font.baseSize, 0, 1));
-    SetTextureFilter(font.texture, FILTER_BILINEAR);
-    return font;
+    SzType* t = CreateType("Font");
+
+    Font* font = (Font*)MemAlloc(sizeof(Font));
+
+    *font = (Font){0};
+    font->baseSize   = baseSize;
+    charsCount = (charsCount > 0) ? charsCount : 95;
+    font->glyphCount = charsCount;
+    unsigned char* font_data;
+    switch (method)
+    {
+    case FONT_CREATION_METHOD_TTF:
+        font->glyphPadding = 0; // FONT_TTF_DEFAULT_CHARS_PADDING
+        font_data = LoadFileData((char*)fontSource, &sourceSize);
+        break;
+    case FONT_CREATION_METHOD_IMAGE:
+        
+        break;
+    case FONT_CREATION_METHOD_RAW:
+        font_data = fontSource;
+        font->glyphPadding = 4;
+        break;
+    default:
+        break;
+    }
+    font->glyphs = LoadFontData(font_data, sourceSize, font->baseSize, 0, font->glyphCount, FONT_DEFAULT);
+    if (method != FONT_CREATION_METHOD_RAW)
+        free(font_data);
+    Image atlas = GenImageFontAtlas(font->glyphs, &(font->recs), font->glyphCount, font->baseSize, font->glyphPadding, 0);
+    font->texture = LoadTextureFromImage(atlas);
+    
+    // Update chars[i].image to use alpha, required to be used on ImageDrawText()
+    for (int i = 0; i < font->glyphCount; i++)
+    {
+        UnloadImage(font->glyphs[i].image);
+        font->glyphs[i].image = ImageFromImage(atlas, font->recs[i]);
+    }
+    
+    UnloadImage(atlas);
+
+    SetTextureFilter(font->texture, TEXTURE_FILTER_BILINEAR);
+
+    t->entity = font;
+    
+    return t;
 }
 
-// Updates a rectangle containing dynamic values
-void UpdateRec(Rectangle* rec)
+SzType* CreateRec(float x, float y, float width, float height)
 {
-    if (rec->width == DYN_WIDTH)
-        rec->width = GetScreenWidth();
-    if (rec->height == DYN_HEIGHT)
-        rec->height = GetScreenHeight();
+    SzType* t = CreateType("Rectangle");
+
+    Rectangle* rect = (Rectangle*)MemAlloc(sizeof(Rectangle));
+    
+    *rect = (Rectangle){
+        .x = x,
+        .y = y,
+        .width = width,
+        .height = height
+    };
+
+    t->entity = rect;
+    
+    return t;
+}
+
+static DynHandler* dynHandlers = NULL;
+static DynHandler* currentDynHandler = NULL;
+static DynHandler* futureDynHandler = NULL;
+
+/// Handles dynamic values in a rectangle
+void DynHandle(SzType* obj)
+{
+    if (obj->type == "Rectangle") {
+        
+        /*if ((int)((Rectangle*)obj->entity)->width == DYN_WIDTH || (int)((Rectangle*)obj->entity)->height == DYN_HEIGHT) {
+            futureDynHandler = (DynHandler*)MemAlloc(sizeof(DynHandler));
+            *futureDynHandler = (DynHandler) {
+                futureDynHandler->entity.rec = obj;
+                futureDynHandler->width = (int)((Rectangle*)obj->entity)->width == DYN_WIDTH;
+                futureDynHandler->height = (int)((Rectangle*)obj->entity)->height == DYN_HEIGHT;
+                futureDynHandler->next = NULL;
+            };
+            //AddFreeable(futureDynHandler, FREEABLE_DYNHANDLER);
+
+            if (dynHandlers != NULL) {
+                currentDynHandler->next = futureDynHandler;
+                currentDynHandler = currentDynHandler->next;
+            } else {
+                dynHandlers = futureDynHandler;
+                currentDynHandler = dynHandlers;
+            }
+        }*/
+    }
+}
+
+/// Updates present dynamic values
+void DynUpdate(void)
+{
+    currentDynHandler = dynHandlers;
+
+    loop:
+    switch (currentDynHandler->type)
+    {
+        case DYN_TYPE_RECTANGLE:
+            if (currentDynHandler->width) {
+                currentDynHandler->entity.rec->width = GetScreenWidth();
+            }
+            if (currentDynHandler->height) {
+                currentDynHandler->entity.rec->height = GetScreenHeight();
+            }
+            break;
+        default:
+            break;
+    }
+    if (currentDynHandler->next != NULL) {
+        currentDynHandler = currentDynHandler->next;
+        goto loop;
+    }
+        
 }

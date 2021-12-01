@@ -1,8 +1,9 @@
+.lock-waf_*_build
+.waf3-2.0.22-aaee2b4cd084b3f1e699ecd3fe442edd
+__pycache__
 result
 build
 deps
-.waf3-2.0.22-aaee2b4cd084b3f1e699ecd3fe442edd
-m
-.lock-waf_linux_build
 compiled.list
 downloaded.list
+fonts_linked.list

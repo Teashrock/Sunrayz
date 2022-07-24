@@ -58,7 +58,7 @@ Group* CreateGroup(char* name, char* types)
     }
 }
 
-/// Destroys a group, freeing a memory it was using
+/// Destroys a group, freeing any memory it was using
 void DestroyGroup(char* name)
 {
     FIND_GROUP(name)
@@ -102,6 +102,7 @@ int EnlistMemory(SzType* obj, char* group)
     char* type = strtok(gCurrentGroup->types, ";");
 
     iterTypes:
+    printf("%s\n", obj->type);
     if (type == NULL) // If neither token equals the needed type, throw a runtime error
         SzRuntimeError(NULL, "Wrong type was tried to be added into a group.");
     if (strcmp(type, obj->type) != 0) { // If the current token in 'type' doesn't respect 'obj->type',

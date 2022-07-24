@@ -63,12 +63,12 @@ int main(int argc, char* argv[])
     //--------------------------------------------------------------------------------------
     
     srand(time(NULL));
-    CreateGroup("freeables", "Rectangle;TextButton;Font");
+    CreateGroup("free_at_shutdown", "Rectangle;TextButton;Font;Void");
 
     SzType* menuPanel = CreateRec(0, 0, DYN_TO_WINDOW, uniValues[0]);
-    EnlistMemory(menuPanel, "freeables");
+    EnlistMemory(menuPanel, "free_at_shutdown");
     SzType* sceneMenu  = CreateRec(0, uniValues[0], 260, DYN_TO_WINDOW);
-    EnlistMemory(sceneMenu, "freeables");
+    EnlistMemory(sceneMenu, "free_at_shutdown");
 
     SzType* buttonDefaultFont = CreateFont(
         GetFontKurintoText_Rg(),
@@ -77,13 +77,6 @@ int main(int argc, char* argv[])
         0,
         FONT_CREATION_METHOD_RAW
     );
-
-    /*Font buttonDefaultFont = LoadFontEx(
-        "KurintoText-Rg.ttf",
-        30,
-        0,
-        0
-    );*/
     
     SzType* fileMenuButton = CreateTextButton(
         "File",
@@ -108,10 +101,8 @@ int main(int argc, char* argv[])
         // Draw
         //----------------------------------------------------------------------------------
         BeginDrawing();
-            //DynUpdate();
 
             ClearBackground(GRAY);
-            //puts("Here!");
 
             DrawRectangleRec(*(Rectangle*)menuPanel->entity, WHITE);
             DrawTextButton((TextButton*)fileMenuButton->entity, false);
@@ -122,7 +113,7 @@ int main(int argc, char* argv[])
     }
 
     // De-Initialization
-    //FreeFreeables();
+    DestroyGroup("free_at_shutdown");
 
     //--------------------------------------------------------------------------------------
     CloseWindow();        // Close window and OpenGL context

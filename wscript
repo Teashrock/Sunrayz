@@ -150,7 +150,7 @@ def configure(conf):
 
     Logs.warn("Applying architecture patches for Raylib...")
     os.chdir("deps/raylib/src")
-    sp = subprocess.Popen(["patch", "-Np1", "-i", os.path.join(BUILD_DIR, out, "/raylib_utils.patch")])
+    sp = subprocess.Popen(["patch", "-Np1", "-i", os.path.join(BUILD_DIR, out, "raylib_utils.patch")])
     sp.wait()
     os.chdir(BUILD_DIR)
     
@@ -171,20 +171,20 @@ def configure(conf):
     
     if platform.system() == "Linux":
         os.chdir("deps/raylib/src")
-        sp = subprocess.Popen(["patch", "-Np1", "-i", os.path.join(BUILD_DIR, out, "/raylib_makefile_linux.patch")])
+        sp = subprocess.Popen(["patch", "-Np1", "-i", os.path.join(BUILD_DIR, out, "raylib_makefile_linux.patch")])
         sp.wait()
         os.chdir(BUILD_DIR)
     
     if platform.system() == "Haiku":
         Logs.warn("Patching Raylib Makefile...")
         os.chdir("deps/raylib/src")
-        sp = subprocess.Popen(["patch", "-Np1", "-i", os.path.join(BUILD_DIR, out, "/raylib_makefile_haiku.patch")])
+        sp = subprocess.Popen(["patch", "-Np1", "-i", os.path.join(BUILD_DIR, out, "raylib_makefile_haiku.patch")])
         sp.wait()
         os.chdir(BUILD_DIR)
 
         Logs.warn("Applying special Raylib patch for Haiku OS...")
         os.chdir("deps/raylib")
-        sp = subprocess.Popen(["patch", "-Np1", "-i", os.path.join(BUILD_DIR, out, "/raylib_haiku.patch")])
+        sp = subprocess.Popen(["patch", "-Np1", "-i", os.path.join(BUILD_DIR, out, "raylib_haiku.patch")])
         sp.wait()
         os.chdir(BUILD_DIR)
     Logs.info("All done here!")
@@ -204,7 +204,7 @@ def configure(conf):
         #p = kf.read().replace('${CC} ${CFLAGS} ${LDFLAGS} -fPIC -shared -o $@ ${SOOBJS} ${LDLIBS}', '${CC} ${CFLAGS} ${LDFLAGS} -shared -o $@ ${SOOBJS} ${LDLIBS}', 1)
         #p = kf.read().replace('${CC} ${CFLAGS} ${LDFLAGS} -fPIC -shared -o $@ ${SOOBJS} ${WINLIBS} -Wl,--export-all-symbols,--out-implib,libkuroko.a', '${CC} ${CFLAGS} ${LDFLAGS} -shared -o $@ ${SOOBJS} ${WINLIBS} -Wl,--export-all-symbols,--out-implib,libkuroko.a')
         os.chdir("deps/kuroko")
-        sp = subprocess.Popen(["patch", "-Np1", "-i", os.path.join(BUILD_DIR, out, "/kuroko_haiku.patch")])
+        sp = subprocess.Popen(["patch", "-Np1", "-i", os.path.join(BUILD_DIR, out, "kuroko_haiku.patch")])
         sp.wait()
         Logs.info("Done!")
     
@@ -230,6 +230,9 @@ def purge(ctx):
     except: pass
     try:
         os.remove(os.path.join(BUILD_DIR, "compiled.list"))
+    except: pass
+    try:
+        os.remove(os.path.join(BUILD_DIR, "compiler.path"))
     except: pass
     try:
         os.remove(os.path.join(BUILD_DIR, "downloaded.list"))

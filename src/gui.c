@@ -39,19 +39,6 @@ void main()\
 \0";
 #endif
 
-typedef struct _DynHandler
-{
-    union
-    {
-        Rectangle* rec;
-    } entity;
-    bool width;
-    bool height;
-    int  type;
-    char* debug;
-    struct _DynHandler* next;
-} DynHandler;
-
 /// Creates a TextButton: a combination of rectangle, text and signals
 SzType* CreateTextButton(
     char* text,
@@ -177,6 +164,9 @@ SzType* CreateFont(unsigned char* fontSource, unsigned int sourceSize, int baseS
     {
         UnloadImage(font->glyphs[i].image);
         font->glyphs[i].image = ImageFromImage(atlas, font->recs[i]);
+        SzType* image_t = CreateType("Void");
+        image_t->entity = font->glyphs[i].image.data;
+        EnlistMemory(image_t, "free_at_shutdown");
     }
     
     UnloadImage(atlas);

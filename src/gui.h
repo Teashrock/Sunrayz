@@ -57,5 +57,3 @@ SzType* CreateTextButton(
 void DrawTextButton(TextButton* btn, bool sdf);
 SzType* CreateFont(unsigned char* fontSource, unsigned int sourceSize, int baseSize, int charsCount, FontCreationMethod method);
 SzType* CreateRec(float x, float y, float width, float height);
-void DynHandle(SzType* obj);
-void DynUpdate(void);

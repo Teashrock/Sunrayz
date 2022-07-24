@@ -1,6 +1,7 @@
 #include "typing.h"
 
 #include <stdlib.h>
+#include <raylib.h>
 
 /*int CreateSignal(SzVisible* object, char* name)
 {

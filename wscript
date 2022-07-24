@@ -41,12 +41,46 @@ MAKE_ARGUMENTS = "-j9"
 
 INSTALLPATH = os.path.join(BUILD_DIR, "result", platform.system() + "-" + BUILD_TYPE)
 
+# 0 — general utility
+# 1 — Windows-specific utility
+UTIL_LIST = {
+    "unix2dos": 1,
+    "patch": 0,
+    "gcc": 0
+}
+
+global patch_list
+patch_list : list = list()
+
 def options(opt):
     if platform.system() == "Windows":
         os.environ["PATH"] = "C:\\mingw32\\bin;C:\\mingw32\\libexec\\gcc\\i686-w64-mingw32\\8.1.0;" + os.environ["PATH"]
     opt.load('compiler_c')
 
 def configure(conf):
+    delim : str = ""
+    ext : str = ""
+    if platform.system() == "Windows":
+        delim = ";"
+        ext = ".exe"
+    else:
+        delim = ":"
+    util_check_paths : list = os.getenv("PATH").split(delim)
+    for key in UTIL_LIST.keys():
+        found : bool = False
+        if UTIL_LIST[key] == 0 or (UTIL_LIST[key] == 1 and platform.system() == "Windows"):
+            for each in util_check_paths:
+                if os.path.exists(os.path.join(each, key + ext)):
+                    if key == "gcc":
+                        with open("compiler.path", "w") as cp:
+                            cp.write(each + '\n')
+                    found = True
+                    break
+            if not found:
+                Logs.error("Error: \"" + key + "\" utility has not been found in PATH.")
+                exit(1)
+
+    clist : list = []
     def download(what : str, version : str, repo : str):
         try:
             clistfile = open("downloaded.list", "r")
@@ -55,7 +89,7 @@ def configure(conf):
         except:
             clist = []
         if not what in clist:
-            if version == ("master" or "main"):
+            if version == ("master" or "main" or "trunk"):
                 sp = subprocess.Popen(["git", "clone", "--recursive", repo, os.path.join(DEPS_DIR, what)])
                 sp.wait()
             else:
@@ -69,10 +103,11 @@ def configure(conf):
                                 cnt = requests.get(repo + ("/archive/refs/tags/%s.tar.gz" % version), allow_redirects=True).content
                                 if cnt == b"404: Not Found":
                                     cnt = requests.get(repo + ("/archive/refs/tags/v%s.tar.gz" % version), allow_redirects=True).content
-                            except ImportError:
+                            except ModuleNotFoundError:
                                 import urllib.request
-                                cnt = urllib.request.urlopen(repo + ("/archive/refs/tags/%s.tar.gz") % version).read()
-                                if cnt == b"404: Not Found":
+                                try:
+                                    cnt = urllib.request.urlopen(repo + ("/archive/refs/tags/%s.tar.gz") % version).read()
+                                except urllib.error.HTTPError:
                                     cnt = urllib.request.urlopen(repo + ("/archive/refs/tags/v%s.tar.gz") % version).read()
                             tarar.write(cnt)
                     import tarfile
@@ -102,13 +137,24 @@ def configure(conf):
     download("kuroko", KUROKO_VERSION, KUROKO_REPO)
     
     # Patch zone
+    for _, _, f in os.walk(os.path.join(BUILD_DIR, "patches")):
+        for i in f:
+            shutil.copy(os.path.join(BUILD_DIR, "patches", i), os.path.join(BUILD_DIR, out))
+            patch_list.append(i)
+    if platform.system() == "Windows":
+        Logs.warn("Converting patches' ends-of-line to CR LF, necessary on Windows...")
+        for i in patch_list:
+            sp = subprocess.Popen(["unix2dos", os.path.join(BUILD_DIR, out, i)])
+            sp.wait()
+        Logs.info("Done!")
+
     Logs.warn("Applying architecture patches for Raylib...")
     os.chdir("deps/raylib/src")
-    sp = subprocess.Popen(["patch", "-Np1", "-i", BUILD_DIR + "/patches/raylib_utils.patch"])
+    sp = subprocess.Popen(["patch", "-Np1", "-i", os.path.join(BUILD_DIR, out, "/raylib_utils.patch")])
     sp.wait()
     os.chdir(BUILD_DIR)
     
-    p = ""
+    p : str = ""
     Logs.warn("Changing Raylib build type to shared... ")
     if DYNAMIC_LINKING:
         with open("deps/raylib/src/Makefile", "r") as rf:
@@ -125,20 +171,20 @@ def configure(conf):
     
     if platform.system() == "Linux":
         os.chdir("deps/raylib/src")
-        sp = subprocess.Popen(["patch", "-Np1", "-i", BUILD_DIR + "/patches/raylib_makefile_linux.patch"])
+        sp = subprocess.Popen(["patch", "-Np1", "-i", os.path.join(BUILD_DIR, out, "/raylib_makefile_linux.patch")])
         sp.wait()
         os.chdir(BUILD_DIR)
     
     if platform.system() == "Haiku":
         Logs.warn("Patching Raylib Makefile...")
         os.chdir("deps/raylib/src")
-        sp = subprocess.Popen(["patch", "-Np1", "-i", BUILD_DIR + "/patches/raylib_makefile_haiku.patch"])
+        sp = subprocess.Popen(["patch", "-Np1", "-i", os.path.join(BUILD_DIR, out, "/raylib_makefile_haiku.patch")])
         sp.wait()
         os.chdir(BUILD_DIR)
 
         Logs.warn("Applying special Raylib patch for Haiku OS...")
         os.chdir("deps/raylib")
-        sp = subprocess.Popen(["patch", "-Np1", "-i", BUILD_DIR + "/patches/raylib_haiku.patch"])
+        sp = subprocess.Popen(["patch", "-Np1", "-i", os.path.join(BUILD_DIR, out, "/raylib_haiku.patch")])
         sp.wait()
         os.chdir(BUILD_DIR)
     Logs.info("All done here!")
@@ -158,7 +204,7 @@ def configure(conf):
         #p = kf.read().replace('${CC} ${CFLAGS} ${LDFLAGS} -fPIC -shared -o $@ ${SOOBJS} ${LDLIBS}', '${CC} ${CFLAGS} ${LDFLAGS} -shared -o $@ ${SOOBJS} ${LDLIBS}', 1)
         #p = kf.read().replace('${CC} ${CFLAGS} ${LDFLAGS} -fPIC -shared -o $@ ${SOOBJS} ${WINLIBS} -Wl,--export-all-symbols,--out-implib,libkuroko.a', '${CC} ${CFLAGS} ${LDFLAGS} -shared -o $@ ${SOOBJS} ${WINLIBS} -Wl,--export-all-symbols,--out-implib,libkuroko.a')
         os.chdir("deps/kuroko")
-        sp = subprocess.Popen(["patch", "-Np1", "-i", BUILD_DIR + "/patches/kuroko_haiku.patch"])
+        sp = subprocess.Popen(["patch", "-Np1", "-i", os.path.join(BUILD_DIR, out, "/kuroko_haiku.patch")])
         sp.wait()
         Logs.info("Done!")
     
@@ -342,15 +388,12 @@ def build(ctx):
         else:
             _rllibpath = "deps/raylib/src"
 
-        #uses = ["raylib"]
-
         ctx.program(
             source       = SRCS,
             target       = EXE_NAME,
             includes     = [".", "deps/raylib/src", "deps/raylib/src/external", "deps/kuroko/src"],
             lib          = libs,
-            #use          = uses,
-            libpath      = [os.path.join(DEPS_DIR, "kuroko"), os.path.join(DEPS_DIR, "raylib")],
+            libpath      = [os.path.join(DEPS_DIR, "kuroko"), os.path.join(DEPS_DIR, "raylib", "src")],
             install_path = INSTALLPATH,
             cflags       = ccflags,
             ldflags      = lflags
@@ -365,6 +408,17 @@ def build(ctx):
             os.path.join(BUILD_DIR, "result", platform.system() + "-" + BUILD_TYPE, LIB_DIR),
             ["deps/kuroko/" + krklib_name]
         )
+
+        if platform.system() == "Windows":
+            Logs.warn("Copying necessary dlls...")
+            f = open("compiler.path", "r")
+            compiler_path = f.read().strip()
+            f.close()
+            shutil.copy(
+                os.path.join(compiler_path, "libwinpthread-1.dll"),
+                os.path.join(BUILD_DIR, "result", platform.system() + "-" + BUILD_TYPE, LIB_DIR)
+            )
+            Logs.info("Done!")
     
         if DYNAMIC_LINKING:
             ctx.install_files(

@@ -15,16 +15,6 @@ typedef enum {
     Signal* next;
 } Signal;*/
 
-typedef struct _Condition
-{
-    ValType ltype;
-    void* lvalue;
-    char* operation;
-    ValType rtype;
-    void* rvalue;
-    Condition* next;
-} Condition;
-
 typedef struct _SzType
 {
     void* entity;

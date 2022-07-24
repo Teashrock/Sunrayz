@@ -66,10 +66,8 @@ int main(int argc, char* argv[])
     CreateGroup("freeables", "Rectangle;TextButton;Font");
 
     SzType* menuPanel = CreateRec(0, 0, DYN_TO_WINDOW, uniValues[0]);
-    DynHandle(menuPanel);
     EnlistMemory(menuPanel, "freeables");
     SzType* sceneMenu  = CreateRec(0, uniValues[0], 260, DYN_TO_WINDOW);
-    DynHandle(sceneMenu);
     EnlistMemory(sceneMenu, "freeables");
 
     SzType* buttonDefaultFont = CreateFont(
@@ -113,6 +111,7 @@ int main(int argc, char* argv[])
             //DynUpdate();
 
             ClearBackground(GRAY);
+            //puts("Here!");
 
             DrawRectangleRec(*(Rectangle*)menuPanel->entity, WHITE);
             DrawTextButton((TextButton*)fileMenuButton->entity, false);

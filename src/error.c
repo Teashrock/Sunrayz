@@ -7,7 +7,7 @@
 #include <raylib.h>
 #endif
 
-void SzError(char* title, char* text)
+void SzRuntimeError(char* title, char* text)
 {
     if (title == NULL)
         title = "Runtime error!";

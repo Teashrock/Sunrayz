@@ -20,7 +20,8 @@
 			"*.ipp": "c",
 			"*.inc": "c",
 			"rlgl.h": "c",
-			"cstdlib": "c"
+			"cstdlib": "c",
+			"windows.h": "c"
 		},
 		"activestate.promptRuntimeCreation": false
 	}

@@ -93,22 +93,31 @@ void DestroyGroupByRef(Group* group)
     }
 }
 
+void SzCheckGroupType(SzType* obj, char* group)
+{
+    // Type checking
+    CREATE_STR(typesStr, gCurrentGroup->types)
+    char* type = strtok(typesStr, ",");
+
+    iterTypes:
+    if (type == NULL) { // If neither token equals the needed type, throw a runtime error
+        char* errorstr = (char*)MemAlloc(sizeof(char*));
+        sprintf(errorstr, "Wrong type has been tried to add into group \"%s\".", group);
+        SzRuntimeError(NULL, errorstr);
+    }
+    if (strcmp(type, obj->type) != 0) { // If the current token in 'type' doesn't respect 'obj->type',
+        type = strtok(NULL, ",");       // switch to next token
+        goto iterTypes;                 // and return to check,
+    }                                   // else pass further
+    MemFree(typesStr);
+    typesStr = NULL;
+}
+
 /// Adds an object into a group
 int EnlistMemory(SzType* obj, char* group)
 {
     FIND_GROUP(group)
-
-    // Type checking
-    char* type = strtok(gCurrentGroup->types, ";");
-
-    iterTypes:
-    printf("%s\n", obj->type);
-    if (type == NULL) // If neither token equals the needed type, throw a runtime error
-        SzRuntimeError(NULL, "Wrong type was tried to be added into a group.");
-    if (strcmp(type, obj->type) != 0) { // If the current token in 'type' doesn't respect 'obj->type',
-        type = strtok(NULL, ";");       // switch to next token
-        goto iterTypes;                 // and return to check,
-    }                                   // else pass further
+    SzCheckGroupType(obj, group);
 
     SzTag* backTag = NULL;
     SzTag* tag = gCurrentGroup->entities;
@@ -138,13 +147,16 @@ int EnlistMemory(SzType* obj, char* group)
 int EnlistMemoryByRef(SzType* obj, Group* group)
 {
     // Type checking
-    char* type = strtok(group->types, ";");
+    char* type = strtok(gCurrentGroup->types, ",");
 
     iterTypes:
-    if (type == NULL) // If neither token equals the needed type, throw a runtime error
-        SzRuntimeError(NULL, "Wrong type was tried to be added into a group.");
+    if (type == NULL) { // If neither token equals the needed type, throw a runtime error
+        char* errorstr = (char*)MemAlloc(sizeof(char*));
+        sprintf(errorstr, "Wrong type has been tried to add into group \"%s\".", group->name);
+        SzRuntimeError(NULL, errorstr);
+    }
     if (strcmp(type, obj->type) != 0) { // If the current token in 'type' doesn't respect 'obj->type',
-        type = strtok(NULL, ";");       // switch to next token
+        type = strtok(NULL, ",");       // switch to next token
         goto iterTypes;                 // and return to check,
     }                                   // else pass further
 

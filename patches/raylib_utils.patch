@@ -1,8 +1,19 @@
---- a/utils.c	2021-12-05 17:45:54.936922514 +0200
-+++ b/utils.c	2021-12-05 17:45:48.389922335 +0200
-@@ -161,14 +161,18 @@
+--- a/utils.c	2022-08-13 23:42:38.000000000 +0300
++++ b/utils.c	2022-08-21 00:16:35.249732500 +0300
+@@ -49,6 +49,7 @@
+ #include <stdio.h>                      // Required for: FILE, fopen(), fseek(), ftell(), fread(), fwrite(), fprintf(), vprintf(), fclose()
+ #include <stdarg.h>                     // Required for: va_list, va_start(), va_end()
+ #include <string.h>                     // Required for: strcpy(), strcat()
++#include <stddef.h>                     // Required for: size_t
+ 
+ //----------------------------------------------------------------------------------
+ // Defines and Macros
+@@ -160,23 +161,30 @@
+ 
+ // Internal memory allocator
  // NOTE: Initializes to zero by default
- void *MemAlloc(int size)
+-void *MemAlloc(int size)
++void *MemAlloc(size_t size)
  {
 +    loop:;
      void *ptr = RL_CALLOC(size, 1);
@@ -11,7 +22,8 @@
  }
  
  // Internal memory reallocator
- void *MemRealloc(void *ptr, int size)
+-void *MemRealloc(void *ptr, int size)
++void *MemRealloc(void *ptr, size_t size)
  {
 +    loop:;
      void *ret = RL_REALLOC(ptr, size);
@@ -19,12 +31,13 @@
      return ret;
  }
  
-@@ -176,6 +180,8 @@
+ // Internal memory free
  void MemFree(void *ptr)
  {
++    loop:;
      RL_FREE(ptr);
 +    if (ptr != NULL)
-+        RL_FREE(ptr);
++        goto loop;
  }
  
  // Load data from file into a buffer

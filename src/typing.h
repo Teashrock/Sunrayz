@@ -1,12 +1,12 @@
 #pragma once
 
-typedef enum {
+/*typedef enum {
     TOKEN_INT,
     TOKEN_STRING,
     TOKEN_BOOL,
     TOKEN_FUNCTION,
     TOKEN_TYPE
-} ValType;
+} ValType;*/
 
 /*typedef struct _Signal
 {

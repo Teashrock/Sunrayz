@@ -20,7 +20,7 @@ from waflib import Logs
 c_compiler['win32'] = ['gcc']
 
 RAYLIB_REPO    = "https://github.com/raysan5/raylib"
-RAYLIB_VERSION = "4.0.0"
+RAYLIB_VERSION = "4.2.0"
 
 KUROKO_REPO    = "https://github.com/kuroko-lang/kuroko"
 KUROKO_VERSION = "1.1.2"
@@ -151,6 +151,8 @@ def configure(conf):
     Logs.warn("Applying architecture patches for Raylib...")
     os.chdir("deps/raylib/src")
     sp = subprocess.Popen(["patch", "-Np1", "-i", os.path.join(BUILD_DIR, out, "raylib_utils.patch")])
+    sp.wait()
+    sp = subprocess.Popen(["patch", "-Np1", "-i", os.path.join(BUILD_DIR, out, "raylib_raylib.patch")])
     sp.wait()
     os.chdir(BUILD_DIR)
     
@@ -366,7 +368,7 @@ def build(ctx):
 
         ccflags = []
         if platform.system() == "Windows":
-            ccflags = ['-Wall', '-std=c99', '-D_DEFAULT_SOURCE', '-Wno-missing-braces', MODE, OPT, '-Wl,--subsystem,windows', '-DPLATFORM_DESKTOP', '-mwindows']
+            ccflags = ['-Wall', '-std=c99', '-D_DEFAULT_SOURCE', '-Wno-missing-braces', MODE, OPT, '-Wl,--subsystem,windows', '-DPLATFORM_DESKTOP']
         elif platform.system() == "Haiku":
             ccflags = ['-Wall', '-std=c99', '-D_DEFAULT_SOURCE', '-Wno-missing-braces', MODE, OPT, '-DPLATFORM_DESKTOP']
         elif platform.system() == "Linux":

@@ -1,21 +1,18 @@
 #include "typing.h"
 
 #include <stdlib.h>
+#include <string.h>
 #include <raylib.h>
-
-/*int CreateSignal(SzVisible* object, char* name)
-{
-    
-}*/
 
 /// Creates an instance of Sunrayz visible type.
 SzType* CreateType(char* typeName)
 {
     SzType* t = (SzType*)MemAlloc(sizeof(SzType));
-    *t = (SzType){0};
-    t->entity = NULL;
+    *t = (SzType){
+        .entity = NULL,
+        .type = (char*)MemAlloc((sizeof(char) * strlen(typeName)) + 1),
+        .id = rand(),
+    };
     t->type = typeName;
-    t->id = rand();
-
     return t;
 }

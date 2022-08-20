@@ -155,24 +155,25 @@ SzType* CreateFont(unsigned char* fontSource, unsigned int sourceSize, int baseS
     }
     font->glyphs = LoadFontData(font_data, sourceSize, font->baseSize, 0, font->glyphCount, FONT_DEFAULT);
     if (method != FONT_CREATION_METHOD_RAW)
-        free(font_data);
+        MemFree(font_data);
     Image atlas = GenImageFontAtlas(font->glyphs, &(font->recs), font->glyphCount, font->baseSize, font->glyphPadding, 0);
     font->texture = LoadTextureFromImage(atlas);
     
+    SzType* image_data_t = NULL;
     // Update chars[i].image to use alpha, required to be used on ImageDrawText()
     for (int i = 0; i < font->glyphCount; i++)
     {
         UnloadImage(font->glyphs[i].image);
         font->glyphs[i].image = ImageFromImage(atlas, font->recs[i]);
-        SzType* image_t = CreateType("Void");
-        image_t->entity = font->glyphs[i].image.data;
-        EnlistMemory(image_t, "free_at_shutdown");
+        image_data_t = CreateType("Void");
+        image_data_t->entity = font->glyphs[i].image.data;
+        EnlistMemory(image_data_t, "free_at_shutdown");
     }
     
     UnloadImage(atlas);
-
+    
     SetTextureFilter(font->texture, TEXTURE_FILTER_BILINEAR);
-
+    
     t->entity = font;
     
     return t;

@@ -63,16 +63,16 @@ int main(int argc, char* argv[])
     //--------------------------------------------------------------------------------------
     
     srand(time(NULL));
-    CreateGroup("free_at_shutdown", "Rectangle;TextButton;Font;Void");
+    CreateGroup("free_at_shutdown", "Rectangle,TextButton,Font,Void");
 
     SzType* menuPanel = CreateRec(0, 0, DYN_TO_WINDOW, uniValues[0]);
-    EnlistMemory(menuPanel, "free_at_shutdown");
+    //EnlistMemory(menuPanel, "free_at_shutdown");
     SzType* sceneMenu  = CreateRec(0, uniValues[0], 260, DYN_TO_WINDOW);
-    EnlistMemory(sceneMenu, "free_at_shutdown");
+    //EnlistMemory(sceneMenu, "free_at_shutdown");
 
     SzType* buttonDefaultFont = CreateFont(
-        GetFontKurintoText_Rg(),
-        GetFontKurintoText_RgSize(),
+        GetFontLibertinusSerif_Regular(),
+        GetFontLibertinusSerif_RegularSize(),
         30,
         0,
         FONT_CREATION_METHOD_RAW

@@ -1,5 +1,5 @@
---- a/utils.c	2022-08-13 23:42:38.000000000 +0300
-+++ b/utils.c	2022-08-21 00:16:35.249732500 +0300
+--- a/utils.c	2022-10-08 13:13:30.078649200 +0300
++++ b/utils.c	2022-10-08 13:23:46.347051300 +0300
 @@ -49,6 +49,7 @@
  #include <stdio.h>                      // Required for: FILE, fopen(), fseek(), ftell(), fread(), fwrite(), fprintf(), vprintf(), fclose()
  #include <stdarg.h>                     // Required for: va_list, va_start(), va_end()
@@ -8,7 +8,7 @@
  
  //----------------------------------------------------------------------------------
  // Defines and Macros
-@@ -160,23 +161,30 @@
+@@ -160,23 +161,28 @@
  
  // Internal memory allocator
  // NOTE: Initializes to zero by default
@@ -34,10 +34,9 @@
  // Internal memory free
  void MemFree(void *ptr)
  {
-+    loop:;
-     RL_FREE(ptr);
+-    RL_FREE(ptr);
 +    if (ptr != NULL)
-+        goto loop;
++        RL_FREE(ptr);
  }
  
  // Load data from file into a buffer

@@ -2,6 +2,12 @@
 
 #include <string.h>
 
+enum Error {
+    OK,
+    GENERIC,
+    DEALLOCATION
+};
+
 #define CREATE_STR(VAR, STR) \
     char* VAR = (char*)MemAlloc((strlen(STR) * sizeof(char*)) + 1); \
     strcpy(VAR, STR);

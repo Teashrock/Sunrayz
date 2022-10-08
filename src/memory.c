@@ -67,9 +67,10 @@ void DestroyGroup(char* name)
     SzTag* tag = gCurrentGroup->entities;
     // Deleting all tags of the group before deleting the group itself
     loop:
-    if (tag == NULL)
+    if (tag == NULL) {
+        SzDebugInfo("Freeing a group");
         MemFree(gCurrentGroup);
-    else {
+    } else {
         backLink = tag->next;
         MemFree(tag);
         tag = backLink;

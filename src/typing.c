@@ -11,8 +11,9 @@ SzType* CreateType(char* typeName)
     *t = (SzType){
         .entity = NULL,
         .type = (char*)MemAlloc((sizeof(char) * strlen(typeName)) + 1),
-        .id = rand(),
+        .id = (int*)MemAlloc(sizeof(int)),
     };
     t->type = typeName;
+    t->id = rand();
     return t;
 }

@@ -23,7 +23,7 @@ typedef struct _Group
 Group* CreateGroup(char* name, char* types);
 void DestroyGroup(char* name);
 void DestroyGroupByRef(Group*);
-int EnlistMemory(SzType* obj, char* group);
-int EnlistMemoryByRef(SzType* obj, Group* group);
+int* EnlistMemory(SzType* obj, char* group);
+int* EnlistMemoryByRef(SzType* obj, Group* group);
 int ExcludeMemory(int id, char* group);
 int ExcludeMemoryByRef(int id, Group* group);

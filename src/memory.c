@@ -114,7 +114,7 @@ void SzCheckGroupType(SzType* obj, char* group)
 }
 
 /// Adds an object into a group
-int EnlistMemory(SzType* obj, char* group)
+int* EnlistMemory(SzType* obj, char* group)
 {
     FIND_GROUP(group)
     SzCheckGroupType(obj, group);
@@ -144,7 +144,7 @@ int EnlistMemory(SzType* obj, char* group)
 }
 
 /// Adds an object into a group
-int EnlistMemoryByRef(SzType* obj, Group* group)
+int* EnlistMemoryByRef(SzType* obj, Group* group)
 {
     // Type checking
     char* type = strtok(gCurrentGroup->types, ",");
@@ -195,7 +195,7 @@ int ExcludeMemory(int id, char* group)
     loop:
     if (currEl == NULL)
         return 1;
-    else if (currEl->entity->id == id) {
+    else if (*(currEl->entity->id) == id) {
         if (prevEl == NULL)
             gCurrentGroup->entities = currEl->next;
         else
@@ -218,7 +218,7 @@ int ExcludeMemoryByRef(int id, Group* group)
     loop:
     if (currEl == NULL)
         return 1;
-    else if (currEl->entity->id == id) {
+    else if (*(currEl->entity->id) == id) {
         if (prevEl == NULL)
             group->entities = currEl->next;
         else

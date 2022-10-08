@@ -17,3 +17,11 @@ src/fonts/LibertinusSerif_Italic.c
 src/fonts/LibertinusSerif_Regular.c
 src/fonts/LibertinusSerif_Semibold.c
 src/fonts/LibertinusSerif_SemiboldItalic.c
+src/fonts/Calibri.c
+src/fonts/KurintoText_Rg.c
+src/fonts/LibertinusSerif_Bold.c
+src/fonts/LibertinusSerif_BoldItalic.c
+src/fonts/LibertinusSerif_Italic.c
+src/fonts/LibertinusSerif_Regular.c
+src/fonts/LibertinusSerif_Semibold.c
+src/fonts/LibertinusSerif_SemiboldItalic.c

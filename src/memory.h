@@ -13,10 +13,10 @@ typedef struct _SzTag
 typedef struct _Group
 {
     char* name;
-    size_t name_len;
+    size_t* name_len;
     SzTag* entities;
     char* types;
-    size_t types_len;
+    size_t* types_len;
     struct _Group* next;
 } Group;
 

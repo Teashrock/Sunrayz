@@ -20,7 +20,7 @@ typedef struct _SzType
     void* entity;
     char* type;
     struct _SzType* next;
-    int id;
+    int* id;
 } SzType;
 
 //int CreateSignal(SzVisible* object, char* name);

@@ -26,11 +26,13 @@ Group* CreateGroup(char* name, char* types)
     if (gGroupEnv == NULL) {
         Group* group = MemAlloc(sizeof(Group));
         group->entities = NULL;
-        group->name_len = strlen(name);
-        group->name = (char*)MemAlloc((sizeof(char) * group->name_len) + 1);
+        group->name_len = (size_t*)MemAlloc(sizeof(size_t));
+        *(group->name_len) = strlen(name);
+        group->name = (char*)MemAlloc((sizeof(char) * *(group->name_len)) + 1);
         strcpy(group->name, name);
-        group->types_len = strlen(types);
-        group->types = (char*)MemAlloc((sizeof(char) * group->types_len) + 1);
+        group->types_len = (size_t*)MemAlloc(sizeof(size_t));
+        *(group->types_len) = strlen(types);
+        group->types = (char*)MemAlloc((sizeof(char) * *(group->types_len)) + 1);
         strcpy(group->types, types);
         gGroupEnv = group;
         return group;
@@ -45,11 +47,13 @@ Group* CreateGroup(char* name, char* types)
             } else {
                 Group* group = MemAlloc(sizeof(Group));
                 group->entities = NULL;
-                group->name_len = strlen(name);
-                group->name = (char*)MemAlloc((sizeof(char) * group->name_len) + 1);
+                group->name_len = (size_t*)MemAlloc(sizeof(size_t));
+                *(group->name_len) = strlen(name);
+                group->name = (char*)MemAlloc((sizeof(char) * *(group->name_len)) + 1);
                 strcpy(group->name, name);
-                group->types_len = strlen(types);
-                group->types = (char*)MemAlloc((sizeof(char) * group->types_len) + 1);
+                group->types_len = (size_t*)MemAlloc(sizeof(size_t));
+                *(group->types_len) = strlen(types);
+                group->types = (char*)MemAlloc((sizeof(char) * *(group->types_len)) + 1);
                 strcpy(group->types, types);
                 gCurrentGroup->next = group;
                 return group;
@@ -68,7 +72,12 @@ void DestroyGroup(char* name)
     // Deleting all tags of the group before deleting the group itself
     loop:
     if (tag == NULL) {
-        SzDebugInfo("Freeing a group");
+        gCurrentGroup->entities = NULL;
+        gCurrentGroup->next = NULL;
+        MemFree(gCurrentGroup->types);
+        MemFree(gCurrentGroup->types_len);
+        MemFree(gCurrentGroup->name);
+        MemFree(gCurrentGroup->name_len);
         MemFree(gCurrentGroup);
     } else {
         backLink = tag->next;

@@ -21,7 +21,8 @@
 			"*.inc": "c",
 			"rlgl.h": "c",
 			"cstdlib": "c",
-			"windows.h": "c"
+			"windows.h": "c",
+			"error.h": "c"
 		},
 		"activestate.promptRuntimeCreation": false
 	}

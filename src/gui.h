@@ -6,8 +6,6 @@
 
 #include "memory.h"
 
-#define DYN_TO_WINDOW -1
-
 typedef struct
 {
     float posX;

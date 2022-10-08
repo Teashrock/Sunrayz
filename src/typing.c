@@ -13,7 +13,7 @@ SzType* CreateType(char* typeName)
         .type = (char*)MemAlloc((sizeof(char) * strlen(typeName)) + 1),
         .id = (int*)MemAlloc(sizeof(int)),
     };
-    t->type = typeName;
+    strcpy(t->type, typeName);
     *(t->id) = rand();
     return t;
 }

@@ -14,6 +14,6 @@ SzType* CreateType(char* typeName)
         .id = (int*)MemAlloc(sizeof(int)),
     };
     t->type = typeName;
-    t->id = rand();
+    *(t->id) = rand();
     return t;
 }

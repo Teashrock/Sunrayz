@@ -65,18 +65,18 @@ int main(int argc, char* argv[])
     srand(time(NULL));
     CreateGroup("free_at_shutdown", "Rectangle,TextButton,Font,Void");
 
-    SzType* menuPanel = CreateRec(0, 0, DYN_TO_WINDOW, uniValues[0]);
+    SzType* menuPanel = CreateRec(0, 0, GetScreenWidth(), uniValues[0]);
     //EnlistMemory(menuPanel, "free_at_shutdown");
-    SzType* sceneMenu  = CreateRec(0, uniValues[0], 260, DYN_TO_WINDOW);
+    SzType* sceneMenu  = CreateRec(0, uniValues[0], 260, GetScreenHeight());
     //EnlistMemory(sceneMenu, "free_at_shutdown");
 
-    SzType* buttonDefaultFont = CreateFont(
+    /*SzType* buttonDefaultFont = CreateFont(
         GetFontLibertinusSerif_Regular(),
         GetFontLibertinusSerif_RegularSize(),
         30,
         0,
         FONT_CREATION_METHOD_RAW
-    );
+    );*/
     
     SzType* fileMenuButton = CreateTextButton(
         "File",
@@ -85,7 +85,8 @@ int main(int argc, char* argv[])
         WHITE,
         LIGHTGRAY,
         GREEN,
-        (Font*)buttonDefaultFont->entity,
+        //(Font*)buttonDefaultFont->entity,
+        NULL,
         NULL,
         30,
         BLACK,
@@ -104,9 +105,9 @@ int main(int argc, char* argv[])
 
             ClearBackground(GRAY);
 
-            DrawRectangleRec(*(Rectangle*)menuPanel->entity, WHITE);
-            DrawTextButton((TextButton*)fileMenuButton->entity, false);
-            DrawRectangleRec(*(Rectangle*)sceneMenu->entity, ORANGE);
+            //DrawRectangleRec(*(Rectangle*)menuPanel->entity, WHITE);
+            //DrawTextButton((TextButton*)fileMenuButton->entity, false);
+            //DrawRectangleRec(*(Rectangle*)sceneMenu->entity, ORANGE);
 
         EndDrawing();
         //----------------------------------------------------------------------------------

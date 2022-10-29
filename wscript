@@ -22,10 +22,14 @@ c_compiler['win32'] = ['gcc']
 RAYLIB_REPO    = "https://github.com/raysan5/raylib"
 RAYLIB_VERSION = "4.2.0"
 
+RAYGUI_REPO    = "https://github.com/raysan5/raygui"
+RAYGUI_VERSION = "3.2"
+
 KUROKO_REPO    = "https://github.com/kuroko-lang/kuroko"
 KUROKO_VERSION = "1.1.2"
 
 BUILD_DIR = os.getcwd()
+CACHE_DIR = BUILD_DIR + "/cache"
 SRC_DIR   = os.path.join(BUILD_DIR, "src")
 
 global EXE_NAME
@@ -43,14 +47,19 @@ INSTALLPATH = os.path.join(BUILD_DIR, "result", platform.system() + "-" + BUILD_
 
 # 0 — general utility
 # 1 — Windows-specific utility
+# 2 — general utility needed if master git branches are used
 UTIL_LIST = {
     "unix2dos": 1,
     "patch": 0,
-    "gcc": 0
+    "gcc": 0,
+    "git": 2
 }
 
 global patch_list
 patch_list : list = list()
+
+global download_only
+download_only : bool = False
 
 def options(opt):
     if platform.system() == "Windows":
@@ -60,25 +69,30 @@ def options(opt):
 def configure(conf):
     delim : str = ""
     ext : str = ""
-    if platform.system() == "Windows":
-        delim = ";"
-        ext = ".exe"
-    else:
-        delim = ":"
-    util_check_paths : list = os.getenv("PATH").split(delim)
-    for key in UTIL_LIST.keys():
-        found : bool = False
-        if UTIL_LIST[key] == 0 or (UTIL_LIST[key] == 1 and platform.system() == "Windows"):
-            for each in util_check_paths:
-                if os.path.exists(os.path.join(each, key + ext)):
-                    if key == "gcc":
-                        with open("compiler.path", "w") as cp:
-                            cp.write(each + '\n')
-                    found = True
-                    break
-            if not found:
-                Logs.error("Error: \"" + key + "\" utility has not been found in PATH.")
-                exit(1)
+    if not download_only:
+        if platform.system() == "Windows":
+            delim = ";"
+            ext = ".exe"
+        else:
+            delim = ":"
+        util_check_paths : list = os.getenv("PATH").split(delim)
+        for key in UTIL_LIST.keys():
+            found : bool = False
+            if UTIL_LIST[key] == 0 or \
+                (UTIL_LIST[key] == 1 and platform.system() == "Windows") or \
+                (UTIL_LIST[key] == 2 and (RAYLIB_VERSION == "master" or \
+                    RAYGUI_VERSION == "master" or \
+                    KUROKO_VERSION == "master")):
+                for each in util_check_paths:
+                    if os.path.exists(os.path.join(each, key + ext)):
+                        if key == "gcc":
+                            with open("compiler.path", "w") as cp:
+                                cp.write(each + '\n')
+                        found = True
+                        break
+                if not found:
+                    Logs.error("Error: \"" + key + "\" utility has not been found in PATH.")
+                    exit(1)
 
     clist : list = []
     def download(what : str, version : str, repo : str):
@@ -89,11 +103,11 @@ def configure(conf):
         except:
             clist = []
         if not what in clist:
-            if version == ("master" or "main" or "trunk"):
-                sp = subprocess.Popen(["git", "clone", "--recursive", repo, os.path.join(DEPS_DIR, what)])
+            if version == "master":
+                sp = subprocess.Popen(["git", "clone", "--recursive", repo, os.path.join(CACHE_DIR, what)])
                 sp.wait()
             else:
-                tar_path_name = os.path.join(DEPS_DIR, ("{}-{}.tar.gz".format(what, version)))
+                tar_path_name = os.path.join(CACHE_DIR, ("{}-{}.tar.gz".format(what, version)))
                 if not os.path.exists(os.path.join(os.path.dirname(tar_path_name), tar_path_name.split(os.path.sep)[-1].split('.')[0].split('-')[0])):
                     if not os.path.exists(tar_path_name):
                         with open(tar_path_name, "wb") as tarar:
@@ -126,15 +140,22 @@ def configure(conf):
             clistfile.write(what + "\n")
             clistfile.close()
 
-    if platform.system() == "Windows":
-	    os.environ["PATH"] = "C:\\mingw32\\bin;C:\\mingw32\\libexec\\gcc\\i686-w64-mingw32\\8.1.0;" + os.environ["PATH"]
-    conf.load('compiler_c')
-    conf.env.THIS = os.getcwd()
-    DEPS_DIR = os.path.join(conf.env.THIS, "deps")
-    Logs.warn("Configuring...")
+    if not download_only:
+        if platform.system() == "Windows":
+	        os.environ["PATH"] = "C:\\mingw32\\bin;C:\\mingw32\\libexec\\gcc\\i686-w64-mingw32\\8.1.0;" + os.environ["PATH"]
+        conf.load('compiler_c')
+        conf.env.THIS = os.getcwd()
+        DEPS_DIR = os.path.join(conf.env.THIS, "deps")
+        Logs.warn("Configuring...")
+    if download_only:
+        Logs.warn("Downloading...")
     if not os.path.exists(DEPS_DIR): os.mkdir(DEPS_DIR)
     download("raylib", RAYLIB_VERSION, RAYLIB_REPO)
+    download("raygui", RAYGUI_VERSION, RAYGUI_REPO)
     download("kuroko", KUROKO_VERSION, KUROKO_REPO)
+
+    if download_only:
+        exit()
     
     # Patch zone
     for _, _, f in os.walk(os.path.join(BUILD_DIR, "patches")):
@@ -148,11 +169,14 @@ def configure(conf):
             sp.wait()
         Logs.info("Done!")
 
-    Logs.warn("Applying architecture patches for Raylib...")
+    Logs.warn("Applying architecture patches for Raylib and Raygui...")
     os.chdir("deps/raylib/src")
     sp = subprocess.Popen(["patch", "-Np1", "-i", os.path.join(BUILD_DIR, out, "raylib_utils.patch")])
     sp.wait()
     sp = subprocess.Popen(["patch", "-Np1", "-i", os.path.join(BUILD_DIR, out, "raylib_raylib.patch")])
+    sp.wait()
+    os.chdir(BUILD_DIR + "/deps/raygui/src")
+    sp = subprocess.Popen(["patch", "-Np1", "-i", os.path.join(BUILD_DIR, out, "raygui.patch")])
     sp.wait()
     os.chdir(BUILD_DIR)
     
@@ -172,6 +196,7 @@ def configure(conf):
             rf.write(p)
     
     if platform.system() == "Linux":
+        Logs.warn("Patching Raylib Makefile...")
         os.chdir("deps/raylib/src")
         sp = subprocess.Popen(["patch", "-Np1", "-i", os.path.join(BUILD_DIR, out, "raylib_makefile_linux.patch")])
         sp.wait()
@@ -216,6 +241,11 @@ def configure(conf):
             Logs.warn("Transforming " + each + "...")
             font_transform(each)
     Logs.info("Done!")
+
+def download(ctx):
+    global download_only
+    download_only = True
+    configure(ctx)
 
 def purge(ctx):
     try:
@@ -368,11 +398,11 @@ def build(ctx):
 
         ccflags = []
         if platform.system() == "Windows":
-            ccflags = ['-Wall', '-std=c99', '-D_DEFAULT_SOURCE', '-Wno-missing-braces', MODE, OPT, '-Wl,--subsystem,windows', '-DPLATFORM_DESKTOP']
+            ccflags = ['-Wall', '-g', '-std=c99', '-D_DEFAULT_SOURCE', '-Wno-missing-braces', MODE, OPT, '-Wl,--subsystem,windows', '-DPLATFORM_DESKTOP', '-DRAYGUI_IMPLEMENTATION']
         elif platform.system() == "Haiku":
-            ccflags = ['-Wall', '-std=c99', '-D_DEFAULT_SOURCE', '-Wno-missing-braces', MODE, OPT, '-DPLATFORM_DESKTOP']
+            ccflags = ['-Wall', '-std=c99', '-D_DEFAULT_SOURCE', '-Wno-missing-braces', MODE, OPT, '-DPLATFORM_DESKTOP', '-DRAYGUI_IMPLEMENTATION']
         elif platform.system() == "Linux":
-            ccflags = ['-Wall', '-std=c99', '-D_DEFAULT_SOURCE', '-Wno-missing-braces', MODE, OPT, '-Wl,-rpath,' + INSTALLPATH, '-DPLATFORM_DESKTOP']
+            ccflags = ['-Wall', '-std=c99', '-D_DEFAULT_SOURCE', '-Wno-missing-braces', MODE, OPT, '-Wl,-rpath,' + INSTALLPATH, '-DPLATFORM_DESKTOP', '-DRAYGUI_IMPLEMENTATION']
         lflags = []
         if platform.system() == "Windows":
             lflags = [os.path.join(DEPS_DIR, "raylib", "src", "raylib.rc.data"), '-mwindows']
@@ -396,7 +426,7 @@ def build(ctx):
         ctx.program(
             source       = SRCS,
             target       = EXE_NAME,
-            includes     = [".", "deps/raylib/src", "deps/raylib/src/external", "deps/kuroko/src"],
+            includes     = [".", "deps/raylib/src", "deps/raylib/src/external", "deps/raygui/src", "deps/kuroko/src"],
             lib          = libs,
             libpath      = [os.path.join(DEPS_DIR, "kuroko"), os.path.join(DEPS_DIR, "raylib", "src")],
             install_path = INSTALLPATH,

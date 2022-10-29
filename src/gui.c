@@ -1,6 +1,8 @@
 #include "gui.h"
 #include "error.h"
 
+//#include <raygui.h>
+
 #ifdef __HAIKU__
 static char* SDFShader = "#version 140\n\n\
 varying vec2 fragTexCoord;\
@@ -93,7 +95,13 @@ SzType* CreateTextButton(
 }
 
 /// Draws a TextButton
-void DrawTextButton(TextButton* btn, bool sdf)
+void DrawTextButton(TextButton* btn)
+{
+    GuiButton((Rectangle){btn->posX, btn->posY, btn->width, btn->height}, btn->text);
+}
+
+/// Draws a TextButton (obsolete)
+void DrawTextButtonOld(TextButton* btn, bool sdf)
 {
     Rectangle rec = {btn->posX, btn->posY, btn->width, btn->height};
     bool mouse_in = CheckCollisionPointRec(GetMousePosition(), rec);
@@ -109,7 +117,7 @@ void DrawTextButton(TextButton* btn, bool sdf)
         Shader shader = LoadShaderFromMemory(NULL, btn->fontShader);
         BeginShaderMode(shader);
     }
-            DrawTextPro(btn->font, btn->text, (Vector2){rec.x + btn->textXOffset, rec.y + btn->textYOffset}, (Vector2){rec.x, rec.y}, 0, btn->fontSize, 0, btn->fontIdleColor);
+        DrawTextPro(btn->font, btn->text, (Vector2){rec.x + btn->textXOffset, rec.y + btn->textYOffset}, (Vector2){rec.x, rec.y}, 0, btn->fontSize, 0, btn->fontIdleColor);
     if (sdf) {
         EndShaderMode();
     }

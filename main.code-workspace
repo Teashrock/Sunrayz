@@ -22,7 +22,8 @@
 			"rlgl.h": "c",
 			"cstdlib": "c",
 			"windows.h": "c",
-			"error.h": "c"
+			"error.h": "c",
+			"raygui.h": "c"
 		},
 		"activestate.promptRuntimeCreation": false
 	}

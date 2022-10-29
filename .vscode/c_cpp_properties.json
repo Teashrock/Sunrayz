@@ -7,6 +7,7 @@
                 "${workspaceFolder}/deps/kuroko/src",
                 "${workspaceFolder}/deps/raylib/src",
                 "${workspaceFolder}/deps/raylib/src/external/glfw/include",
+                "${workspaceFolder}/deps/raygui/src",
                 "C:/mingw32/include",
                 "C:/mingw32/i686-w64-mingw32/include"
             ],
@@ -16,7 +17,8 @@
                 "_UNICODE",
                 "GRAPHICS_API_OPENGL_33",
                 "PLATFORM_DESKTOP",
-                "USE_LIBTYPE_SHARED"
+                "USE_LIBTYPE_SHARED",
+                "RAYGUI_IMPLEMENTATION"
             ],
             "compilerPath": "C:/mingw32/bin/gcc.exe",
             "cStandard": "c99",
@@ -30,6 +32,7 @@
                 "${workspaceFolder}/deps/kuroko/src",
                 "${workspaceFolder}/deps/raylib/src",
                 "${workspaceFolder}/deps/raylib/src/external/glfw/include",
+                "${workspaceFolder}/deps/raygui/src",
                 "/boot/system/develop/headers"
             ],
             "defines": [
@@ -37,7 +40,8 @@
                 "UNICODE",
                 "_UNICODE",
                 "GRAPHICS_API_OPENGL_33",
-                "PLATFORM_DESKTOP"
+                "PLATFORM_DESKTOP",
+                "RAYGUI_IMPLEMENTATION"
             ],
             "macFrameworkPath": [
                 "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.13.sdk/System/Library/Frameworks"
@@ -54,6 +58,7 @@
                 "${workspaceFolder}/deps/kuroko/src",
                 "${workspaceFolder}/deps/raylib/src",
                 "${workspaceFolder}/deps/raylib/src/external/glfw/include",
+                "${workspaceFolder}/deps/raygui/src",
                 "/usr/include"
             ],
             "defines": [
@@ -61,7 +66,8 @@
                 "UNICODE",
                 "_UNICODE",
                 "GRAPHICS_API_OPENGL_33",
-                "PLATFORM_DESKTOP"
+                "PLATFORM_DESKTOP",
+                "RAYGUI_IMPLEMENTATION"
             ],
             "compilerPath": "/usr/bin/gcc",
             "cStandard": "c11",

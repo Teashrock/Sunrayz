@@ -1,4 +1,5 @@
 #include <raylib.h>
+#include <raygui.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -69,12 +70,13 @@ int main(int argc, char* argv[])
     SzType* buttonDefaultFont = CreateFont(
         GetFontLibertinusSerif_Regular(),
         GetFontLibertinusSerif_RegularSize(),
-        30,
-        0,
+        24,
+        2048,
         FONT_CREATION_METHOD_RAW
     );
+	GuiSetFont(*((Font*)buttonDefaultFont->entity));
     
-    SzType* fileMenuButton = CreateTextButton(
+    /*SzType* fileMenuButton = CreateTextButton(
         "File",
         0, 0,
         45, uniValues[0],
@@ -89,7 +91,7 @@ int main(int argc, char* argv[])
         BLACK,
         5,
         2.1
-    );
+    );*/
 
     // Main game loop
     while (!WindowShouldClose())    // Detect window close button or ESC key
@@ -101,7 +103,9 @@ int main(int argc, char* argv[])
             ClearBackground(GRAY);
 
             DrawRectangleRec(*(Rectangle*)menuPanel->entity, WHITE);
-            DrawTextButton((TextButton*)fileMenuButton->entity, false);
+            GuiButton((Rectangle){0, 0, 45, 30}, "File");
+            GuiButton((Rectangle){45, 0, 45, 30}, "Edit");
+            GuiButton((Rectangle){90, 0, 65, 30}, "About");
             DrawRectangleRec(*(Rectangle*)sceneMenu->entity, ORANGE);
 
         EndDrawing();

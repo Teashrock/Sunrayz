@@ -6,12 +6,12 @@
 
 #include "memory.h"
 
-typedef struct
-{
+typedef struct {
     float posX;
     float posY;
     float width;
     float height;
+    Rectangle shape;
     Color idleColor;
     Color hoverColor;
     Color pressedColor;
@@ -26,8 +26,13 @@ typedef struct
     float textYOffset;
 } TextButton;
 
-typedef enum
-{
+typedef struct _SzConstruct {
+    unsigned int zorder;
+    SzType* parts;
+    SzConstruct* branches;
+} SzConstruct;
+
+typedef enum {
     FONT_CREATION_METHOD_TTF,
     FONT_CREATION_METHOD_IMAGE,
     FONT_CREATION_METHOD_RAW
@@ -52,6 +57,6 @@ SzType* CreateTextButton(
     float textYOffset
 );
 
-void DrawTextButton(TextButton* btn, bool sdf);
+void DrawTextButton(TextButton* btn);
 SzType* CreateFont(unsigned char* fontSource, unsigned int sourceSize, int baseSize, int charsCount, FontCreationMethod method);
 SzType* CreateRec(float x, float y, float width, float height);

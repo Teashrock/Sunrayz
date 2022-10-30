@@ -1,6 +1,8 @@
 #include "gui.h"
 #include "error.h"
 
+#include <raygui.h>
+
 //#include <raygui.h>
 
 #ifdef __HAIKU__
@@ -202,5 +204,38 @@ SzType* CreateRec(float x, float y, float width, float height)
 
     t->entity = rect;
     
+    return t;
+}
+
+SzConstruct* CreateConstruct(SzConstruct* parent)
+{
+    SzConstruct* c = (SzConstruct*)MemAlloc(sizeof(SzConstruct));
+
+    *c = (SzConstruct){
+        .parent = parent,
+        .child = NULL,
+        .parts = NULL
+    };
+    if (parent == NULL)
+        c->zorder = 0;
+    else {
+        c->zorder = parent->zorder++;
+        parent->child = c;
+    }
+
+    return c;
+}
+
+/// Creates an instance of Sunrayz visible type.
+SzType* CreateType(char* typeName)
+{
+    SzType* t = (SzType*)MemAlloc(sizeof(SzType));
+    *t = (SzType){
+        .entity = NULL,
+        .type = (char*)MemAlloc((sizeof(char) * strlen(typeName)) + 1),
+        .id = (int*)MemAlloc(sizeof(int)),
+    };
+    strcpy(t->type, typeName);
+    *(t->id) = rand();
     return t;
 }

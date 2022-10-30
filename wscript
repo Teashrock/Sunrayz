@@ -26,7 +26,7 @@ RAYGUI_REPO    = "https://github.com/raysan5/raygui"
 RAYGUI_VERSION = "3.2"
 
 KUROKO_REPO    = "https://github.com/kuroko-lang/kuroko"
-KUROKO_VERSION = "1.1.2"
+KUROKO_VERSION = "1.3.0"
 
 BUILD_DIR = os.getcwd()
 CACHE_DIR = BUILD_DIR + "/cache"

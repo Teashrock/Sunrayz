@@ -1,9 +1,10 @@
 #include <raylib.h>
-#include <raygui.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <locale.h>
+
 #include "gui.h"
 #include "error.h"
 #include "memory.h"
@@ -74,7 +75,7 @@ int main(int argc, char* argv[])
         2048,
         FONT_CREATION_METHOD_RAW
     );
-	GuiSetFont(*((Font*)buttonDefaultFont->entity));
+	//GuiSetFont(*((Font*)buttonDefaultFont->entity));
     
     /*SzType* fileMenuButton = CreateTextButton(
         "File",
@@ -103,9 +104,9 @@ int main(int argc, char* argv[])
             ClearBackground(GRAY);
 
             DrawRectangleRec(*(Rectangle*)menuPanel->entity, WHITE);
-            GuiButton((Rectangle){0, 0, 45, 30}, "File");
-            GuiButton((Rectangle){45, 0, 45, 30}, "Edit");
-            GuiButton((Rectangle){90, 0, 65, 30}, "About");
+            //GuiButton((Rectangle){0, 0, 45, 30}, "File");
+            //GuiButton((Rectangle){45, 0, 45, 30}, "Edit");
+            //GuiButton((Rectangle){90, 0, 65, 30}, "About");
             DrawRectangleRec(*(Rectangle*)sceneMenu->entity, ORANGE);
 
         EndDrawing();

@@ -26,10 +26,20 @@ typedef struct {
     float textYOffset;
 } TextButton;
 
+typedef struct _SzType
+{
+    SzConstruct* parent;
+    void* entity;
+    char* type;
+    struct _SzType* next;
+    int* id;
+} SzType;
+
 typedef struct _SzConstruct {
+    SzConstruct* parent;
     unsigned int zorder;
     SzType* parts;
-    struct _SzConstruct* branches;
+    struct _SzConstruct* child;
 } SzConstruct;
 
 typedef enum {
@@ -58,5 +68,11 @@ SzType* CreateTextButton(
 );
 
 void DrawTextButton(TextButton* btn);
-SzType* CreateFont(unsigned char* fontSource, unsigned int sourceSize, int baseSize, int charsCount, FontCreationMethod method);
+SzType* CreateFont(unsigned char* fontSource,
+    unsigned int sourceSize,
+    int baseSize,
+    int charsCount,
+    FontCreationMethod method);
 SzType* CreateRec(float x, float y, float width, float height);
+SzConstruct* CreateConstruct(SzConstruct* parent);
+SzType* CreateType(char* typeName);

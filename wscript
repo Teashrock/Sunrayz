@@ -28,6 +28,9 @@ RAYGUI_VERSION = "3.2"
 KUROKO_REPO    = "https://github.com/kuroko-lang/kuroko"
 KUROKO_VERSION = "1.3.0"
 
+GETTEXT_REPO    = "https://ftp.gnu.org"
+GETTEXT_VERSION = "0.21.1"
+
 BUILD_DIR = os.getcwd()
 CACHE_DIR = BUILD_DIR + "/cache"
 SRC_DIR   = os.path.join(BUILD_DIR, "src")
@@ -111,22 +114,36 @@ def configure(conf):
                 if not os.path.exists(os.path.join(os.path.dirname(tar_path_name), tar_path_name.split(os.path.sep)[-1].split('.')[0].split('-')[0])):
                     if not os.path.exists(tar_path_name):
                         with open(tar_path_name, "wb") as tarar:
-                            Logs.warn("Downloading {}-{}.tar.gz, this may take a while...".format(what, version))
-                            try:
-                                import requests
-                                cnt = requests.get(repo + ("/archive/refs/tags/%s.tar.gz" % version), allow_redirects=True).content
-                                if cnt == b"404: Not Found":
-                                    cnt = requests.get(repo + ("/archive/refs/tags/v%s.tar.gz" % version), allow_redirects=True).content
-                            except ModuleNotFoundError:
-                                import urllib.request
+                            if repo.split("://")[1].split('/')[0] == "github.com":
+                                Logs.warn("Downloading {}-{}.tar.gz, this may take a while...".format(what, version))
                                 try:
-                                    cnt = urllib.request.urlopen(repo + ("/archive/refs/tags/%s.tar.gz") % version).read()
-                                except urllib.error.HTTPError:
-                                    cnt = urllib.request.urlopen(repo + ("/archive/refs/tags/v%s.tar.gz") % version).read()
+                                    import requests
+                                    cnt = requests.get(repo + ("/archive/refs/tags/%s.tar.gz" % version), allow_redirects=True).content
+                                    if cnt == b"404: Not Found":
+                                        cnt = requests.get(repo + ("/archive/refs/tags/v%s.tar.gz" % version), allow_redirects=True).content
+                                except ModuleNotFoundError:
+                                    import urllib.request
+                                    try:
+                                        cnt = urllib.request.urlopen(repo + ("/archive/refs/tags/%s.tar.gz") % version).read()
+                                    except urllib.error.HTTPError:
+                                        cnt = urllib.request.urlopen(repo + ("/archive/refs/tags/v%s.tar.gz") % version).read()
+                            elif repo.split("://")[1].split('/')[0] == "ftp.gnu.org" and repo == GETTEXT_REPO:
+                                Logs.warn("Downloading {}-{}.tar.gz, this may take a while...".format(what, version))
+                                try:
+                                    import requests
+                                    cnt = requests.get(repo + ("/pub/gnu/{}/{}-{}.tar.gz").format(what, what, version), allow_redirects=True).content
+                                    if cnt == b"404: Not Found":
+                                        pass
+                                except ModuleNotFoundError:
+                                    import urllib.request
+                                    try:
+                                        cnt = urllib.request.urlopen(repo + ("/pub/gnu/{}/{}-{}.tar.gz").format(what, what, version)).read()
+                                    except urllib.error.HTTPError:
+                                        pass
                             tarar.write(cnt)
                     import tarfile
                     tf = tarfile.open(tar_path_name, 'r')
-                    Logs.warn("Extracting...")
+                    Logs.warn(("Extracting {}-{}.tar.gz...").format(what, version))
                     tf.extractall(DEPS_DIR)
                     shutil.move(os.path.join(DEPS_DIR, "{}-{}".format(what, version)), os.path.join(DEPS_DIR, what))
                 Logs.info("Done!")
@@ -153,6 +170,7 @@ def configure(conf):
     download("raylib", RAYLIB_VERSION, RAYLIB_REPO)
     download("raygui", RAYGUI_VERSION, RAYGUI_REPO)
     download("kuroko", KUROKO_VERSION, KUROKO_REPO)
+    #download("gettext", GETTEXT_VERSION, GETTEXT_REPO)
 
     if download_only:
         exit()
@@ -272,20 +290,20 @@ def purge(ctx):
     try:
         os.remove(os.path.join(BUILD_DIR, "fonts_linked.list"))
     except: pass
-    for _, _, f in os.walk(os.path.join(BUILD_DIR, "src", "fonts")):
+    for _, _, f in os.walk(os.path.join(BUILD_DIR, "src", "assets_gen", "fonts")):
         for each in f:
             if each.split('.')[-1] == 'c':
-                os.remove(os.path.join(BUILD_DIR, "src", "fonts", each))
+                os.remove(os.path.join(BUILD_DIR, "src", "assets_gen", "fonts", each))
     
     gitignore_dump = str()
     with open(".gitignore", "r") as gitignore:
         gitignore_dump = gitignore.readlines()
     with open(".gitignore", "w") as gitignore:
         for each in gitignore_dump:
-            if not each.startswith("src/fonts/"):
+            if not each.startswith("src/assets_gen/fonts/"):
                 gitignore.write(each)
 
-    with open(os.path.join("src", "fonts", "fonts.h"), "w") as fonts_h:
+    with open(os.path.join("src", "assets_gen", "fonts", "fonts.h"), "w") as fonts_h:
         fonts_h.write("#pragma once\n\n// This file only links static fonts with the engine.\n// Do not touch with bare hands.\n")
 
 def distclean(ctx):

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "typing.h"
+#include "gui.h"
 #include <stddef.h>
 
 typedef struct _SzTag

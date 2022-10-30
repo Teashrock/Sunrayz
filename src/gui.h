@@ -29,7 +29,7 @@ typedef struct {
 typedef struct _SzConstruct {
     unsigned int zorder;
     SzType* parts;
-    SzConstruct* branches;
+    struct _SzConstruct* branches;
 } SzConstruct;
 
 typedef enum {

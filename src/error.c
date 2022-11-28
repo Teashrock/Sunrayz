@@ -1,5 +1,5 @@
 #ifdef _WIN32
-#include <windows.h>
+//#include <windows.h>
 #elif __linux__
 #include <stdbool.h>
 #include <stdio.h>
@@ -16,7 +16,7 @@ void SzRuntimeError(char* title, char* text)
     if (text == NULL)
         text = "A runtime error has occured.";
     #ifdef _WIN32
-    MessageBox(NULL, (LPCTSTR)text, (LPCTSTR)title, MB_OK | MB_ICONERROR);
+    //MessageBox(NULL, (LPCTSTR)text, (LPCTSTR)title, MB_OK | MB_ICONERROR);
     #elif __linux__
     puts(text);
     #endif
@@ -31,7 +31,7 @@ void SzDebugInfo(char* text)
     if (text == NULL)
         text = "A debug message has been called.";
     #ifdef _WIN32
-    MessageBox(NULL, (LPCTSTR)text, (LPCTSTR)"Debug Information", MB_OK | MB_ICONINFORMATION);
+    //MessageBox(NULL, (LPCTSTR)text, (LPCTSTR)"Debug Information", MB_OK | MB_ICONINFORMATION);
     #elif __linux__
     puts(text);
     exit(1);

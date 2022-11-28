@@ -141,11 +141,12 @@ def configure(conf):
                                     except urllib.error.HTTPError:
                                         pass
                             tarar.write(cnt)
-                    import tarfile
-                    tf = tarfile.open(tar_path_name, 'r')
-                    Logs.warn(("Extracting {}-{}.tar.gz...").format(what, version))
-                    tf.extractall(DEPS_DIR)
-                    shutil.move(os.path.join(DEPS_DIR, "{}-{}".format(what, version)), os.path.join(DEPS_DIR, what))
+                    if not os.path.exists(os.path.join(DEPS_DIR, what)):
+                        import tarfile
+                        tf = tarfile.open(tar_path_name, 'r')
+                        Logs.warn(("Extracting {}-{}.tar.gz...").format(what, version))
+                        tf.extractall(DEPS_DIR)
+                        shutil.move(os.path.join(DEPS_DIR, "{}-{}".format(what, version)), os.path.join(DEPS_DIR, what))
                 Logs.info("Done!")
             try:
                 clistfile = open("downloaded.list", "r")
@@ -418,9 +419,9 @@ def build(ctx):
         if platform.system() == "Windows":
             ccflags = ['-Wall', '-g', '-std=c99', '-D_DEFAULT_SOURCE', '-Wno-missing-braces', MODE, OPT, '-Wl,--subsystem,windows', '-DPLATFORM_DESKTOP', '-DRAYGUI_IMPLEMENTATION']
         elif platform.system() == "Haiku":
-            ccflags = ['-Wall', '-std=c99', '-D_DEFAULT_SOURCE', '-Wno-missing-braces', MODE, OPT, '-DPLATFORM_DESKTOP', '-DRAYGUI_IMPLEMENTATION']
+            ccflags = ['-Wall', '-std=c99', '-D_DEFAULT_SOURCE', '-Wno-missing-braces', MODE, OPT, '-DPLATFORM_DESKTOP', '-DRAYGUI_IMPLEMENTATION', '-DRAYLIB_STANDALONE']
         elif platform.system() == "Linux":
-            ccflags = ['-Wall', '-std=c99', '-D_DEFAULT_SOURCE', '-Wno-missing-braces', MODE, OPT, '-Wl,-rpath,' + INSTALLPATH, '-DPLATFORM_DESKTOP', '-DRAYGUI_IMPLEMENTATION']
+            ccflags = ['-Wall', '-std=c99', '-D_DEFAULT_SOURCE', '-Wno-missing-braces', MODE, OPT, '-Wl,-rpath,' + INSTALLPATH, '-DPLATFORM_DESKTOP', '-DRAYGUI_IMPLEMENTATION', '-DRAYLIB_STANDALONE']
         lflags = []
         if platform.system() == "Windows":
             lflags = [os.path.join(DEPS_DIR, "raylib", "src", "raylib.rc.data"), '-mwindows']

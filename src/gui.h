@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "memory.h"
+//#include "memory.h"
 
 typedef struct {
     float posX;
@@ -28,7 +28,7 @@ typedef struct {
 
 typedef struct _SzType
 {
-    SzConstruct* parent;
+    struct _SzConstruct* parent;
     void* entity;
     char* type;
     struct _SzType* next;
@@ -36,7 +36,7 @@ typedef struct _SzType
 } SzType;
 
 typedef struct _SzConstruct {
-    SzConstruct* parent;
+    struct _SzConstruct* parent;
     unsigned int zorder;
     SzType* parts;
     struct _SzConstruct* child;

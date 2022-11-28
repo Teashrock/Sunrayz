@@ -3,13 +3,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include <locale.h>
+//#include <locale.h>
 
 #include "gui.h"
 #include "error.h"
 #include "memory.h"
 
-#include "fonts/fonts.h"
+#include "assets_gen/fonts/fonts.h"
 
 const int uniValues[] = {
     30 // Menu and panel collision point

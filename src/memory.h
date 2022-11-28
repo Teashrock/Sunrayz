@@ -9,7 +9,6 @@ typedef struct _SzTag
     struct _SzTag* next;
 } SzTag;
 
-
 typedef struct _Group
 {
     char* name;

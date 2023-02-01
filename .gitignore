@@ -6,7 +6,16 @@ result
 build
 cache
 deps
+src/external
 compiled.list
 compiler.path
 downloaded.list
 fonts_linked.list
+src/assets_gen/fonts/Calibri.c
+src/assets_gen/fonts/KurintoText_Rg.c
+src/assets_gen/fonts/LibertinusSerif_Bold.c
+src/assets_gen/fonts/LibertinusSerif_BoldItalic.c
+src/assets_gen/fonts/LibertinusSerif_Italic.c
+src/assets_gen/fonts/LibertinusSerif_Regular.c
+src/assets_gen/fonts/LibertinusSerif_Semibold.c
+src/assets_gen/fonts/LibertinusSerif_SemiboldItalic.c

@@ -1,13 +1,10 @@
-#include <raylib.h>
+//#include <raygui.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-//#include <locale.h>
 
-#include "gui.h"
-#include "error.h"
-#include "memory.h"
+#include "base.h"
 
 #include "assets_gen/fonts/fonts.h"
 
@@ -65,26 +62,33 @@ int main(int argc, char* argv[])
     srand(time(NULL));
     CreateGroup("free_at_shutdown", "Rectangle,TextButton,Font,Void");
 
-    SzType* menuPanel = CreateRec(0, 0, GetScreenWidth(), uniValues[0]);
-    SzType* sceneMenu  = CreateRec(0, uniValues[0], 260, GetScreenHeight());
+    SzConstruct* menuPanel = CreateConstruct(NULL);
+    SzConstruct* panel1    = CreateConstruct(menuPanel);
 
-    SzType* buttonDefaultFont = CreateFont(
+    SzEntity* panel = CreateRec(0, 0, GetScreenWidth(), uniValues[0]);
+    AddEntity(menuPanel, panel);
+    SzEntity* sceneMenu  = CreateRec(0, uniValues[0], 260, GetScreenHeight());
+
+    SzEntity* buttonDefaultFont = CreateFont(
         GetFontLibertinusSerif_Regular(),
         GetFontLibertinusSerif_RegularSize(),
         24,
         2048,
         FONT_CREATION_METHOD_RAW
     );
-	//GuiSetFont(*((Font*)buttonDefaultFont->entity));
+	GuiSetFont(*((Font*)buttonDefaultFont->entity));
+            
+    #define TEST_TEXT_MARGIN 5
     
-    /*SzType* fileMenuButton = CreateTextButton(
+    SzEntity* fileMenuButton = CreateTextButton(
         "File",
         0, 0,
-        45, uniValues[0],
+        45, 30,
+        TEST_TEXT_MARGIN,
         WHITE,
         LIGHTGRAY,
         GREEN,
-        (Font*)buttonDefaultFont->entity,
+        NULL, // TODO: Set the default font to render automatically, else override
         NULL,
         30,
         BLACK,
@@ -92,7 +96,43 @@ int main(int argc, char* argv[])
         BLACK,
         5,
         2.1
-    );*/
+    );
+
+    SzEntity* editMenuButton = CreateTextButton(
+        "Edit",
+        0 + ((SzTextButton*)fileMenuButton->entity)->posX + ((SzTextButton*)fileMenuButton->entity)->width, 0,
+        45, 30,
+        TEST_TEXT_MARGIN,
+        WHITE,
+        LIGHTGRAY,
+        GREEN,
+        NULL, // TODO: Set the default font to render automatically, else override
+        NULL,
+        30,
+        BLACK,
+        BLACK,
+        BLACK,
+        5,
+        2.1
+    );
+
+    SzEntity* aboutMenuButton = CreateTextButton(
+        "About",
+        0 + ((SzTextButton*)editMenuButton->entity)->posX + ((SzTextButton*)editMenuButton->entity)->width, 0,
+        45, 30,
+        TEST_TEXT_MARGIN,
+        WHITE,
+        LIGHTGRAY,
+        GREEN,
+        NULL, // TODO: Set the default font to render automatically, else override
+        NULL,
+        30,
+        BLACK,
+        BLACK,
+        BLACK,
+        5,
+        2.1
+    );
 
     // Main game loop
     while (!WindowShouldClose())    // Detect window close button or ESC key
@@ -103,10 +143,45 @@ int main(int argc, char* argv[])
 
             ClearBackground(GRAY);
 
-            DrawRectangleRec(*(Rectangle*)menuPanel->entity, WHITE);
-            //GuiButton((Rectangle){0, 0, 45, 30}, "File");
-            //GuiButton((Rectangle){45, 0, 45, 30}, "Edit");
-            //GuiButton((Rectangle){90, 0, 65, 30}, "About");
+            DrawRectangleRec(*(Rectangle*)panel->entity, WHITE);
+
+            DrawTextButton((SzTextButton*)fileMenuButton->entity);
+            //GuiLabelButton((Rectangle){((SzTextButton*)editMenuButton->entity)->posX + ((SzTextButton*)editMenuButton->entity)->margin, ((SzTextButton*)editMenuButton->entity)->posY, ((SzTextButton*)editMenuButton->entity)->width, ((SzTextButton*)editMenuButton->entity)->height}, ((SzTextButton*)editMenuButton->entity)->text, NULL);
+            DrawTextButton((SzTextButton*)editMenuButton->entity);
+            DrawTextButton((SzTextButton*)aboutMenuButton->entity);
+
+            /*float textWidth1 = MeasureTextEx(*(Font*)buttonDefaultFont->entity, "File", (float)GuiGetStyle(DEFAULT, TEXT_SIZE), (float)GuiGetStyle(DEFAULT, TEXT_SPACING)).x;
+            
+            Rectangle fileButtonRect = (Rectangle){
+                .x = 0 + TEST_TEXT_MARGIN,
+                .y = 0,
+                .width = textWidth1,
+                .height = 30
+            };
+
+            GuiLabelButton(fileButtonRect, "File", NULL);
+            
+            float textWidth2 = MeasureTextEx(*(Font*)buttonDefaultFont->entity, "Edit", (float)GuiGetStyle(DEFAULT, TEXT_SIZE), (float)GuiGetStyle(DEFAULT, TEXT_SPACING)).x;
+            
+            Rectangle editButtonRect = (Rectangle){
+                .x = fileButtonRect.x + fileButtonRect.width + TEST_TEXT_MARGIN,
+                .y = 0,
+                .width = textWidth2,
+                .height = 30
+            };
+            
+            GuiLabelButton(editButtonRect, "Edit", NULL);
+            
+            float textWidth3 = MeasureTextEx(*(Font*)buttonDefaultFont->entity, "About", (float)GuiGetStyle(DEFAULT, TEXT_SIZE), (float)GuiGetStyle(DEFAULT, TEXT_SPACING)).x;
+            
+            Rectangle aboutButtonRect = (Rectangle){
+                .x = editButtonRect.x + editButtonRect.width + TEST_TEXT_MARGIN,
+                .y = 0,
+                .width = textWidth3,
+                .height = 30
+            };
+            
+            GuiLabelButton(aboutButtonRect, "About", NULL);*/
             DrawRectangleRec(*(Rectangle*)sceneMenu->entity, ORANGE);
 
         EndDrawing();

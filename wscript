@@ -197,9 +197,30 @@ def configure(conf):
     os.chdir(BUILD_DIR + "/deps/raygui/src")
     sp = subprocess.Popen(["patch", "-Np1", "-i", os.path.join(BUILD_DIR, out, "raygui.patch")])
     sp.wait()
-    os.chdir(BUILD_DIR)
-    
     p : str = ""
+    raygui_code : str = ""
+    with open("raygui.h", "r") as raygui_h:
+        p = raygui_h.read().replace("#if defined(RAYGUI_IMPLEMENTATION)", "#if 0 // WAF Checkpoint", 1)
+        raygui_h.seek(0, 0)
+        rg_line_found : bool = False
+        for line in raygui_h.readlines():
+            if rg_line_found:
+                if line.strip() == "#endif      // RAYGUI_IMPLEMENTATION":
+                    break
+                else:
+                    raygui_code += line
+            if line.strip() == "#if defined(RAYGUI_IMPLEMENTATION)":
+                rg_line_found = True
+    with open("raygui.h", "w") as raygui_h:
+        raygui_h.write(p)
+    os.chdir(BUILD_DIR)
+    if not os.path.exists(BUILD_DIR + "/src/external"):
+        os.mkdir(BUILD_DIR + "/src/external")
+    with open(BUILD_DIR + "/src/external/raygui.c", "w") as raygui_c:
+        raygui_c.write("#include <raygui.h>\n")
+        raygui_c.write(raygui_code)
+    
+    p = ""
     Logs.warn("Changing Raylib build type to shared... ")
     if DYNAMIC_LINKING:
         with open("deps/raylib/src/Makefile", "r") as rf:
@@ -295,6 +316,9 @@ def purge(ctx):
         for each in f:
             if each.split('.')[-1] == 'c':
                 os.remove(os.path.join(BUILD_DIR, "src", "assets_gen", "fonts", each))
+    try:
+        os.remove(os.path.join(BUILD_DIR, "src", "external", "raygui.c"))
+    except: pass
     
     gitignore_dump = str()
     with open(".gitignore", "r") as gitignore:
@@ -401,7 +425,7 @@ def build(ctx):
 
         SRCS = []
         src_path_len = len(os.path.join(BUILD_DIR, "src").split(os.path.sep))
-        for n, d, f in os.walk(os.path.join(BUILD_DIR, "src")):
+        for n, _, f in os.walk(os.path.join(BUILD_DIR, "src")):
             i : int = 0
             n_split = n.split(os.path.sep)
             while i < src_path_len - 1:
@@ -417,11 +441,11 @@ def build(ctx):
 
         ccflags = []
         if platform.system() == "Windows":
-            ccflags = ['-Wall', '-g', '-std=c99', '-D_DEFAULT_SOURCE', '-Wno-missing-braces', MODE, OPT, '-Wl,--subsystem,windows', '-DPLATFORM_DESKTOP', '-DRAYGUI_IMPLEMENTATION']
+            ccflags = ['-Wall', '-g', '-std=c99', '-D_DEFAULT_SOURCE', '-Wno-missing-braces', MODE, OPT, '-Wl,--subsystem,windows', '-DPLATFORM_DESKTOP']
         elif platform.system() == "Haiku":
-            ccflags = ['-Wall', '-std=c99', '-D_DEFAULT_SOURCE', '-Wno-missing-braces', MODE, OPT, '-DPLATFORM_DESKTOP', '-DRAYGUI_IMPLEMENTATION', '-DRAYLIB_STANDALONE']
+            ccflags = ['-Wall', '-std=c99', '-D_DEFAULT_SOURCE', '-Wno-missing-braces', MODE, OPT, '-DPLATFORM_DESKTOP']
         elif platform.system() == "Linux":
-            ccflags = ['-Wall', '-std=c99', '-D_DEFAULT_SOURCE', '-Wno-missing-braces', MODE, OPT, '-Wl,-rpath,' + INSTALLPATH, '-DPLATFORM_DESKTOP', '-DRAYGUI_IMPLEMENTATION', '-DRAYLIB_STANDALONE']
+            ccflags = ['-Wall', '-std=c99', '-D_DEFAULT_SOURCE', '-Wno-missing-braces', MODE, OPT, '-Wl,-rpath,' + INSTALLPATH, '-DPLATFORM_DESKTOP']
         lflags = []
         if platform.system() == "Windows":
             lflags = [os.path.join(DEPS_DIR, "raylib", "src", "raylib.rc.data"), '-mwindows']

@@ -6,8 +6,9 @@
 #include <stdlib.h>
 #include <raylib.h>
 #endif
+#include <stddef.h>
 
-#include "memory.h"
+#include "base.h"
 
 void SzRuntimeError(char* title, char* text)
 {

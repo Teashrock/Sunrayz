@@ -29,7 +29,7 @@ typedef struct {
 typedef struct _SzType
 {
     struct _SzConstruct* parent;
-    void* entity;
+    void* essence;
     char* type;
     struct _SzType* next;
     int* id;
@@ -50,7 +50,7 @@ typedef enum {
 
 typedef struct _SzTag
 {
-    SzEntity* entity;
+    SzEntity* essence;
     struct _SzTag* next;
 } SzTag;
 
@@ -98,6 +98,7 @@ void DestroyGroup(char* name);
 void DestroyGroupByRef(Group*);
 int* EnlistMemory(SzEntity* obj, char* group);
 int* EnlistMemoryByRef(SzEntity* obj, Group* group);
-int ExcludeMemory(int id, char* group);
+enum Error ExcludeMemory(int id, char* group);
 int ExcludeMemoryByRef(int id, Group* group);
 void AddEntity(SzConstruct* cnst, SzEntity* ent);
+enum Error RemoveEntity(SzConstruct* cnst, int* id);

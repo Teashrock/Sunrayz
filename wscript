@@ -320,13 +320,13 @@ def purge(ctx):
         os.remove(os.path.join(BUILD_DIR, "src", "external", "raygui.c"))
     except: pass
     
-    gitignore_dump = str()
-    with open(".gitignore", "r") as gitignore:
-        gitignore_dump = gitignore.readlines()
-    with open(".gitignore", "w") as gitignore:
-        for each in gitignore_dump:
-            if not each.startswith("src/assets_gen/fonts/"):
-                gitignore.write(each)
+    #gitignore_dump = str()
+    #with open(".gitignore", "r") as gitignore:
+    #    gitignore_dump = gitignore.readlines()
+    #with open(".gitignore", "w") as gitignore:
+    #    for each in gitignore_dump:
+    #        if not each.startswith("src/assets_gen/fonts/"):
+    #            gitignore.write(each)
 
     with open(os.path.join("src", "assets_gen", "fonts", "fonts.h"), "w") as fonts_h:
         fonts_h.write("#pragma once\n\n// This file only links static fonts with the engine.\n// Do not touch with bare hands.\n")

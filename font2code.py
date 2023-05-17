@@ -60,12 +60,12 @@ def font_transform(filename : str):
         byte_file.close()
         code_file.close()
 
-        gitignore_dump = str()
-        with open(".gitignore", "r") as gitignore:
-            gitignore_dump = gitignore.read()
-        with open(".gitignore", "w") as gitignore:
-            gitignore.write(gitignore_dump)
-            gitignore.write(result_dir + fn_noext + ".c\n")
+        #gitignore_dump = str()
+        #with open(".gitignore", "r") as gitignore:
+        #    gitignore_dump = gitignore.read()
+        #with open(".gitignore", "w") as gitignore:
+        #    gitignore.write(gitignore_dump)
+        #    gitignore.write(result_dir + fn_noext + ".c\n")
 
         fonts_h_dump = str()
         try:

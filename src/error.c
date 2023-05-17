@@ -27,14 +27,17 @@ void SzRuntimeError(char* title, char* text)
     #endif
 }
 
-void SzDebugInfo(char* text)
+void SzDebugInfo(char* text, bool* oneshot)
 {
-    if (text == NULL)
-        text = "A debug message has been called.";
-    #ifdef _WIN32
-    //MessageBox(NULL, (LPCTSTR)text, (LPCTSTR)"Debug Information", MB_OK | MB_ICONINFORMATION);
-    #elif __linux__
-    puts(text);
-    exit(1);
-    #endif
+    if (!(*oneshot)) {
+        *oneshot = true;
+        if (text == NULL)
+            text = "A debug message has been called.";
+        #ifdef _WIN32
+        //MessageBox(NULL, (LPCTSTR)text, (LPCTSTR)"Debug Information", MB_OK | MB_ICONINFORMATION);
+        #elif __linux__
+        puts(text);
+        exit(1);
+        #endif
+    }
 }

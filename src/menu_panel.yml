@@ -1,0 +1,27 @@
+construct:
+  zorder: 0
+  rectangle:
+    x: 0
+    y: 0
+    width: GetScreenHeight
+    height: 30
+  construct:
+    zorder: 1
+    text_button:
+      text: File
+      posX: 0
+      posY: 0
+      width: 45
+      height: 30
+      margin: 5
+      idleColor: white
+      hoverColor: lightgray
+      pressedColor: green
+      font: null
+      fontShader: null
+      fontSize: 30
+      fontIdleColor: black
+      fontHoverColor: black
+      fontPressedColor: black
+      textXOffset: 5
+      textYOffset: 2.1

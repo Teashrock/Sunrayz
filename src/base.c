@@ -89,7 +89,7 @@ SzEntity* CreateTextButton(
     btn->textXOffset      = textXOffset;
     btn->textYOffset      = textYOffset;
 
-    t->entity = btn;
+    t->essence = btn;
     
     return t;
 }
@@ -180,7 +180,7 @@ SzEntity* CreateFont(unsigned char* fontSource, unsigned int sourceSize, int bas
         UnloadImage(font->glyphs[i].image);
         font->glyphs[i].image = ImageFromImage(atlas, font->recs[i]);
         image_data_t = CreateType("Void");
-        image_data_t->entity = font->glyphs[i].image.data;
+        image_data_t->essence = font->glyphs[i].image.data;
         EnlistMemory(image_data_t, "free_at_shutdown");
     }
     
@@ -188,7 +188,7 @@ SzEntity* CreateFont(unsigned char* fontSource, unsigned int sourceSize, int bas
     
     SetTextureFilter(font->texture, TEXTURE_FILTER_BILINEAR);
     
-    t->entity = font;
+    t->essence = font;
     
     return t;
 }
@@ -206,7 +206,7 @@ SzEntity* CreateRec(float x, float y, float width, float height)
         .height = height
     };
 
-    t->entity = rect;
+    t->essence = rect;
     
     return t;
 }
@@ -235,7 +235,7 @@ SzEntity* CreateType(char* typeName)
 {
     SzEntity* t = (SzEntity*)MemAlloc(sizeof(SzEntity));
     *t = (SzEntity){
-        .entity = NULL,
+        .essence = NULL,
         .type = (char*)MemAlloc((sizeof(char) * strlen(typeName)) + 1),
         .id = (int*)MemAlloc(sizeof(int)),
     };
@@ -378,7 +378,7 @@ int* EnlistMemory(SzEntity* obj, char* group)
     // Tag creation
     tag = (SzTag*)MemAlloc(sizeof(SzTag));
     *tag = (SzTag){
-        .entity = obj,
+        .essence = obj,
         .next = NULL
     };
     
@@ -387,7 +387,7 @@ int* EnlistMemory(SzEntity* obj, char* group)
     else
         backTag->next = tag;
 
-    return tag->entity->id;
+    return tag->essence->id;
 }
 
 /// Adds an object into a group
@@ -419,7 +419,7 @@ int* EnlistMemoryByRef(SzEntity* obj, Group* group)
     // Tag creation
     tag = (SzTag*)MemAlloc(sizeof(SzTag));
     *tag = (SzTag){
-        .entity = obj,
+        .essence = obj,
         .next = NULL
     };
 
@@ -428,11 +428,11 @@ int* EnlistMemoryByRef(SzEntity* obj, Group* group)
     else
         backTag->next = tag;
 
-    return tag->entity->id;
+    return tag->essence->id;
 }
 
 /// Excludes an object from a memory group
-int ExcludeMemory(int id, char* group)
+enum Error ExcludeMemory(int id, char* group)
 {
     FIND_GROUP(group)
     
@@ -441,8 +441,8 @@ int ExcludeMemory(int id, char* group)
     currEl = gCurrentGroup->entities;
     loop:
     if (currEl == NULL)
-        return 1;
-    else if (*(currEl->entity->id) == id) {
+        return GENERIC;
+    else if (*(currEl->essence->id) == id) {
         if (prevEl == NULL)
             gCurrentGroup->entities = currEl->next;
         else
@@ -453,7 +453,7 @@ int ExcludeMemory(int id, char* group)
         goto loop;
     }
 
-    return 0;
+    return OK;
 }
 
 /// Excludes an object from a memory group
@@ -465,7 +465,7 @@ int ExcludeMemoryByRef(int id, Group* group)
     loop:
     if (currEl == NULL)
         return 1;
-    else if (*(currEl->entity->id) == id) {
+    else if (*(currEl->essence->id) == id) {
         if (prevEl == NULL)
             group->entities = currEl->next;
         else
@@ -494,6 +494,22 @@ void AddEntity(SzConstruct* cnst, SzEntity* ent) {
             temp->next = ent;
         }
     }
+}
+
+enum Error RemoveEntity(SzConstruct* cnst, int* id) {
+    SzEntity* prev_entity = NULL;
+    SzEntity* entity = cnst->parts;
+    while (entity->essence != NULL) {
+        if (*(entity->id) == *id) {
+            
+            return OK;
+        } else {
+            prev_entity = entity;
+            entity = entity->next;
+        }
+    }
+
+    return NOTFOUND;
 }
 
 void ArrangeSequence(SzConstruct* cnst) {

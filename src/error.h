@@ -5,7 +5,8 @@
 enum Error {
     OK,
     GENERIC,
-    DEALLOCATION
+    NOTFOUND,
+    DEALLOCATION,
 };
 
 #define CREATE_STR(VAR, STR) \
@@ -13,4 +14,4 @@ enum Error {
     strcpy(VAR, STR);
 
 void SzRuntimeError(char* title, char* text);
-void SzDebugInfo(char* text);
+void SzDebugInfo(char* text, bool* oneshot);

@@ -1,10 +1,10 @@
---- a/Makefile	2023-06-26 09:21:22.414631679 +0300
-+++ b/Makefile	2023-06-26 09:29:46.028602451 +0300
-@@ -587,10 +587,8 @@
+--- a/Makefile	2021-10-05 21:49:50.609206035 +0300
++++ b/Makefile	2021-10-05 21:49:30.951206292 +0300
+@@ -501,10 +501,8 @@
              ifeq ($(PLATFORM_OS),LINUX)
                  # Compile raylib shared library version $(RAYLIB_VERSION).
                  # WARNING: you should type "make clean" before doing this target
--				$(CC) -shared -o $(RAYLIB_RELEASE_PATH)/lib$(RAYLIB_LIB_NAME).so.$(RAYLIB_VERSION) $(OBJS) $(LDFLAGS) $(LDLIBS)
+-				$(CC) -shared -o $(RAYLIB_RELEASE_PATH)/lib$(RAYLIB_LIB_NAME).so.$(RAYLIB_VERSION) $(OBJS) $(LDFLAGS) -Wl,-soname,lib$(RAYLIB_LIB_NAME).so.$(RAYLIB_API_VERSION) -lGL -lc -lm -lpthread -ldl -lrt $(LDLIBS)
 -				@echo "raylib shared library generated (lib$(RAYLIB_LIB_NAME).so.$(RAYLIB_VERSION)) in $(RAYLIB_RELEASE_PATH)!"
 -				cd $(RAYLIB_RELEASE_PATH) && ln -fsv lib$(RAYLIB_LIB_NAME).so.$(RAYLIB_VERSION) lib$(RAYLIB_LIB_NAME).so.$(RAYLIB_API_VERSION)
 -				cd $(RAYLIB_RELEASE_PATH) && ln -fsv lib$(RAYLIB_LIB_NAME).so.$(RAYLIB_API_VERSION) lib$(RAYLIB_LIB_NAME).so
@@ -12,8 +12,8 @@
 +				@echo "raylib shared library generated (lib$(RAYLIB_LIB_NAME).so) in $(RAYLIB_RELEASE_PATH)!"
              endif
              ifeq ($(PLATFORM_OS),OSX)
- 				$(CC) -dynamiclib -o $(RAYLIB_RELEASE_PATH)/lib$(RAYLIB_LIB_NAME).$(RAYLIB_VERSION).dylib $(OBJS) $(LDFLAGS) $(LDLIBS)
-@@ -729,12 +731,7 @@
+ 				$(CC) -dynamiclib -o $(RAYLIB_RELEASE_PATH)/lib$(RAYLIB_LIB_NAME).$(RAYLIB_VERSION).dylib $(OBJS) $(LDFLAGS) -compatibility_version $(RAYLIB_API_VERSION) -current_version $(RAYLIB_VERSION) -framework OpenGL -framework Cocoa -framework IOKit -framework CoreAudio -framework CoreVideo
+@@ -636,12 +634,7 @@
  		mkdir --parents --verbose $(RAYLIB_H_INSTALL_PATH)
          ifeq ($(RAYLIB_LIBTYPE),SHARED)
              # Installing raylib to $(RAYLIB_INSTALL_PATH).

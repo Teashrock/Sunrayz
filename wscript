@@ -110,6 +110,8 @@ def configure(conf):
                 sp = subprocess.Popen(["git", "clone", "--recursive", repo, os.path.join(CACHE_DIR, what)])
                 sp.wait()
             else:
+                if not os.path.exists(CACHE_DIR):
+                    os.mkdir(CACHE_DIR)
                 tar_path_name = os.path.join(CACHE_DIR, ("{}-{}.tar.gz".format(what, version)))
                 if not os.path.exists(os.path.join(os.path.dirname(tar_path_name), tar_path_name.split(os.path.sep)[-1].split('.')[0].split('-')[0])):
                     if not os.path.exists(tar_path_name):
@@ -328,6 +330,9 @@ def purge(ctx):
     #        if not each.startswith("src/assets_gen/fonts/"):
     #            gitignore.write(each)
 
+    if not os.path.exists(os.path.join("src", "assets_gen", "fonts")):
+        os.mkdir(os.path.join("src", "assets_gen", "fonts"))
+
     with open(os.path.join("src", "assets_gen", "fonts", "fonts.h"), "w") as fonts_h:
         fonts_h.write("#pragma once\n\n// This file only links static fonts with the engine.\n// Do not touch with bare hands.\n")
 
@@ -459,12 +464,13 @@ def build(ctx):
         elif platform.system() == "Haiku":
             libs = ["raylib", "root", "be", "GL"]
         elif platform.system() == "Linux":
-            libs = ["raylib", "kuroko", "GL"]
+            libs = ["raylib", "kuroko", "GL", "m"]
         _rllibpath = []
-        if platform.system() == "Linux":
-            _rllibpath = "deps/raylib"
-        else:
-            _rllibpath = "deps/raylib/src"
+        #if platform.system() == "Linux":
+        #    _rllibpath = "deps/raylib"
+        #else:
+        #    _rllibpath = "deps/raylib/src"
+        _rllibpath = "deps/raylib/src"
 
         ctx.program(
             source       = SRCS,

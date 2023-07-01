@@ -1,7 +1,7 @@
 # Sunrayz
 Sunrayz is a visual novel development engine, inspired by Ren'Py, Light.vn and Novelty.
 
-![](sunrayzxwhiteback.png)
+![](sunrayz.png)
 
 # Dependencies
 ### Windows

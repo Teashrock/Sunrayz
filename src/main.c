@@ -52,6 +52,10 @@ int main(int argc, char* argv[])
     exit(0);
     #endif
 
+    // Initializing Kuroko
+    krk_initVM(0);
+    krk_startModule("__main__");
+
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     InitWindow(screenWidth, screenHeight, "Sunrayz");
     SetWindowMinSize(screenWidth, screenHeight);
@@ -269,6 +273,7 @@ int main(int argc, char* argv[])
 
     // De-Initialization
     DestroyGroup("free_at_shutdown");
+    krk_freeVM();
 
     //--------------------------------------------------------------------------------------
     CloseWindow();        // Close window and OpenGL context

@@ -5,34 +5,20 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef struct {
-    float posX;
-    float posY;
-    float width;
-    float height;
-    float margin;
-    Rectangle shape;
-    Color idleColor;
-    Color hoverColor;
-    Color pressedColor;
-    Font font;
-    char* fontShader;
-    int fontSize;
-    Color fontIdleColor;
-    Color fontHoverColor;
-    Color fontPressedColor;
-    char* text;
-    float textXOffset;
-    float textYOffset;
-} SzTextButton;
+typedef struct _SzSignal {
+    char* name;
+    SzError (*trigger)(SzEntity* self);
+    SzError (*behaviour)(void);
+    struct _SzSignal* next;
+} SzSignal;
 
-typedef struct _SzType
-{
+typedef struct _SzType {
     struct _SzConstruct* parent;
     void* essence;
     char* type;
     struct _SzType* next;
     int* id;
+    SzSignal* signals;
 } SzEntity;
 
 typedef struct _SzConstruct {
@@ -48,14 +34,12 @@ typedef enum {
     FONT_CREATION_METHOD_RAW
 } FontCreationMethod;
 
-typedef struct _SzTag
-{
+typedef struct _SzTag {
     SzEntity* essence;
     struct _SzTag* next;
 } SzTag;
 
-typedef struct _Group
-{
+typedef struct _Group {
     char* name;
     size_t* name_len;
     SzTag* entities;
@@ -64,41 +48,16 @@ typedef struct _Group
     struct _Group* next;
 } Group;
 
-SzEntity* CreateTextButton(
-    char* text,
-    float posX,
-    float posY,
-    float width,
-    float height,
-    float margin,
-    Color idleColor,
-    Color hoverColor,
-    Color pressedColor,
-    Font* font,
-    char* fontShader,
-    int fontSize,
-    Color fontIdleColor,
-    Color fontHoverColor,
-    Color fontPressedColor,
-    float textXOffset,
-    float textYOffset
-);
-
-void DrawTextButton(SzTextButton* btn);
-SzEntity* CreateFont(unsigned char* fontSource,
-    unsigned int sourceSize,
-    int baseSize,
-    int charsCount,
-    FontCreationMethod method);
-SzEntity* CreateRec(float x, float y, float width, float height);
+void AddEntity(SzConstruct* cnst, SzEntity* ent);
 SzConstruct* CreateConstruct(SzConstruct* parent);
-SzEntity* CreateType(char* typeName);
 Group* CreateGroup(char* name, char* types);
+SzEntity* CreateRec(float x, float y, float width, float height);
+void CreateSignal(char* name, SzError (*trigger)(void), SzError (*behaviour)(void));
+SzEntity* CreateType(char* typeName);
 void DestroyGroup(char* name);
 void DestroyGroupByRef(Group*);
 int* EnlistMemory(SzEntity* obj, char* group);
 int* EnlistMemoryByRef(SzEntity* obj, Group* group);
-enum Error ExcludeMemory(int id, char* group);
+SzError ExcludeMemory(int id, char* group);
 int ExcludeMemoryByRef(int id, Group* group);
-void AddEntity(SzConstruct* cnst, SzEntity* ent);
-enum Error RemoveEntity(SzConstruct* cnst, int* id);
+SzError RemoveEntity(SzConstruct* cnst, int* id);

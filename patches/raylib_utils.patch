@@ -1,6 +1,6 @@
---- a/utils.c	2022-10-08 13:13:30.078649200 +0300
-+++ b/utils.c	2022-10-08 13:23:46.347051300 +0300
-@@ -49,6 +49,7 @@
+--- a/utils.c	2023-08-07 01:42:04.476649909 +0300
++++ b/utils.c	2023-08-07 01:45:01.953959942 +0300
+@@ -48,6 +48,7 @@
  #include <stdio.h>                      // Required for: FILE, fopen(), fseek(), ftell(), fread(), fwrite(), fprintf(), vprintf(), fclose()
  #include <stdarg.h>                     // Required for: va_list, va_start(), va_end()
  #include <string.h>                     // Required for: strcpy(), strcat()
@@ -12,7 +12,7 @@
  
  // Internal memory allocator
  // NOTE: Initializes to zero by default
--void *MemAlloc(int size)
+-void *MemAlloc(unsigned int size)
 +void *MemAlloc(size_t size)
  {
 +    loop:;
@@ -22,12 +22,12 @@
  }
  
  // Internal memory reallocator
--void *MemRealloc(void *ptr, int size)
+-void *MemRealloc(void *ptr, unsigned int size)
 +void *MemRealloc(void *ptr, size_t size)
  {
 +    loop:;
      void *ret = RL_REALLOC(ptr, size);
-+    if (ret == NULL) goto loop;
++    if (ptr == NULL) goto loop;
      return ret;
  }
  

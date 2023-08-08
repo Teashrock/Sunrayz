@@ -1,21 +1,21 @@
---- a/raylib.h	2022-08-13 23:42:38.000000000 +0300
-+++ b/raylib.h	2022-08-21 00:17:56.391042200 +0300
-@@ -79,6 +79,7 @@
+--- a/raylib.h	2023-08-07 01:36:55.400885522 +0300
++++ b/raylib.h	2023-08-07 01:38:07.453229328 +0300
+@@ -80,6 +80,7 @@
  #define RAYLIB_H
  
  #include <stdarg.h>     // Required for: va_list - Only used by TraceLogCallback
 +#include <stddef.h>     // Required for: size_t - Only used by MemAlloc() and MemRealloc()
  
- #define RAYLIB_VERSION  "4.2"
- 
-@@ -1038,8 +1039,8 @@
+ #define RAYLIB_VERSION_MAJOR 4
+ #define RAYLIB_VERSION_MINOR 6
+@@ -1060,8 +1061,8 @@
  
  RLAPI void TraceLog(int logLevel, const char *text, ...);         // Show trace log messages (LOG_DEBUG, LOG_INFO, LOG_WARNING, LOG_ERROR...)
  RLAPI void SetTraceLogLevel(int logLevel);                        // Set the current threshold (minimum) log level
--RLAPI void *MemAlloc(int size);                                   // Internal memory allocator
--RLAPI void *MemRealloc(void *ptr, int size);                      // Internal memory reallocator
-+RLAPI void *MemAlloc(size_t size);                                   // Internal memory allocator
-+RLAPI void *MemRealloc(void *ptr, size_t size);                      // Internal memory reallocator
+-RLAPI void *MemAlloc(unsigned int size);                          // Internal memory allocator
+-RLAPI void *MemRealloc(void *ptr, unsigned int size);             // Internal memory reallocator
++RLAPI void *MemAlloc(size_t size);                                // Internal memory allocator
++RLAPI void *MemRealloc(void *ptr, size_t size);                   // Internal memory reallocator
  RLAPI void MemFree(void *ptr);                                    // Internal memory free
  
  RLAPI void OpenURL(const char *url);                              // Open URL with default system browser (if available)

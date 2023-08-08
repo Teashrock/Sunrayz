@@ -20,13 +20,16 @@ from waflib import Logs
 c_compiler['win32'] = ['gcc']
 
 RAYLIB_REPO    = "https://github.com/raysan5/raylib"
-RAYLIB_VERSION = "4.2.0"
+RAYLIB_VERSION = "4.5.0"
 
 RAYGUI_REPO    = "https://github.com/raysan5/raygui"
 RAYGUI_VERSION = "3.2"
 
 KUROKO_REPO    = "https://github.com/kuroko-lang/kuroko"
-KUROKO_VERSION = "1.3.0"
+KUROKO_VERSION = "1.3.1"
+
+LUAJIT_REPO    = "https://github.com/LuaJIT/LuaJIT"
+LUAJIT_VERSION = "2.0.5"
 
 GETTEXT_REPO    = "https://ftp.gnu.org"
 GETTEXT_VERSION = "0.21.1"
@@ -173,6 +176,7 @@ def configure(conf):
     download("raylib", RAYLIB_VERSION, RAYLIB_REPO)
     download("raygui", RAYGUI_VERSION, RAYGUI_REPO)
     download("kuroko", KUROKO_VERSION, KUROKO_REPO)
+    download("LuaJIT", LUAJIT_VERSION, LUAJIT_REPO)
     #download("gettext", GETTEXT_VERSION, GETTEXT_REPO)
 
     if download_only:

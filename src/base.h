@@ -1,22 +1,23 @@
 #pragma once
 
-//#include <raylib.h>
 #include <raygui.h>
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "error.h"
+
 typedef struct _SzSignal {
     char* name;
-    SzError (*trigger)(SzEntity* self);
+    SzError (*trigger)(void);
     SzError (*behaviour)(void);
     struct _SzSignal* next;
 } SzSignal;
 
-typedef struct _SzType {
+typedef struct _SzEntity {
     struct _SzConstruct* parent;
     void* essence;
     char* type;
-    struct _SzType* next;
+    struct _SzEntity* next;
     int* id;
     SzSignal* signals;
 } SzEntity;
@@ -52,7 +53,7 @@ void AddEntity(SzConstruct* cnst, SzEntity* ent);
 SzConstruct* CreateConstruct(SzConstruct* parent);
 Group* CreateGroup(char* name, char* types);
 SzEntity* CreateRec(float x, float y, float width, float height);
-void CreateSignal(char* name, SzError (*trigger)(void), SzError (*behaviour)(void));
+SzSignal* CreateSignal(char* name, SzError (*trigger)(void), SzError (*behaviour)(void));
 SzEntity* CreateType(char* typeName);
 void DestroyGroup(char* name);
 void DestroyGroupByRef(Group*);

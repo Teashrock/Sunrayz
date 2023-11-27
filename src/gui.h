@@ -1,5 +1,9 @@
 #pragma once
 
+#include <raylib.h>
+
+#include "base.h"
+
 typedef struct {
     float posX;
     float posY;

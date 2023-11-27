@@ -89,11 +89,11 @@ SzEntity* CreateType(char* typeName) {
     return t;
 }
 
-SzSignal* CreateSignal(char* name) {
+SzSignal* CreateSignal(char* name, SzError (*trigger)(void), SzError (*behaviour)(void)) {
     SzSignal* s = (SzSignal*)MemAlloc(sizeof(SzSignal));
     *s = (SzSignal){
         .name = name,
-        .triiger = NULL,
+        .trigger = NULL,
         .behaviour = NULL
     };
     return s;
@@ -295,7 +295,7 @@ int* EnlistMemoryByRef(SzEntity* obj, Group* group)
 }
 
 /// Excludes an object from a memory group
-enum Error ExcludeMemory(int id, char* group)
+SzError ExcludeMemory(int id, char* group)
 {
     FIND_GROUP(group)
     
@@ -359,7 +359,7 @@ void AddEntity(SzConstruct* cnst, SzEntity* ent) {
     }
 }
 
-enum Error RemoveEntity(SzConstruct* cnst, int* id) {
+SzError RemoveEntity(SzConstruct* cnst, int* id) {
     SzEntity* prev_entity = NULL;
     SzEntity* entity = cnst->parts;
     while (entity->essence != NULL) {

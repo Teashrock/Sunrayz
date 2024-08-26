@@ -4,6 +4,9 @@
 #include <string.h>
 #include <time.h>
 
+#include <kuroko/kuroko.h>
+#include <kuroko/vm.h>
+
 #include "base.h"
 #include "error.h"
 

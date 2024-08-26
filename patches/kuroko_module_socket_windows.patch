@@ -1,0 +1,47 @@
+--- a/modules/module_socket.c	2024-07-28 00:14:44.119841300 +0300
++++ b/modules/module_socket.c	2024-07-28 00:15:18.213318000 +0300
+@@ -14,7 +14,7 @@
+ #include <arpa/inet.h>
+ #include <netdb.h>
+ #endif
+-#ifdef AF_UNIX
++#if 0
+ #include <sys/un.h>
+ #endif
+ #include <errno.h>
+@@ -73,7 +73,7 @@
+ #ifdef AF_INET6
+ 		case AF_INET6: return "AF_INET6";
+ #endif
+-#ifdef AF_UNIX
++#if 0
+ 		case AF_UNIX: return "AF_UNIX";
+ #endif
+ 		default:
+@@ -228,7 +228,7 @@
+ 			return 0;
+ 		}
+ #endif
+-#ifdef AF_UNIX
++#if 0
+ 	} else if (self->family == AF_UNIX) {
+ 		if (!IS_str(address)) {
+ 			krk_runtimeError(vm.exceptions->typeError, "Address should be str, not '%T'", address);
+@@ -366,7 +366,7 @@
+ 		addrTuple->values.values[1] = INTEGER_VAL(htons(((struct sockaddr_in6*)&addr)->sin6_port));
+ 		addrTuple->values.count = 2;
+ #endif
+-#ifdef AF_UNIX
++#if 0
+ 	} else if (self->family == AF_UNIX) {
+ 		/* ignore remote path because it's meaningless? */
+ 		krk_push(OBJECT_VAL(S("")));
+@@ -591,7 +591,7 @@
+ #ifdef AF_INET6
+ 	SOCK_CONST(AF_INET6);
+ #endif
+-#ifdef AF_UNIX
++#if 0
+ 	SOCK_CONST(AF_UNIX);
+ #endif
+ 

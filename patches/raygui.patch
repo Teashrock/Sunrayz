@@ -1,7 +1,7 @@
 --- a/raygui.h	2022-07-25 01:51:43.000000000 +0300
 +++ b/raygui.h	2023-01-31 22:25:13.182099400 +0200
 @@ -199,7 +199,7 @@
- #define RAYGUI_VERSION  "3.2"
+ #define RAYGUI_VERSION  "4.0"
  
  #if !defined(RAYGUI_STANDALONE)
 -    #include "raylib.h"
@@ -9,51 +9,3 @@
  #endif
  
  // Function specifiers in case library is build/used as a shared library (Windows)
-@@ -511,7 +511,7 @@
- // Basic controls set
- RAYGUIAPI void GuiLabel(Rectangle bounds, const char *text);                                            // Label control, shows text
- RAYGUIAPI bool GuiButton(Rectangle bounds, const char *text);                                           // Button control, returns true when clicked
--RAYGUIAPI bool GuiLabelButton(Rectangle bounds, const char *text);                                      // Label button control, show true when clicked
-+RAYGUIAPI bool GuiLabelButton(Rectangle bounds, const char *text, Font* overFont);                                      // Label button control, show true when clicked
- RAYGUIAPI bool GuiToggle(Rectangle bounds, const char *text, bool active);                              // Toggle Button control, returns true when active
- RAYGUIAPI int GuiToggleGroup(Rectangle bounds, const char *text, int active);                           // Toggle Group control, returns active toggle index
- RAYGUIAPI bool GuiCheckBox(Rectangle bounds, const char *text, bool checked);                           // Check Box control, returns true when active
-@@ -1649,13 +1649,18 @@
- }
- 
- // Label button control
--bool GuiLabelButton(Rectangle bounds, const char *text)
-+bool GuiLabelButton(Rectangle bounds, const char *text, Font* overFont)
- {
-     GuiState state = guiState;
-     bool pressed = false;
- 
-     // NOTE: We force bounds.width to be all text
--    float textWidth = MeasureTextEx(guiFont, text, (float)GuiGetStyle(DEFAULT, TEXT_SIZE), (float)GuiGetStyle(DEFAULT, TEXT_SPACING)).x;
-+    float textWidth;
-+    if (overFont == NULL) {
-+        textWidth = MeasureTextEx(guiFont, text, (float)GuiGetStyle(DEFAULT, TEXT_SIZE), (float)GuiGetStyle(DEFAULT, TEXT_SPACING)).x;
-+    } else {
-+        textWidth = MeasureTextEx(*overFont, text, (float)GuiGetStyle(DEFAULT, TEXT_SIZE), (float)GuiGetStyle(DEFAULT, TEXT_SPACING)).x;
-+    }
-     if (bounds.width < textWidth) bounds.width = textWidth;
- 
-     // Update control
-@@ -2032,7 +2037,7 @@
-             // Only allow keys in range [32..125]
-             if ((keyCount + byteSize) < textSize)
-             {
--                float maxWidth = (bounds.width - (GuiGetStyle(TEXTBOX, TEXT_INNER_PADDING)*2));
-+                //float maxWidth = (bounds.width - (GuiGetStyle(TEXTBOX, TEXT_INNER_PADDING)*2));
- 
-                 if (key >= 32)
-                 {
-@@ -2320,7 +2325,7 @@
-             int codepoint = GetCharPressed();
-             int textLength = (int)strlen(text);     // Length in bytes (UTF-8 string)
-             int byteSize = 0;
--            const char *textUTF8 = CodepointToUTF8(codepoint, &byteSize);
-+            //const char *textUTF8 = CodepointToUTF8(codepoint, &byteSize);
- 
-             // Introduce characters
-             if ((textLength + byteSize) < textSize)

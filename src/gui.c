@@ -39,10 +39,7 @@ SzEntity* CreateTextButton(
         btn->font         = GetFontDefault();
     else
         btn->font         = *font;
-    if (fontShader == NULL)
-        btn->fontShader   = SDFShader;
-    else
-        btn->fontShader   = fontShader;
+    btn->fontShader   = fontShader;
     btn->fontSize         = fontSize;
     btn->fontIdleColor    = fontIdleColor;
     btn->fontHoverColor   = fontHoverColor;
@@ -64,7 +61,7 @@ void AdjustSequence(SzConstruct* construct, short alignType)
 /// Draws a TextButton
 void DrawTextButton(SzTextButton* btn)
 {
-    GuiLabelButton((Rectangle){btn->posX + btn->margin, btn->posY, btn->width, btn->height}, btn->text, NULL);
+    GuiLabelButton((Rectangle){btn->posX + btn->margin, btn->posY, btn->width, btn->height}, btn->text);
 }
 
 /// Draws a TextButton (obsolete)
@@ -101,7 +98,7 @@ void UnloadTextButton(SzTextButton* btn)
     1 - Create font from image
     2 - Create font from raw code data
 */ 
-SzEntity* CreateFont(unsigned char* fontSource, unsigned int sourceSize, int baseSize, int charsCount, FontCreationMethod method)
+SzEntity* CreateFont(unsigned char* fontSource, int sourceSize, int baseSize, int charsCount, FontCreationMethod method)
 {
     SzEntity* t = CreateType("Font");
 

@@ -8,8 +8,8 @@
                 "${workspaceFolder}/deps/raylib/src",
                 "${workspaceFolder}/deps/raylib/src/external/glfw/include",
                 "${workspaceFolder}/deps/raygui/src",
-                "C:/mingw32/include",
-                "C:/mingw32/i686-w64-mingw32/include"
+                "F:/mingw64/include",
+                "F:/mingw64/x86_64-w64-mingw32/include"
             ],
             "defines": [
                 "_DEBUG",
@@ -20,7 +20,7 @@
                 "USE_LIBTYPE_SHARED",
                 "RAYGUI_IMPLEMENTATION"
             ],
-            "compilerPath": "C:/mingw32/bin/gcc.exe",
+            "compilerPath": "F:/mingw64/bin/gcc.exe",
             "cStandard": "c99",
             "cppStandard": "c++14",
             "intelliSenseMode": "gcc-x64"

@@ -46,7 +46,7 @@ SzEntity* CreateTextButton(
 );
 
 SzEntity* CreateFont(unsigned char* fontSource,
-    unsigned int sourceSize,
+    int sourceSize,
     int baseSize,
     int charsCount,
     FontCreationMethod method);

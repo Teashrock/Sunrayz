@@ -1,0 +1,13 @@
+--- a/Makefile	2024-05-08 11:25:45.278248847 +0300
++++ b/Makefile	2024-05-08 11:25:45.330248847 +0300
+@@ -21,9 +21,7 @@
+ 
+ all: ${TARGET} ${MODULES} ${TOOLS} ${GENMODS}
+ 
+-ifneq ($(shell tools/can-floor-without-libm.sh $(CC)),yes)
+-  LDLIBS += -lm
+-endif
++SUNRAYZ_FLOOR_WITHOUT_LIBM_CHECK
+ 
+ ifeq (,$(findstring mingw,$(CC)))
+   CFLAGS  += -pthread

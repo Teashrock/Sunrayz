@@ -10,7 +10,7 @@ typedef struct {
     float width;
     float height;
     float margin;
-    Rectangle shape;
+    RLRectangle shape;
     Color idleColor;
     Color hoverColor;
     Color pressedColor;

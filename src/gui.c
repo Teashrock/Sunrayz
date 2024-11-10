@@ -61,13 +61,13 @@ void AdjustSequence(SzConstruct* construct, short alignType)
 /// Draws a TextButton
 void DrawTextButton(SzTextButton* btn)
 {
-    GuiLabelButton((Rectangle){btn->posX + btn->margin, btn->posY, btn->width, btn->height}, btn->text);
+    GuiLabelButton((RLRectangle){btn->posX + btn->margin, btn->posY, btn->width, btn->height}, btn->text);
 }
 
 /// Draws a TextButton (obsolete)
 void DrawTextButtonOld(SzTextButton* btn, bool sdf)
 {
-    Rectangle rec = {btn->posX, btn->posY, btn->width, btn->height};
+    RLRectangle rec = {btn->posX, btn->posY, btn->width, btn->height};
     bool mouse_in = CheckCollisionPointRec(GetMousePosition(), rec);
     
     if (mouse_in && IsMouseButtonDown(MOUSE_LEFT_BUTTON))

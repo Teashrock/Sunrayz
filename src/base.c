@@ -41,11 +41,11 @@ void main()\
 
 SzEntity* CreateRec(float x, float y, float width, float height)
 {
-    SzEntity* t = CreateType("Rectangle");
+    SzEntity* t = CreateType("RLRectangle");
 
-    Rectangle* rect = (Rectangle*)MemAlloc(sizeof(Rectangle));
+    RLRectangle* rect = (RLRectangle*)MemAlloc(sizeof(RLRectangle));
     
-    *rect = (Rectangle){
+    *rect = (RLRectangle){
         .x = x,
         .y = y,
         .width = width,

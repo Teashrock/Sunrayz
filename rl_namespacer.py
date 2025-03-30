@@ -17,7 +17,7 @@ RAYLIB_CHANGED_FILES = [
     "utils.h"
 ]
 
-raylib_valid_types = [
+raylib_kept_types = [
     "void",
     "void*",
     "int",
@@ -44,114 +44,105 @@ raylib_valid_types = [
     "FILE*"
 ]
 
-raylib_new_types = []
+global raylib_typedefs
+raylib_typedefs = []
 
 RAYLIB_PATH = "deps/raylib/src"
 
+global raylib_names
 raylib_names = []
 
-seek_rbracket = False
-not_a_type = False
+global found_typedef
+found_typedef = False
+global block_comment
+block_comment = False
+global in_check
+in_check = False
+
 g_string = 0
 
-def check_fn_pattern(s: str) -> bool:
+### Checking if a line contains token pattern of a C function
+### Return codes:
+### "-1" - No function name pattern found
+### anything else - Function name
+def check_fn_pattern(line: str) -> str:
     # [static ][unsigned ]<type ><FuncName>(
-    s = s.split(" ")
-    
-
-# Finding definitions
-for file in RAYLIB_CHANGED_FILES:
-    with open(os.path.join(RAYLIB_PATH, file), "r") as handled_file:
-        file_lines = handled_file.readlines()
-        g_string = 0
-        # Looking for types
-        for line in file_lines:
-            g_string += 1
-            if seek_rbracket:
-                if not line[0] == "}":
-                    continue
-                else:
-                    i = 2
-                    rec_stop = ";"
-                    seek_rbracket = False
+    global block_comment
+    global in_check
+    split_line = line.split(" ")
+    for i in split_line:
+        if in_check:
+            if "(" in list(i):
+                return i.split("(")[0]
+        if block_comment:
+            if i == "*/":
+                block_comment = False
+                continue
             else:
-                rettype_pos = line.find("typedef ")
-                if rettype_pos != 0:
-                    continue
-                # Checking typedef
-                i = len("typedef ") + rettype_pos
-                typedef_word = str()
-                while line[i] != " ":
-                    typedef_word += line[i]
-                    i += 1
-                i += 1
-                if typedef_word == "enum":
-                    seek_rbracket = True
-                    continue
-                if not typedef_word == "struct":
-                    type_name = str()
-                    while line[i] != ";":
-                        type_name += line[i]
-                        i += 1
-                    raylib_new_types.append(type_name)
-                    continue
-                rec_stop = " "
-            type_name = str()
-            while (line[i] != rec_stop):
-                if line[i] == "{":
-                    seek_rbracket = True
-                    break
-                if line[i] == "[" and line[i + 1] == "]":
-                    not_a_type = True
-                    break
-                type_name += line[i]
-                i += 1
-            if seek_rbracket or not_a_type:
-                continue
-            raylib_new_types.append(type_name)
-    
-        raylib_valid_types += raylib_new_types
+                return "-1"
+        if i == "/*":
+            block_comment = True
+            return "-1"
+        if i == "//":
+            return "-1"
+        if i in raylib_kept_types or i in raylib_typedefs:
+            in_check = True
+            continue
 
-        # Looking for names
-        g_string = 0
-        for line in file_lines:
+def pick_typedefs(line: str) -> None:
+    global found_typedef
+    split_line = line.split(" ")
+    # Looking for typedefs
+    for i in range(len(split_line)):
+        if found_typedef:
+            if split_line[i] == "}":
+                found_typedef = False
+                if split_line[i + 1].strip()[-1] == ",":
+                    raylib_typedefs.append(split_line[i + 1].strip().strip(","))
+                    print(str(g_string) + " " + split_line[i + 1].strip().strip(","))
+                else:
+                    raylib_typedefs.append(split_line[i + 1].strip().strip(";"))
+                    print(str(g_string) + " " + split_line[i + 1].strip().strip(";"))
+            break
+        else:
+            if split_line[i] == "typedef":
+                found_typedef = True
+
+def dedup(l: list) -> list:
+    i: int = 0
+    j: int = 1
+    while i < len(l):
+        j = i + 1
+        while j < len(l):
+            if l[i] == l[j]:
+                l.pop(j)
+            else:
+                j += 1
+        i += 1
+    return l
+
+for each in RAYLIB_CHANGED_FILES:
+    out = list()
+    print(each)
+    with open(each, "r") as f:
+        g_string = 1
+        lines = f.readlines()
+        for line in lines:
+            pick_typedefs(line)
+            raylib_typedefs = dedup(raylib_typedefs)
             g_string += 1
-            skip = False
-            if line.find("typedef ") != -1: # Skipping typedefs
-                continue
-            for a_type in raylib_valid_types:
-                retcom_pos = line.find("//")
-                type_marker: str = a_type + " "
-                rettype_pos = line.find(type_marker)
-                if rettype_pos == -1:
-                    type_marker = "static "
-                    rettype_pos = line.find(type_marker)
-                    if rettype_pos != -1:
-                        rettype_pos += len(type_marker)
-                        if not rettype_pos > retcom_pos:
-                            while line[rettype_pos] != " ":
-                                rettype_pos += 1
-                if (retcom_pos != -1 and rettype_pos > retcom_pos) or rettype_pos == -1:
-                    break
-                print(type_marker)
-                i = len(type_marker) + rettype_pos
-                found_name = str()
-                while i < len(line):
-                    if line[i] == "(":
-                        break
-                    elif line[i] == " ":
-                        found_name = ""
-                        break
-                    else:
-                        found_name += line[i]
-                    i += 1
-                if found_name == "":
-                    break
-                print(file)
-                print(g_string)
-                print(found_name)
-                if not found_name.find("android_"):
-                    raylib_names.append(found_name)
-                break
-
+        for line in lines:
+            result = check_fn_pattern(line)
+            if result != "-1":
+                raylib_names.append(result)
+        #for line in lines:
+        #    for each in raylib_typedefs:
+        #        print(each)
+                #out.append(line.replace(each, "rl" + each))
+        #    for each in raylib_names:
+        #        print(each)
+                #out.append(line.replace(each, "rl" + each))
+    #with open(each, "w") as f:
+    #    f.write(out)
+#print(raylib_typedefs)
 #print(raylib_names)

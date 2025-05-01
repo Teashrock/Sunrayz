@@ -380,7 +380,7 @@ def purge(ctx):
         os.mkdir(os.path.join("src", "assets_gen", "fonts"))
 
     with open(os.path.join("src", "assets_gen", "fonts", "fonts.h"), "w") as fonts_h:
-        fonts_h.write("#pragma once\n\n// This file only links static fonts with the engine.\n// Do not touch with bare hands.\n")
+        fonts_h.write("#pragma once\n\n// This file only links static fonts with the engine.\n// Edit it only if you know what you're doing.\n")
 
 def distclean(ctx):
     purge(ctx)

@@ -156,6 +156,7 @@ def pick_typedefs(line: str) -> None:
     # Looking for a single-line comment to purge it from the line
     comm_purge = False
     purge_indexes = []
+    # This is supposed to turn the line into an array and remove a single-line comment from it
     for i in range(len(split_line)):
         if find_comment(split_line[i], 2):
             comm_purge = True
@@ -180,9 +181,10 @@ def pick_typedefs(line: str) -> None:
                 debug_print(tname)
                 raylib_typedefs.append(tname)
                 break
+            # If we found a typedef, we're waiting for the closing bracket to get the type name after it
             if split_line[i] == "}":
                 found_typedef = False
-                if split_line[i + 1].strip()[-1] == ",":
+                if split_line[i + 1].strip()[-1] == ",": # Handling typedef having two names
                     entry_one = split_line[i + 1].strip().strip(",")
                     entry_two = raylib_typedefs.append(split_line[i + 2].strip().strip(";"))
                     if not entry_one in raylib_kept_types:

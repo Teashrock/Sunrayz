@@ -1,25 +1,4 @@
 def font_transform(filename : str):
-    def dec2hex(num : int):
-        num_dict = {
-            10 : 'a',
-            11 : 'b',
-            12 : 'c',
-            13 : 'd',
-            14 : 'e',
-            15 : 'f'
-        }
-        last_digit = num % 16
-        if last_digit in num_dict.keys():
-            last_digit = num_dict[last_digit]
-        else:
-            last_digit = str(last_digit)
-        first_digit = int(num / 16)
-        if first_digit in num_dict.keys():
-            first_digit = num_dict[first_digit]
-        else:
-            first_digit = str(first_digit)
-        return "0x" + first_digit + last_digit
-    
     nonascii_list = ['-', '+', '~', '.']
 
     fn : list = filename.split('.')
@@ -53,7 +32,7 @@ def font_transform(filename : str):
                 code_file.write("\n\t")
             else:
                 code_file.write(' ')
-            code_file.write(dec2hex(each) + ',')
+            code_file.write(hex(each) + ',')
             byte_counter += 1
         code_file.write("\n};\n\nunsigned char* GetFont" + fn_noext + "()\n{\n\treturn font;\n};\n")
         code_file.write("\nunsigned long GetFont" + fn_noext + "Size() {\n\treturn " + str(byte_counter) + ";\n};\n")

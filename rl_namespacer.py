@@ -153,17 +153,22 @@ def check_fn_pattern(line: str) -> str:
 def pick_typedefs(line: str) -> None:
     global found_typedef
     split_line = line.split(" ")
-    # Looking for a single-line comment to purge it from the line
-    comm_purge = False
-    purge_indexes = []
-    # This is supposed to turn the line into an array and remove a single-line comment from it
-    for i in range(len(split_line)):
-        if find_comment(split_line[i], 2):
-            comm_purge = True
-        if comm_purge:
-            purge_indexes.append(i)
-    for i in purge_indexes:
-        split_line.pop(i)
+    # Deleting single-line comment from split line
+    el = 0
+    line_len = len(split_line)
+    comm_found = False
+    while el < line_len:
+        if not comm_found:
+            if split_line[el] == "//":
+                comm_found = True
+                split_line.pop(el)
+                line_len -= 1
+            else:
+                el += 1
+        else:
+            split_line.pop(el)
+            line_len -= 1
+    
     # Looking for typedefs
     for i in range(len(split_line)):
         if found_typedef:
@@ -195,7 +200,7 @@ def pick_typedefs(line: str) -> None:
                     entry = split_line[i + 1].strip().strip(";")
                     if not entry in raylib_kept_types:
                         raylib_typedefs.append(entry)
-            else: break
+            #else: break
         else:
             if split_line[i] == "typedef":
                 found_typedef = True

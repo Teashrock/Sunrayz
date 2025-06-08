@@ -15,6 +15,7 @@ import subprocess
 import sys
 import json
 from font2code import font_transform
+from rl_namespacer import do_namespacing
 from waflib.Tools.compiler_c import c_compiler
 from waflib import Logs
 c_compiler['win32'] = ['gcc']
@@ -263,13 +264,12 @@ def configure(conf):
         sp = subprocess.Popen(["patch", "-Np1", "-i", os.path.join(BUILD_DIR, out, "raylib_haiku.patch")])
         sp.wait()
         os.chdir(BUILD_DIR)
-        
-    if platform.system() == "Windows":
-        Logs.warn("Changing Raylib Rectangle type to RLRectangle, necessary with Kuroko on Windows due to WinAPI conflict...")
-        os.chdir("deps/raylib/src")
-        sp = subprocess.Popen(["patch", "-Np1", "-i", os.path.join(BUILD_DIR, out, "raylib_windows.patch")])
-        sp.wait()
-        os.chdir(BUILD_DIR)
+
+    os.chdir(os.path.join(BUILD_DIR, "deps", "raylib", "src"))    
+    Logs.warn("Prefixing all Raylib types and functions to ensure namespacing...")
+    do_namespacing()
+    os.chdir(BUILD_DIR)
+    
     Logs.info("All done here!")
 
     # Kuroko patches

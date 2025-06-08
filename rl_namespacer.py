@@ -248,7 +248,6 @@ def pick_typedefs(line: str) -> None:
 
 for each in RAYLIB_CHANGED_FILES:
     out = list()
-    print(each)
     with open(each, "r") as f:
         g_string = 1
         lines = f.readlines()
@@ -261,18 +260,12 @@ for each in RAYLIB_CHANGED_FILES:
             result = check_fn_pattern(line)
             if result != "-1":
                 raylib_names.append(result)
-                if each == 'rtext.c' or each == 'raudio.c':
-                    print("{}f {}".format(str(g_string), str(result)))
             g_string += 1
         raylib_names = list(dict.fromkeys(raylib_names))
-        #for line in lines:
-        #    for each in raylib_typedefs:
-        #        print(each)
-                #out.append(line.replace(each, "rl" + each))
-        #    for each in raylib_names:
-        #        print(each)
-                #out.append(line.replace(each, "rl" + each))
-    #with open(each, "w") as f:
-    #    f.write(out)
-print(f"Final typedefs: {raylib_typedefs}")
-print(f"Final names: {raylib_names}")
+        for line in lines:
+           for each in raylib_typedefs:
+                out.append(line.replace(each, "rl" + each))
+           for each in raylib_names:
+                out.append(line.replace(each, "rl" + each))
+    with open(each, "w") as f:
+       f.write(out)

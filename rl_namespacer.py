@@ -167,7 +167,9 @@ def check_fn_pattern(line: str) -> str:
         if in_check:
             in_check = False # Ensuring the check is performed only once
             # Checking if a string element contains a left parenthesis and the name without it isn't already namespaced
-            if "(" in list(split_line[i]) and not detect_substring_in_list(split_line[i].split("(")[0], kept_namespaces):
+            if not split_line[i].startswith(")") and not split_line[i].startswith("*)") \
+            and "(" in list(split_line[i]) \
+            and not detect_substring_in_list(split_line[i].split("(")[0], kept_namespaces):
                 # If not, then we've found a function name!
                 return split_line[i].split("(")[0]
             else:

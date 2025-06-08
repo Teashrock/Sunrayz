@@ -20,28 +20,64 @@ RAYLIB_CHANGED_FILES = [
 raylib_kept_types = [
     "void",
     "void*",
+    "void *",
     "int",
     "int*",
+    "int *",
+    "unsigned int",
+    "unsigned int*",
+    "unsigned int *",
     "char",
     "char*",
+    "char *",
+    "unsigned char",
+    "unsigned char*",
+    "unsigned char *",
     "bool",
     "bool*",
+    "bool *",
     "float",
     "float*",
+    "float *",
+    "unsigned float",
+    "unsigned float*",
+    "unsigned float *",
     "double",
     "double*",
+    "double *",
+    "unsigned double",
+    "unsigned double*",
+    "unsigned double *",
     "size_t",
     "size_t*",
+    "size_t *",
     "short",
     "short*",
+    "short *",
+    "unsigned short",
+    "unsigned short*",
+    "unsigned short *",
     "short int",
     "short int*",
+    "short int *",
+    "unsigned short int",
+    "unsigned short int*",
+    "unsigned short int *",
     "long",
     "long*",
+    "long *",
+    "unsigned long",
+    "unsigned long*",
+    "unsigned long *",
     "long int",
     "long int*",
+    "long int *",
+    "unsigned long int",
+    "unsigned long int*",
+    "unsigned long int *",
     "FILE",
-    "FILE*"
+    "FILE*",
+    "FILE *"
 ]
 
 c_nested_macros = [
@@ -74,12 +110,6 @@ global in_check
 in_check: bool = False
 
 g_string = 0
-
-DEBUG = True
-
-def debug_print(s: str) -> None:
-    if DEBUG:
-        print(s)
 
 ### Finding a comment in a line (single or multiline) 
 def find_comment(s: str, oc: int) -> bool:
@@ -117,16 +147,17 @@ def check_fn_pattern(line: str) -> str:
         # Checking if macro-nesting level is higher than 0 (and thus, present)
         if if_nesting > 0:
             # Decreasing nesting level upon meeting "#endif"
-            if split_line[i].strip() != '' and "".join(list(split_line[i].strip())[0:6]) == "#endif":
+            if split_line[i].strip() != '' and split_line[i].strip().startswith("#endif"):
                 if_nesting -=1
             # Dropping the line anywise, as even with nesting reaching zero we don't need it
             return "-1"
-        # Checking if line begins with a C macros
+        # Checking if a line begins with a C macros
         if split_line[i].strip() != '' and list(split_line[i].strip())[0] == "#":
             if detect_substring_in_list(split_line[i], c_nested_macros): # If the line contains an if-macro, increasing nesting level
                 if_nesting += 1
             # Dropping the line, as it's definitely not what we want
             return "-1"
+        # Just denying whatever we find until we're outside of the block comment
         if block_comment:
             if find_comment(split_line[i], 1):
                 block_comment = False
@@ -134,18 +165,22 @@ def check_fn_pattern(line: str) -> str:
             else:
                 return "-1"
         if in_check:
-            in_check = False
-            if "(" in list(split_line[i]) and not detect_substring_in_list(split_line[i].split("(")[0], kept_namespaces): #and split_line[i].split("(")[0].strip("!") != "defined":
+            in_check = False # Ensuring the check is performed only once
+            # Checking if a string element contains a left parenthesis and the name without it isn't already namespaced
+            if "(" in list(split_line[i]) and not detect_substring_in_list(split_line[i].split("(")[0], kept_namespaces):
+                # If not, then we've found a function name!
                 return split_line[i].split("(")[0]
             else:
                 return "-1"
+        # If we've found a block comment sequence, entering the mode where we deny anything until we're outside of the block comment
         if find_comment(split_line[i], 0):
             block_comment = True
             return "-1"
+        # If we're inside a comment, we just deny
         if find_comment(split_line[i], 2):
             return "-1"
         if split_line[0] != "typedef" and (split_line[i] in raylib_kept_types or split_line[i] in raylib_typedefs):
-            #debug_print(str(g_string) + "t " + split_line[i])
+            # If we've found what seems to be a type, we enable checking mode and iterate to the next element
             in_check = True
             continue
     return "-1"
@@ -158,6 +193,11 @@ def pick_typedefs(line: str) -> None:
     line_len = len(split_line)
     comm_found = False
     while el < line_len:
+        # Removing empty elements in place
+        if split_line[el] == '':
+            split_line.pop(el)
+            line_len -= 1
+            continue
         if not comm_found:
             if split_line[el] == "//":
                 comm_found = True
@@ -168,22 +208,22 @@ def pick_typedefs(line: str) -> None:
         else:
             split_line.pop(el)
             line_len -= 1
-    
     # Looking for typedefs
     for i in range(len(split_line)):
         if found_typedef:
-            if "".join(list(split_line[-1].strip())[-2:]) == ");":
-                debug_print(str(g_string) + " " + "".join(list(split_line[-1].strip())[-2:]))
-                lsl = list(split_line[-1].strip())
+            if split_line[-1].strip().endswith(");"):
+                lsl = split_line[i].strip()
                 bracket_pos = int()
-                for symbol in range(len(lsl)):
-                    if "".join(lsl[symbol:symbol + 2]) == "(*":
-                        bracket_pos = symbol + 3
+                if lsl.startswith("(*"):
+                    bracket_pos = lsl.find("(*") + 2
+                elif lsl.startswith("*(*"):
+                    bracket_pos = lsl.find("*(*") + 3
+                else:
+                    continue
                 tname = str()
                 while "".join(lsl[bracket_pos:bracket_pos + 2]) != ")(":
                     tname += lsl[bracket_pos]
                     bracket_pos += 1
-                debug_print(tname)
                 raylib_typedefs.append(tname)
                 break
             # If we found a typedef, we're waiting for the closing bracket to get the type name after it
@@ -191,7 +231,7 @@ def pick_typedefs(line: str) -> None:
                 found_typedef = False
                 if split_line[i + 1].strip()[-1] == ",": # Handling typedef having two names
                     entry_one = split_line[i + 1].strip().strip(",")
-                    entry_two = raylib_typedefs.append(split_line[i + 2].strip().strip(";"))
+                    entry_two = split_line[i + 2].strip().strip(";")
                     if not entry_one in raylib_kept_types:
                         raylib_typedefs.append(entry_one)
                     if not entry_two in raylib_kept_types:
@@ -200,14 +240,13 @@ def pick_typedefs(line: str) -> None:
                     entry = split_line[i + 1].strip().strip(";")
                     if not entry in raylib_kept_types:
                         raylib_typedefs.append(entry)
-            #else: break
         else:
             if split_line[i] == "typedef":
                 found_typedef = True
 
 for each in RAYLIB_CHANGED_FILES:
     out = list()
-    debug_print(each)
+    print(each)
     with open(each, "r") as f:
         g_string = 1
         lines = f.readlines()
@@ -220,16 +259,17 @@ for each in RAYLIB_CHANGED_FILES:
             result = check_fn_pattern(line)
             if result != "-1":
                 raylib_names.append(result)
-                #debug_print(str(g_string) + "f " + str(result))
+                if each == 'rtext.c' or each == 'raudio.c':
+                    print("{}f {}".format(str(g_string), str(result)))
             g_string += 1
         #for line in lines:
         #    for each in raylib_typedefs:
-        #        debug_print(each)
+        #        print(each)
                 #out.append(line.replace(each, "rl" + each))
         #    for each in raylib_names:
-        #        debug_print(each)
+        #        print(each)
                 #out.append(line.replace(each, "rl" + each))
     #with open(each, "w") as f:
     #    f.write(out)
-debug_print(raylib_typedefs)
-#debug_print(raylib_names)
+print(f"Final typedefs: {raylib_typedefs}")
+print(f"Final names: {raylib_names}")

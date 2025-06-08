@@ -264,7 +264,7 @@ for each in RAYLIB_CHANGED_FILES:
         raylib_names = list(dict.fromkeys(raylib_names))
         for line in lines:
            for each in raylib_typedefs:
-                out.append(line.replace(each, "rl" + each))
+                out.append(line.replace(each, "Rl" + each))
            for each in raylib_names:
                 out.append(line.replace(each, "rl" + each))
     with open(each, "w") as f:

@@ -170,8 +170,8 @@ def check_fn_pattern(line: str) -> str:
             if not split_line[i].startswith(")") and not split_line[i].startswith("*)") \
             and "(" in list(split_line[i]) \
             and not detect_substring_in_list(split_line[i].split("(")[0], kept_namespaces):
-                # If not, then we've found a function name!
-                return split_line[i].split("(")[0]
+                # If not, then we've found a function name! Retuning it with stripped '*'
+                return split_line[i].split("(")[0].strip("*")
             else:
                 return "-1"
         # If we've found a block comment sequence, entering the mode where we deny anything until we're outside of the block comment
@@ -254,8 +254,8 @@ for each in RAYLIB_CHANGED_FILES:
         lines = f.readlines()
         for line in lines:
             pick_typedefs(line)
-            raylib_typedefs = list(dict.fromkeys(raylib_typedefs))
             g_string += 1
+        raylib_typedefs = list(dict.fromkeys(raylib_typedefs))
         g_string = 1
         for line in lines:
             result = check_fn_pattern(line)
@@ -264,6 +264,7 @@ for each in RAYLIB_CHANGED_FILES:
                 if each == 'rtext.c' or each == 'raudio.c':
                     print("{}f {}".format(str(g_string), str(result)))
             g_string += 1
+        raylib_names = list(dict.fromkeys(raylib_names))
         #for line in lines:
         #    for each in raylib_typedefs:
         #        print(each)

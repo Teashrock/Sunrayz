@@ -138,7 +138,6 @@ def detect_substring_in_list(s: str, l: list) -> bool:
 ### "-1" - No function name pattern found
 ### anything else - Function name
 def check_fn_pattern(line: str) -> str:
-    # [static ][unsigned ]<type ><FuncName>(
     global block_comment
     global if_nesting
     global in_check
@@ -148,7 +147,7 @@ def check_fn_pattern(line: str) -> str:
         if if_nesting > 0:
             # Decreasing nesting level upon meeting "#endif"
             if split_line[i].strip() != '' and split_line[i].strip().startswith("#endif"):
-                if_nesting -=1
+                if_nesting -= 1
             # Dropping the line anywise, as even with nesting reaching zero we don't need it
             return "-1"
         # Checking if a line begins with a C macros
@@ -166,11 +165,11 @@ def check_fn_pattern(line: str) -> str:
                 return "-1"
         if in_check:
             in_check = False # Ensuring the check is performed only once
-            # Checking if a string element contains a left parenthesis and the name without it isn't already namespaced
+            # Checking if a string element contains a left parenthesis, doesn't start with asterisk/right parenthesis, and the name without it isn't already namespaced
             if not split_line[i].startswith(")") and not split_line[i].startswith("*)") \
             and "(" in list(split_line[i]) \
             and not detect_substring_in_list(split_line[i].split("(")[0], kept_namespaces):
-                # If not, then we've found a function name! Retuning it with stripped '*'
+                # If not, then we've found a function name! Returning it with stripped '*'
                 return split_line[i].split("(")[0].strip("*")
             else:
                 return "-1"
@@ -213,6 +212,10 @@ def pick_typedefs(line: str) -> None:
     # Looking for typedefs
     for i in range(len(split_line)):
         if found_typedef:
+            if split_line[-1].strip().endswith(";") and not split_line[-1].strip().endswith(");") \
+            and split_line[-2].strip() in raylib_typedefs \
+            and len(split_line) >= 3 and split_line[-3].strip() == "typedef":
+                raylib_typedefs.append(split_line[-1].strip().strip(";"))
             if split_line[-1].strip().endswith(");"):
                 lsl = split_line[i].strip()
                 bracket_pos = int()
@@ -247,6 +250,8 @@ def pick_typedefs(line: str) -> None:
                 found_typedef = True
 
 def do_namespacing():
+    global raylib_typedefs
+    global raylib_names
     for each in RAYLIB_CHANGED_FILES:
         out = list()
         with open(each, "r") as f:
@@ -264,9 +269,20 @@ def do_namespacing():
                 g_string += 1
             raylib_names = list(dict.fromkeys(raylib_names))
             for line in lines:
-               for each in raylib_typedefs:
-                    out.append(line.replace(each, "Rl" + each))
-               for each in raylib_names:
-                    out.append(line.replace(each, "rl" + each))
+                new_line = line
+                for a_name in raylib_names:
+                    new_line = new_line.replace(" {}(".format(a_name), " rl{}(".format(a_name))
+                    new_line = new_line.replace("*{}(".format(a_name), "*rl{}(".format(a_name))
+                for a_type in raylib_typedefs:
+                    new_line = new_line.replace(" {} ".format(a_type), " Rl{} ".format(a_type))
+                    new_line = new_line.replace(" {}*".format(a_type), " Rl{}*".format(a_type))
+                    new_line = new_line.replace("({} ".format(a_type), "(Rl{} ".format(a_type))
+                    new_line = new_line.replace("({}*".format(a_type), "(Rl{}*".format(a_type))
+                    new_line = new_line.replace(" {};".format(a_type), " Rl{};".format(a_type))
+                    new_line = new_line.replace(" {},".format(a_type), " Rl{},".format(a_type))
+                    new_line = new_line.replace(",{};".format(a_type), ",Rl{};".format(a_type))
+                out.append(new_line)
         with open(each, "w") as f:
-           f.write(out)
+            for i in out:
+                f.write(i)
+        

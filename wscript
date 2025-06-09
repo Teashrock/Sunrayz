@@ -196,7 +196,7 @@ def configure(conf):
 
     # Raylib and Raygui patches
     Logs.warn("Applying architecture patches for Raylib and Raygui...")
-    os.chdir("deps/raylib/src")
+    os.chdir(BUILD_DIR + "/deps/raylib/src")
     sp = subprocess.Popen(["patch", "-Np1", "-i", os.path.join(BUILD_DIR, "patches", "raylib_utils.patch")])
     sp.wait()
     sp = subprocess.Popen(["patch", "-Np1", "-i", os.path.join(BUILD_DIR, "patches", "raylib_raylib.patch")])

@@ -1,6 +1,7 @@
 import os
 
 RAYLIB_CHANGED_FILES = [
+    "rlgl.h", # This file is a special case, handling it first
     "raylib.h",
     "raudio.c",
     "raymath.h",
@@ -8,7 +9,6 @@ RAYLIB_CHANGED_FILES = [
     "rcore.c",
     "rgestures.h",
     "rglfw.c",
-    #"rlgl.h", # Excluded deliberately
     "rmodels.c",
     "rshapes.c",
     "rtext.c",
@@ -273,11 +273,13 @@ def do_namespacing():
                 for a_name in raylib_names:
                     new_line = new_line.replace(" {}(".format(a_name), " rl{}(".format(a_name))
                     new_line = new_line.replace("*{}(".format(a_name), "*rl{}(".format(a_name))
+                    new_line = new_line.replace("({}(".format(a_name), "(rl{}(".format(a_name))
                 for a_type in raylib_typedefs:
                     new_line = new_line.replace(" {} ".format(a_type), " Rl{} ".format(a_type))
                     new_line = new_line.replace(" {}*".format(a_type), " Rl{}*".format(a_type))
                     new_line = new_line.replace("({} ".format(a_type), "(Rl{} ".format(a_type))
                     new_line = new_line.replace("({}*".format(a_type), "(Rl{}*".format(a_type))
+                    new_line = new_line.replace("(*{})(".format(a_type), "(*Rl{})(".format(a_type))
                     new_line = new_line.replace(" {};".format(a_type), " Rl{};".format(a_type))
                     new_line = new_line.replace(" {},".format(a_type), " Rl{},".format(a_type))
                     new_line = new_line.replace(",{};".format(a_type), ",Rl{};".format(a_type))

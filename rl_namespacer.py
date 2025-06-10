@@ -271,6 +271,10 @@ def do_namespacing():
             for line in lines:
                 new_line = line
                 for a_name in raylib_names:
+                    if each == "rlgl.h":
+                        new_line = new_line.replace(" rl{}(".format(a_name), " rlgl{}(".format(a_name))
+                        new_line = new_line.replace("*rl{}(".format(a_name), "*rlgl{}(".format(a_name))
+                        new_line = new_line.replace("(rl{}(".format(a_name), "(rlgl{}(".format(a_name))
                     new_line = new_line.replace(" {}(".format(a_name), " rl{}(".format(a_name))
                     new_line = new_line.replace("*{}(".format(a_name), "*rl{}(".format(a_name))
                     new_line = new_line.replace("({}(".format(a_name), "(rl{}(".format(a_name))

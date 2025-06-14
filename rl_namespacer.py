@@ -88,9 +88,10 @@ c_nested_macros = [
 
 kept_namespaces = [
     "android_",
-    "rl",
     "ma_"
 ]
+
+kept_typedefs = []
 
 global raylib_typedefs
 raylib_typedefs = []
@@ -228,9 +229,12 @@ def pick_typedefs(line: str) -> None:
                 else:
                     continue
                 tname = str()
-                while "".join(lsl[bracket_pos:bracket_pos + 2]).replace(" ", "") != ")(":
-                    tname += lsl[bracket_pos]
-                    bracket_pos += 1
+                if not ")" in lsl:
+                    tname = split_line[i + 1].strip(")")
+                else:    
+                    while "".join(lsl[bracket_pos:bracket_pos + 2]).replace(" ", "") != ")(":
+                        tname += lsl[bracket_pos]
+                        bracket_pos += 1
                 raylib_typedefs.append(tname)
                 break
             # If we found a typedef, we're waiting for the closing bracket to get the type name after it

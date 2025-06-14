@@ -213,12 +213,16 @@ def pick_typedefs(line: str) -> None:
     # Looking for typedefs
     for i in range(len(split_line)):
         if found_typedef:
-            print(str(g_string) + " " + str(split_line))
-            if not split_line[-1].strip().strip(";") in raylib_kept_types \
+            if g_string == 826:
+                print(str(g_string) + " " + str(split_line))
+                if not split_line[-2].strip() in raylib_typedefs:
+                    print(split_line[-2].strip())
+                    print("Here!") # Doesn't work
+            if not split_line[-1].strip().rstrip(";") in raylib_kept_types \
             and split_line[-1].strip().endswith(";") and not split_line[-1].strip().endswith(");") \
             and split_line[-2].strip() in raylib_typedefs \
             and len(split_line) >= 3 and split_line[-3].strip() == "typedef":
-                raylib_typedefs.append(split_line[-1].strip().strip(";"))
+                raylib_typedefs.append(split_line[-1].strip().rstrip(";"))
             if split_line[-1].strip().endswith(");"):
                 lsl = split_line[i].strip()
                 bracket_pos = int()
@@ -243,14 +247,14 @@ def pick_typedefs(line: str) -> None:
             if split_line[i] == "}":
                 found_typedef = False
                 if split_line[i + 1].strip()[-1] == ",": # Handling typedef having two names
-                    entry_one = split_line[i + 1].strip().strip(",")
-                    entry_two = split_line[i + 2].strip().strip(";")
+                    entry_one = split_line[i + 1].strip().rstrip(",")
+                    entry_two = split_line[i + 2].strip().rstrip(";")
                     if not entry_one in raylib_kept_types:
                         raylib_typedefs.append(entry_one)
                     if not entry_two in raylib_kept_types:
                         raylib_typedefs.append(entry_two)
                 else:
-                    entry = split_line[i + 1].strip().strip(";")
+                    entry = split_line[i + 1].strip().rstrip(";")
                     if not entry in raylib_kept_types:
                         raylib_typedefs.append(entry)
         else:

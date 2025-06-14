@@ -222,7 +222,9 @@ def pick_typedefs(line: str) -> None:
             if split_line[-1].strip().endswith(");"):
                 lsl = split_line[i].strip()
                 bracket_pos = int()
-                if lsl.startswith("(*"):
+                if lsl.startswith("("):
+                    bracket_pos = lsl.find("(") + 1
+                elif lsl.startswith("(*"):
                     bracket_pos = lsl.find("(*") + 2
                 elif lsl.startswith("*(*"):
                     bracket_pos = lsl.find("*(*") + 3

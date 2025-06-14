@@ -212,7 +212,9 @@ def pick_typedefs(line: str) -> None:
     # Looking for typedefs
     for i in range(len(split_line)):
         if found_typedef:
-            if split_line[-1].strip().endswith(";") and not split_line[-1].strip().endswith(");") \
+            print(str(g_string) + " " + str(split_line))
+            if not split_line[-1].strip().strip(";") in raylib_kept_types \
+            and split_line[-1].strip().endswith(";") and not split_line[-1].strip().endswith(");") \
             and split_line[-2].strip() in raylib_typedefs \
             and len(split_line) >= 3 and split_line[-3].strip() == "typedef":
                 raylib_typedefs.append(split_line[-1].strip().strip(";"))
@@ -226,7 +228,7 @@ def pick_typedefs(line: str) -> None:
                 else:
                     continue
                 tname = str()
-                while "".join(lsl[bracket_pos:bracket_pos + 2]) != ")(":
+                while "".join(lsl[bracket_pos:bracket_pos + 2]).replace(" ", "") != ")(":
                     tname += lsl[bracket_pos]
                     bracket_pos += 1
                 raylib_typedefs.append(tname)
@@ -249,13 +251,90 @@ def pick_typedefs(line: str) -> None:
             if split_line[i] == "typedef":
                 found_typedef = True
 
-def do_namespacing():
+def do_namespacing() -> None:
     global raylib_typedefs
     global raylib_names
+    global g_string
+    # This serves as a set of variable parameters to which files read and change, and what with what to replace
+    # [
+    #     0 - Which files to seek through
+    #     1 - Which files to replace in
+    #     2 - Replacements for function name prfeixes
+    #     3 - Replacements for type name prefixes
+    # ]
+    action_routine = [
+        [
+            ["rlgl.h"],
+            RAYLIB_CHANGED_FILES,
+            ["rl", "rlgl"],
+            ["rl", "rlgl"]
+        ],
+        [
+            RAYLIB_CHANGED_FILES,
+            RAYLIB_CHANGED_FILES,
+            ["", "rl"],
+            ["", "Rl"]
+        ]
+    ]
+    action_number = 0
+    while action_number < len(action_routine):
+        name_replacements = action_routine[action_number][2]
+        type_replacements = action_routine[action_number][3]
+        for each in action_routine[action_number][0]:
+            with open(each, "r") as f:
+                g_string = 1
+                out = list()
+                lines = f.readlines()
+                for line in lines:
+                    pick_typedefs(line)
+                    g_string += 1
+                raylib_typedefs = list(dict.fromkeys(raylib_typedefs))
+                g_string = 1
+                for line in lines:
+                    result = check_fn_pattern(line)
+                    if result != "-1":
+                        raylib_names.append(result)
+                    g_string += 1
+                raylib_names = list(dict.fromkeys(raylib_names))
+        for each in action_routine[action_number][1]:
+            with open(each, "r") as f:
+                for line in lines:
+                    new_line = line
+                    for a_name in raylib_names:
+                        new_line = new_line.replace(" {}{}(".format(name_replacements[0], a_name), " {}{}(".format(name_replacements[1], a_name))
+                        new_line = new_line.replace("*{}{}(".format(name_replacements[0], a_name), "*{}{}(".format(name_replacements[1], a_name))
+                        new_line = new_line.replace("({}{}(".format(name_replacements[0], a_name), "({}{}(".format(name_replacements[1], a_name))
+                    for a_type in raylib_typedefs:
+                        new_line = new_line.replace(" {}{} ".format(type_replacements[0], a_type), " {}{} ".format(type_replacements[1], a_type))
+                        new_line = new_line.replace(" {}{}*".format(type_replacements[0], a_type), " {}l{}*".format(type_replacements[1], a_type))
+                        new_line = new_line.replace("({}{} ".format(type_replacements[0], a_type), "({}{} ".format(type_replacements[1], a_type))
+                        new_line = new_line.replace("({}{}*".format(type_replacements[0], a_type), "({}{}*".format(type_replacements[1], a_type))
+                        new_line = new_line.replace("(*{}{})(".format(type_replacements[0], a_type), "(*{}{})(".format(type_replacements[1], a_type))
+                        new_line = new_line.replace(" {}{};".format(type_replacements[0], a_type), " {}{};".format(type_replacements[1], a_type))
+                        new_line = new_line.replace(" {}{},".format(type_replacements[0], a_type), " {}{},".format(type_replacements[1], a_type))
+                        new_line = new_line.replace(",{}{};".format(type_replacements[0], a_type), ",{}{};".format(type_replacements[1], a_type))
+                    out.append(new_line)
+            with open(each, "w") as f:
+                for i in out:
+                    f.write(i)
+        action_number += 1
+
+
+def do_namespacing_old(rlgl_mode: bool) -> None:
+    global raylib_typedefs
+    global raylib_names
+    name_replacements = {}
+    type_replacements = {}
+    if rlgl_mode:
+        name_replacements = {"rl", "rlgl"}
+        type_replacements = {"", "Rl"}
+    else:
+        name_replacements = {"", "rl"}
+        type_replacements = {"", "Rl"}
     for each in RAYLIB_CHANGED_FILES:
-        out = list()
         with open(each, "r") as f:
             g_string = 1
+            out = list()
             lines = f.readlines()
             for line in lines:
                 pick_typedefs(line)
@@ -271,24 +350,19 @@ def do_namespacing():
             for line in lines:
                 new_line = line
                 for a_name in raylib_names:
-                    if each == "rlgl.h":
-                        new_line = new_line.replace(" rl{}(".format(a_name), " rlgl{}(".format(a_name))
-                        new_line = new_line.replace("*rl{}(".format(a_name), "*rlgl{}(".format(a_name))
-                        new_line = new_line.replace("(rl{}(".format(a_name), "(rlgl{}(".format(a_name))
-                    new_line = new_line.replace(" {}(".format(a_name), " rl{}(".format(a_name))
-                    new_line = new_line.replace("*{}(".format(a_name), "*rl{}(".format(a_name))
-                    new_line = new_line.replace("({}(".format(a_name), "(rl{}(".format(a_name))
+                    new_line = new_line.replace(" {}{}(".format(name_replacements[0], a_name), " {}{}(".format(name_replacements[1], a_name))
+                    new_line = new_line.replace("*{}{}(".format(name_replacements[0], a_name), "*{}{}(".format(name_replacements[1], a_name))
+                    new_line = new_line.replace("({}{}(".format(name_replacements[0], a_name), "({}{}(".format(name_replacements[1], a_name))
                 for a_type in raylib_typedefs:
-                    new_line = new_line.replace(" {} ".format(a_type), " Rl{} ".format(a_type))
-                    new_line = new_line.replace(" {}*".format(a_type), " Rl{}*".format(a_type))
-                    new_line = new_line.replace("({} ".format(a_type), "(Rl{} ".format(a_type))
-                    new_line = new_line.replace("({}*".format(a_type), "(Rl{}*".format(a_type))
-                    new_line = new_line.replace("(*{})(".format(a_type), "(*Rl{})(".format(a_type))
-                    new_line = new_line.replace(" {};".format(a_type), " Rl{};".format(a_type))
-                    new_line = new_line.replace(" {},".format(a_type), " Rl{},".format(a_type))
-                    new_line = new_line.replace(",{};".format(a_type), ",Rl{};".format(a_type))
+                    new_line = new_line.replace(" {}{} ".format(type_replacements[0], a_type), " {}{} ".format(type_replacements[1], a_type))
+                    new_line = new_line.replace(" {}{}*".format(type_replacements[0], a_type), " {}l{}*".format(type_replacements[1], a_type))
+                    new_line = new_line.replace("({}{} ".format(type_replacements[0], a_type), "({}{} ".format(type_replacements[1], a_type))
+                    new_line = new_line.replace("({}{}*".format(type_replacements[0], a_type), "({}{}*".format(type_replacements[1], a_type))
+                    new_line = new_line.replace("(*{}{})(".format(type_replacements[0], a_type), "(*{}{})(".format(type_replacements[1], a_type))
+                    new_line = new_line.replace(" {}{};".format(type_replacements[0], a_type), " {}{};".format(type_replacements[1], a_type))
+                    new_line = new_line.replace(" {}{},".format(type_replacements[0], a_type), " {}{},".format(type_replacements[1], a_type))
+                    new_line = new_line.replace(",{}{};".format(type_replacements[0], a_type), ",{}{};".format(type_replacements[1], a_type))
                 out.append(new_line)
         with open(each, "w") as f:
             for i in out:
                 f.write(i)
-        

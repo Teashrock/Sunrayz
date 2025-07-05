@@ -96,10 +96,11 @@ kept_typedefs = []
 global raylib_typedefs
 raylib_typedefs = []
 
-RAYLIB_PATH = "deps/raylib/src"
-
 global raylib_names
 raylib_names = []
+
+global raylib_typedef_names
+raylib_typedef_names = []
 
 global found_typedef
 found_typedef: bool = False

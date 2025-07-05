@@ -362,20 +362,12 @@ def purge(ctx):
     except: pass
     for _, _, f in os.walk(os.path.join(BUILD_DIR, "src", "assets_gen", "fonts")):
         for each in f:
-            if each.split('.')[-1] == 'c':
+            if each.endswith('.c'):
                 os.remove(os.path.join(BUILD_DIR, "src", "assets_gen", "fonts", each))
     try:
         os.remove(os.path.join(BUILD_DIR, "src", "external", "raygui.c"))
     except: pass
     
-    #gitignore_dump = str()
-    #with open(".gitignore", "r") as gitignore:
-    #    gitignore_dump = gitignore.readlines()
-    #with open(".gitignore", "w") as gitignore:
-    #    for each in gitignore_dump:
-    #        if not each.startswith("src/assets_gen/fonts/"):
-    #            gitignore.write(each)
-
     if not os.path.exists(os.path.join("src", "assets_gen", "fonts")):
         os.mkdir(os.path.join("src", "assets_gen", "fonts"))
 

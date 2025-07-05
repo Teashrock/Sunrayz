@@ -263,10 +263,13 @@ def configure(conf):
         sp = subprocess.Popen(["patch", "-Np1", "-i", os.path.join(BUILD_DIR, "patches", "raylib_haiku.patch")])
         sp.wait()
         os.chdir(BUILD_DIR)
+    
+    Logs.info("All patches were applied successfully!")
 
     os.chdir(os.path.join(BUILD_DIR, "deps", "raylib", "src"))    
-    Logs.warn("Prefixing all Raylib types and functions to ensure namespacing...")
-    do_namespacing()
+    Logs.warn("Now prefixing all Raylib types and functions to ensure namespacing...")
+    for i in do_namespacing():
+        Logs.warn(f"Processing {i}...")
     os.chdir(BUILD_DIR)
     
     Logs.info("All done here!")

@@ -253,6 +253,7 @@ def do_namespacing() -> None:
     global raylib_names
     global g_string
     for each in RAYLIB_CHANGED_FILES:
+        yield each
         with open(each, "r") as f:
             g_string = 1
             out = list()

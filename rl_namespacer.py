@@ -152,7 +152,7 @@ def check_fn_pattern(line: str) -> str:
             # Dropping the line anywise, as even with nesting reaching zero we don't need it
             return "-1"
         # Checking if a line begins with a C macros
-        if split_line[i].strip() != '' and list(split_line[i].strip())[0] == "#":
+        if split_line[i].strip() != '' and split_line[i].strip().startswith("#"):
             if detect_substring_in_list(split_line[i], c_nested_macros): # If the line contains an if-macro, increasing nesting level
                 if_nesting += 1
             # Dropping the line, as it's definitely not what we want
@@ -229,7 +229,6 @@ def pick_typedefs(line: str) -> None:
                     bracket_pos = lsl.find("*(*") + 3
                 else:
                     continue
-                #print(str(g_string))
                 tname = str()
                 if not ")" in lsl:
                     tname = split_line[i + 1].strip(")")
@@ -237,7 +236,7 @@ def pick_typedefs(line: str) -> None:
                     while "".join(lsl[bracket_pos:bracket_pos + 2]).replace(" ", "") != ")(":
                         tname += lsl[bracket_pos]
                         bracket_pos += 1
-                raylib_typedefs.append(tname)
+                raylib_names.append(tname)
                 found_typedef = False
                 break
             # If we found a typedef, we're waiting for the closing bracket to get the type name after it
@@ -285,6 +284,8 @@ def do_namespacing() -> None:
                     new_line = new_line.replace(" {}(".format(a_name), " rl_{}(".format(a_name))
                     new_line = new_line.replace("*{}(".format(a_name), "*rl_{}(".format(a_name))
                     new_line = new_line.replace("({}(".format(a_name), "(rl_{}(".format(a_name))
+                    new_line = new_line.replace("({})(".format(a_name), "(rl_{})(".format(a_name))
+                    new_line = new_line.replace("(*{})(".format(a_name), "(*rl_{})(".format(a_name))
                 for a_type in raylib_typedefs:
                     new_line = new_line.replace(" {} ".format(a_type), " Rl_{} ".format(a_type))
                     new_line = new_line.replace(" {}*".format(a_type), " Rl_{}*".format(a_type))

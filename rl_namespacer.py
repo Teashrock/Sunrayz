@@ -269,7 +269,6 @@ def do_namespacing() -> None:
                     raylib_names.append(result)
                 g_string += 1
             raylib_names = list(dict.fromkeys(raylib_names))
-        with open(each, "r") as f:
             for line in lines:
                 new_line = line
                 for a_name in raylib_names:

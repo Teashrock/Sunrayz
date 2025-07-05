@@ -273,21 +273,20 @@ def do_namespacing() -> None:
             for line in lines:
                 new_line = line
                 for a_name in raylib_names:
-                    new_line = new_line.replace(" {}(".format(a_name), " rl_{}(".format(a_name))
-                    new_line = new_line.replace("*{}(".format(a_name), "*rl_{}(".format(a_name))
-                    new_line = new_line.replace("({}(".format(a_name), "(rl_{}(".format(a_name))
-                    new_line = new_line.replace("({} ".format(a_name), "(rl_{} ".format(a_name))
-                    new_line = new_line.replace("({})(".format(a_name), "(rl_{})(".format(a_name))
-                    new_line = new_line.replace("(*{})(".format(a_name), "(*rl_{})(".format(a_name))
+                    new_line = new_line.replace(f" {a_name}(", f" rl_{a_name}(")
+                    new_line = new_line.replace(f"*{a_name}(", f"*rl_{a_name}(")
+                    new_line = new_line.replace(f"({a_name}(", f"(rl_{a_name}(")
+                    new_line = new_line.replace(f"({a_name})(", f"(rl_{a_name})(")
+                    new_line = new_line.replace(f"(*{a_name})(", f"(*rl_{a_name})(")
                 for a_type in raylib_typedefs:
-                    new_line = new_line.replace(" {} ".format(a_type), " Rl_{} ".format(a_type))
-                    new_line = new_line.replace(" {}*".format(a_type), " Rl_{}*".format(a_type))
-                    new_line = new_line.replace("({} ".format(a_type), "(Rl_{} ".format(a_type))
-                    new_line = new_line.replace("({}*".format(a_type), "(Rl_{}*".format(a_type))
-                    new_line = new_line.replace("(*{})(".format(a_type), "(*Rl_{})(".format(a_type))
-                    new_line = new_line.replace(" {};".format(a_type), " Rl_{};".format(a_type))
-                    new_line = new_line.replace(" {},".format(a_type), " Rl_{},".format(a_type))
-                    new_line = new_line.replace(",{};".format(a_type), ",Rl_{};".format(a_type))
+                    new_line = new_line.replace(f" {a_type} ", f" Rl_{a_type} ")
+                    new_line = new_line.replace(f" {a_type}*", f" Rl_{a_type}*")
+                    new_line = new_line.replace(f"({a_type} ", f"(Rl_{a_type} ")
+                    new_line = new_line.replace(f"({a_type}*", f"(Rl_{a_type}*")
+                    new_line = new_line.replace(f"(*{a_type})(", f"(*Rl_{a_type})(")
+                    new_line = new_line.replace(f" {a_type};", f" Rl_{a_type};")
+                    new_line = new_line.replace(f" {a_type},", f" Rl_{a_type},")
+                    new_line = new_line.replace(f",{a_type};", f",Rl_{a_type};")
                 out.append(new_line)
         with open(each, "w") as f:
             for i in out:

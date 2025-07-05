@@ -144,17 +144,8 @@ def check_fn_pattern(line: str) -> str:
     global in_check
     split_line: list = line.split(" ")
     for i in range(len(split_line)):
-        # Checking if macro-nesting level is higher than 0 (and thus, present)
-        if if_nesting > 0:
-            # Decreasing nesting level upon meeting "#endif"
-            if split_line[i].strip() != '' and split_line[i].strip().startswith("#endif"):
-                if_nesting -= 1
-            # Dropping the line anywise, as even with nesting reaching zero we don't need it
-            return "-1"
         # Checking if a line begins with a C macros
         if split_line[i].strip() != '' and split_line[i].strip().startswith("#"):
-            if detect_substring_in_list(split_line[i], c_nested_macros): # If the line contains an if-macro, increasing nesting level
-                if_nesting += 1
             # Dropping the line, as it's definitely not what we want
             return "-1"
         # Just denying whatever we find until we're outside of the block comment

@@ -227,7 +227,7 @@ def pick_typedefs(line: str) -> None:
                     while "".join(lsl[bracket_pos:bracket_pos + 2]).replace(" ", "") != ")(":
                         tname += lsl[bracket_pos]
                         bracket_pos += 1
-                raylib_names.append(tname)
+                raylib_names.append(tname.lstrip("*"))
                 found_typedef = False
                 break
             # If we found a typedef, we're waiting for the closing bracket to get the type name after it
@@ -275,6 +275,7 @@ def do_namespacing() -> None:
                     new_line = new_line.replace(" {}(".format(a_name), " rl_{}(".format(a_name))
                     new_line = new_line.replace("*{}(".format(a_name), "*rl_{}(".format(a_name))
                     new_line = new_line.replace("({}(".format(a_name), "(rl_{}(".format(a_name))
+                    new_line = new_line.replace("({} ".format(a_name), "(rl_{} ".format(a_name))
                     new_line = new_line.replace("({})(".format(a_name), "(rl_{})(".format(a_name))
                     new_line = new_line.replace("(*{})(".format(a_name), "(*rl_{})(".format(a_name))
                 for a_type in raylib_typedefs:

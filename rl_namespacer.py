@@ -77,7 +77,9 @@ raylib_kept_types = [
     "unsigned long int *",
     "FILE",
     "FILE*",
-    "FILE *"
+    "FILE *",
+    "float3",
+    "float16"
 ]
 
 c_nested_macros = [
@@ -110,6 +112,8 @@ global if_nesting
 if_nesting: int = 0
 global in_check
 in_check: bool = False
+global typedef_nesting
+typedef_nesting = 0
 
 g_string = 0
 
@@ -181,6 +185,7 @@ def check_fn_pattern(line: str) -> str:
 
 def pick_typedefs(line: str) -> None:
     global found_typedef
+    global typedef_nesting
     split_line = line.split(" ")
     # Deleting single-line comment from split line
     el = 0
@@ -188,7 +193,7 @@ def pick_typedefs(line: str) -> None:
     comm_found = False
     while el < line_len:
         # Removing empty elements in place
-        if split_line[el] == '':
+        if split_line[el].strip() == '':
             split_line.pop(el)
             line_len -= 1
             continue
@@ -203,7 +208,6 @@ def pick_typedefs(line: str) -> None:
             split_line.pop(el)
             line_len -= 1
     # Looking for typedefs
-    typedef_nesting = 0
     for i in range(len(split_line)):
         if found_typedef:
             if split_line[i] == "{":
@@ -239,6 +243,7 @@ def pick_typedefs(line: str) -> None:
                 if typedef_nesting > 0:
                     typedef_nesting -= 1
                 else:
+                    #print(str(g_string) + " " + split_line[i + 1])
                     found_typedef = False
                     if split_line[i + 1].strip()[-1] == ",": # Handling typedef having two names
                         entry_one = split_line[i + 1].strip().rstrip(",")

@@ -203,8 +203,11 @@ def pick_typedefs(line: str) -> None:
             split_line.pop(el)
             line_len -= 1
     # Looking for typedefs
+    typedef_nesting = 0
     for i in range(len(split_line)):
         if found_typedef:
+            if split_line[i] == "{":
+                typedef_nesting += 1
             if not split_line[-1].strip().rstrip(";") in raylib_kept_types \
             and split_line[-1].strip().endswith(";") and not split_line[-1].strip().endswith(");") \
             and len(split_line) >= 3 and split_line[-2].strip() in raylib_typedefs \
@@ -233,18 +236,21 @@ def pick_typedefs(line: str) -> None:
                 break
             # If we found a typedef, we're waiting for the closing bracket to get the type name after it
             if split_line[i] == "}":
-                found_typedef = False
-                if split_line[i + 1].strip()[-1] == ",": # Handling typedef having two names
-                    entry_one = split_line[i + 1].strip().rstrip(",")
-                    entry_two = split_line[i + 2].strip().rstrip(";")
-                    if not entry_one in raylib_kept_types:
-                        raylib_typedefs.append(entry_one)
-                    if not entry_two in raylib_kept_types:
-                        raylib_typedefs.append(entry_two)
+                if typedef_nesting > 0:
+                    typedef_nesting -= 1
                 else:
-                    entry = split_line[i + 1].strip().rstrip(";")
-                    if not entry in raylib_kept_types:
-                        raylib_typedefs.append(entry)
+                    found_typedef = False
+                    if split_line[i + 1].strip()[-1] == ",": # Handling typedef having two names
+                        entry_one = split_line[i + 1].strip().rstrip(",")
+                        entry_two = split_line[i + 2].strip().rstrip(";")
+                        if not entry_one in raylib_kept_types:
+                            raylib_typedefs.append(entry_one)
+                        if not entry_two in raylib_kept_types:
+                            raylib_typedefs.append(entry_two)
+                    else:
+                        entry = split_line[i + 1].strip().rstrip(";")
+                        if not entry in raylib_kept_types:
+                            raylib_typedefs.append(entry)
         else:
             if split_line[i] == "typedef":
                 found_typedef = True

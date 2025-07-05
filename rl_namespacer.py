@@ -276,8 +276,7 @@ def do_namespacing() -> None:
                     new_line = new_line.replace(f" {a_name}(", f" rl_{a_name}(")
                     new_line = new_line.replace(f"*{a_name}(", f"*rl_{a_name}(")
                     new_line = new_line.replace(f"({a_name}(", f"(rl_{a_name}(")
-                    new_line = new_line.replace(f"({a_name})(", f"(rl_{a_name})(")
-                    new_line = new_line.replace(f"(*{a_name})(", f"(*rl_{a_name})(")
+                    new_line = new_line.replace(f"*(*{a_name})(", f"*(*rl_{a_name})(")
                 for a_type in raylib_typedefs:
                     new_line = new_line.replace(f" {a_type} ", f" Rl_{a_type} ")
                     new_line = new_line.replace(f" {a_type}*", f" Rl_{a_type}*")
@@ -288,7 +287,10 @@ def do_namespacing() -> None:
                     new_line = new_line.replace(f" {a_type},", f" Rl_{a_type},")
                     new_line = new_line.replace(f",{a_type};", f",Rl_{a_type};")
                 for a_name in raylib_typedef_names:
-                    new_line = new_line.replace("")
+                    new_line = new_line.replace(f"({a_name})(", f"(rl_{a_name})(")
+                    new_line = new_line.replace(f"(*{a_name})(", f"(*rl_{a_name})(")
+                    new_line = new_line.replace(f"({a_name} ", f"(rl_{a_name} ")
+                    new_line = new_line.replace(f" {a_name} ", f" rl_{a_name} ")
                 out.append(new_line)
         with open(each, "w") as f:
             for i in out:

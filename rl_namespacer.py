@@ -210,7 +210,9 @@ def pick_typedefs(line: str) -> None:
     # Looking for typedefs
     for i in range(len(split_line)):
         if found_typedef:
-            if split_line[i] == "{":
+            #if g_string == 965:
+            #    print(split_line)
+            if split_line[i].rstrip() == "{":
                 typedef_nesting += 1
                 print(str(g_string) + " Typedef nested!")
             if not split_line[-1].strip().rstrip(";") in raylib_kept_types \

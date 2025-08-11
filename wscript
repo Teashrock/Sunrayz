@@ -268,6 +268,12 @@ def configure(conf):
     Logs.warn("Now prefixing all Raylib types and functions to ensure namespacing...")
     for i in do_namespacing():
         Logs.warn(f"Processing {i}...")
+    os.chdir(os.path.join(BUILD_DIR, "deps", "raygui", "src"))
+    for i in do_namespacing(["raygui.h"]):
+        Logs.warn(f"Processing {i}...")
+    os.chdir(os.path.join(BUILD_DIR, "src", "external"))
+    for i in do_namespacing(["raygui.c"]):
+        Logs.warn(f"Processing {i}...")
     os.chdir(BUILD_DIR)
     
     Logs.info("All done here!")

@@ -259,11 +259,11 @@ def pick_typedefs(line: str) -> None:
             if split_line[i] == "typedef":
                 found_typedef = True
 
-def do_namespacing() -> None:
+def do_namespacing(file_list: list=RAYLIB_CHANGED_FILES) -> None:
     global raylib_typedefs
     global raylib_names
     global g_string
-    for each in RAYLIB_CHANGED_FILES:
+    for each in file_list:
         yield each
         with open(each, "r") as f:
             g_string = 1

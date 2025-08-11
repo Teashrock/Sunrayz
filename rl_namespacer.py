@@ -293,6 +293,7 @@ def do_namespacing(file_list: list=RAYLIB_CHANGED_FILES) -> None:
                     new_line = new_line.replace(f" {a_type}*", f" Rl_{a_type}*")
                     new_line = new_line.replace(f"({a_type} ", f"(Rl_{a_type} ")
                     new_line = new_line.replace(f"({a_type}*", f"(Rl_{a_type}*")
+                    new_line = new_line.replace(f"({a_type})", f"(Rl_{a_type})")
                     new_line = new_line.replace(f"(*{a_type})(", f"(*Rl_{a_type})(")
                     new_line = new_line.replace(f" {a_type};", f" Rl_{a_type};")
                     new_line = new_line.replace(f" {a_type},", f" Rl_{a_type},")

@@ -1,4 +1,5 @@
 import os
+import re
 
 RAYLIB_CHANGED_FILES = [
     "raylib.h",
@@ -162,7 +163,7 @@ def check_fn_pattern(line: str) -> str:
                 return "-1"
         if in_check:
             in_check = False # Ensuring the check is performed only once
-            # Checking if a string element contains a left parenthesis, doesn't start with asterisk/right parenthesis, and the name without it isn't already namespaced
+            # Checking if a string element contains a left parenthesis, doesn't start with an asterisk/right parenthesis, and the name without it isn't already namespaced
             if not split_line[i].startswith(")") and not split_line[i].startswith("*)") \
             and "(" in list(split_line[i]) \
             and not detect_substring_in_list(split_line[i].split("(")[0], kept_namespaces):
@@ -221,11 +222,11 @@ def pick_typedefs(line: str) -> None:
                 lsl = split_line[i].strip()
                 bracket_pos = int()
                 if lsl.startswith("("):
-                    bracket_pos = lsl.find("(") + 1
+                    bracket_pos = 1
                 elif lsl.startswith("(*"):
-                    bracket_pos = lsl.find("(*") + 2
+                    bracket_pos = 2
                 elif lsl.startswith("*(*"):
-                    bracket_pos = lsl.find("*(*") + 3
+                    bracket_pos = 3
                 else:
                     continue
                 tname = str()
@@ -263,6 +264,25 @@ def do_namespacing(file_list: list=RAYLIB_CHANGED_FILES) -> None:
     global raylib_typedefs
     global raylib_names
     global g_string
+    # Checks if a string corresponds with the pattern, and returns the replaced string if yes
+    def check_string(s: str, left_pos: str, type_: str, mid_pos: str, name: str, right_pos: str, type_prefix: str, name_prefix: str) -> str:
+        ns1: str = f"{left_pos}{type_}{mid_pos}{name}{right_pos}"
+        if ns in s:
+            ns2: str = f"{left_pos}{type_prefix}{type_}{mid_pos}{name_prefix}{name}{right_pos}"
+            return s.replace(ns1, ns2)
+
+    # Modes
+    # 0 - names
+    # 1 - types
+    def uni_replace(old_name: str, new_name: str, mode: int) -> None:
+        #name_opt_prefixes = ['\n', '\t']
+        #name_prefixes = [" ", "*", "(", "(!", "*(*", "+", "-", "/", ")"]
+        #name_suffixes = ["(", ")("]
+
+        r_name = r"(^|\t|\s|)(\*|\((!)|\*\(\*|\+|-|/|\)|).*(\)|)\("
+        rs = re.search(r_name, old_name)
+        
+
     for each in file_list:
         yield each
         with open(each, "r") as f:
@@ -283,22 +303,28 @@ def do_namespacing(file_list: list=RAYLIB_CHANGED_FILES) -> None:
             for line in lines:
                 new_line = line
                 for a_name in raylib_names:
-                    if not a_name: continue # TODO: refactor this to proper preventing of empty names at all
+                    if not a_name: continue # TODO: refactor this up in check_fn_pattern to proper preventing of empty names at all
                     new_line = new_line.replace(f" {a_name}(", f" rl_{a_name}(")
                     new_line = new_line.replace(f"*{a_name}(", f"*rl_{a_name}(")
                     new_line = new_line.replace(f"({a_name}(", f"(rl_{a_name}(")
+                    new_line = new_line.replace(f"(!{a_name}(", f"(!rl_{a_name}(")
                     new_line = new_line.replace(f"*(*{a_name})(", f"*(*rl_{a_name})(")
+                    new_line = new_line.replace(f"+{a_name}(", f"+rl_{a_name}(")
+                    new_line = new_line.replace(f"-{a_name}(", f"-rl_{a_name}(")
+                    new_line = new_line.replace(f"/{a_name}(", f"/rl_{a_name}(")
+                    new_line = new_line.replace(f"){a_name}(", f")rl_{a_name}(")
                 for a_type in raylib_typedefs:
-                    new_line = new_line.replace(f" {a_type} ", f" Rl_{a_type} ")
+                    new_line = new_line.replace(f"{a_type} rl_", f"Rl_{a_type} rl_")
                     new_line = new_line.replace(f" {a_type}*", f" Rl_{a_type}*")
                     new_line = new_line.replace(f"({a_type} ", f"(Rl_{a_type} ")
                     new_line = new_line.replace(f"({a_type}*", f"(Rl_{a_type}*")
+                    new_line = new_line.replace(f"({a_type})", f"(Rl_{a_type})")
                     new_line = new_line.replace(f"(*{a_type})(", f"(*Rl_{a_type})(")
                     new_line = new_line.replace(f" {a_type};", f" Rl_{a_type};")
                     new_line = new_line.replace(f" {a_type},", f" Rl_{a_type},")
                     new_line = new_line.replace(f",{a_type};", f",Rl_{a_type};")
                 for a_name in raylib_typedef_names:
-                    if not a_name: continue # TODO: refactor this to proper preventing of empty names at all
+                    if not a_name: continue # TODO: refactor this up in pick_typedefs to proper preventing of empty names at all
                     new_line = new_line.replace(f"({a_name})(", f"(rl_{a_name})(")
                     new_line = new_line.replace(f"(*{a_name})(", f"(*rl_{a_name})(")
                     new_line = new_line.replace(f"({a_name} ", f"(rl_{a_name} ")

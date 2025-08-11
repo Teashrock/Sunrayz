@@ -10,16 +10,16 @@ typedef struct {
     float width;
     float height;
     float margin;
-    RLRectangle shape;
-    Color idleColor;
-    Color hoverColor;
-    Color pressedColor;
-    Font font;
+    Rl_Rectangle shape;
+    Rl_Color idleColor;
+    Rl_Color hoverColor;
+    Rl_Color pressedColor;
+    Rl_Font font;
     char* fontShader;
     int fontSize;
-    Color fontIdleColor;
-    Color fontHoverColor;
-    Color fontPressedColor;
+    Rl_Color fontIdleColor;
+    Rl_Color fontHoverColor;
+    Rl_Color fontPressedColor;
     char* text;
     float textXOffset;
     float textYOffset;
@@ -32,15 +32,15 @@ SzEntity* CreateTextButton(
     float width,
     float height,
     float margin,
-    Color idleColor,
-    Color hoverColor,
-    Color pressedColor,
-    Font* font,
+    Rl_Color idleColor,
+    Rl_Color hoverColor,
+    Rl_Color pressedColor,
+    Rl_Font* font,
     char* fontShader,
     int fontSize,
-    Color fontIdleColor,
-    Color fontHoverColor,
-    Color fontPressedColor,
+    Rl_Color fontIdleColor,
+    Rl_Color fontHoverColor,
+    Rl_Color fontPressedColor,
     float textXOffset,
     float textYOffset
 );

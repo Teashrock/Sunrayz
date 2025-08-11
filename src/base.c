@@ -41,11 +41,11 @@ void main()\
 
 SzEntity* CreateRec(float x, float y, float width, float height)
 {
-    SzEntity* t = CreateType("RLRectangle");
+    SzEntity* t = CreateType("Rl_Rectangle");
 
-    RLRectangle* rect = (RLRectangle*)MemAlloc(sizeof(RLRectangle));
+    Rl_Rectangle* rect = (Rl_Rectangle*)rl_MemAlloc(sizeof(Rl_Rectangle));
     
-    *rect = (RLRectangle){
+    *rect = (Rl_Rectangle){
         .x = x,
         .y = y,
         .width = width,
@@ -59,7 +59,7 @@ SzEntity* CreateRec(float x, float y, float width, float height)
 
 SzConstruct* CreateConstruct(SzConstruct* parent)
 {
-    SzConstruct* c = (SzConstruct*)MemAlloc(sizeof(SzConstruct));
+    SzConstruct* c = (SzConstruct*)rl_MemAlloc(sizeof(SzConstruct));
 
     *c = (SzConstruct){
         .parent = parent,
@@ -78,11 +78,11 @@ SzConstruct* CreateConstruct(SzConstruct* parent)
 
 /// Creates an instance of Sunrayz visible type.
 SzEntity* CreateType(char* typeName) {
-    SzEntity* t = (SzEntity*)MemAlloc(sizeof(SzEntity));
+    SzEntity* t = (SzEntity*)rl_MemAlloc(sizeof(SzEntity));
     *t = (SzEntity){
         .essence = NULL,
-        .type = (char*)MemAlloc((sizeof(char) * strlen(typeName)) + 1),
-        .id = (int*)MemAlloc(sizeof(int)),
+        .type = (char*)rl_MemAlloc((sizeof(char) * strlen(typeName)) + 1),
+        .id = (int*)rl_MemAlloc(sizeof(int)),
     };
     strcpy(t->type, typeName);
     *(t->id) = rand();
@@ -90,7 +90,7 @@ SzEntity* CreateType(char* typeName) {
 }
 
 SzSignal* CreateSignal(char* name, SzError (*trigger)(void), SzError (*behaviour)(void)) {
-    SzSignal* s = (SzSignal*)MemAlloc(sizeof(SzSignal));
+    SzSignal* s = (SzSignal*)rl_MemAlloc(sizeof(SzSignal));
     *s = (SzSignal){
         .name = name,
         .trigger = NULL,
@@ -124,15 +124,15 @@ static Group* gCurrentGroup = NULL;
 Group* CreateGroup(char* name, char* types)
 {
     if (gGroupEnv == NULL) {
-        Group* group = MemAlloc(sizeof(Group));
+        Group* group = rl_MemAlloc(sizeof(Group));
         group->entities = NULL;
-        group->name_len = (size_t*)MemAlloc(sizeof(size_t));
+        group->name_len = (size_t*)rl_MemAlloc(sizeof(size_t));
         *(group->name_len) = strlen(name);
-        group->name = (char*)MemAlloc((sizeof(char) * *(group->name_len)) + 1);
+        group->name = (char*)rl_MemAlloc((sizeof(char) * *(group->name_len)) + 1);
         strcpy(group->name, name);
-        group->types_len = (size_t*)MemAlloc(sizeof(size_t));
+        group->types_len = (size_t*)rl_MemAlloc(sizeof(size_t));
         *(group->types_len) = strlen(types);
-        group->types = (char*)MemAlloc((sizeof(char) * *(group->types_len)) + 1);
+        group->types = (char*)rl_MemAlloc((sizeof(char) * *(group->types_len)) + 1);
         strcpy(group->types, types);
         gGroupEnv = group;
         return group;
@@ -145,15 +145,15 @@ Group* CreateGroup(char* name, char* types)
                 gCurrentGroup = gCurrentGroup->next;
                 goto loop;
             } else {
-                Group* group = MemAlloc(sizeof(Group));
+                Group* group = rl_MemAlloc(sizeof(Group));
                 group->entities = NULL;
-                group->name_len = (size_t*)MemAlloc(sizeof(size_t));
+                group->name_len = (size_t*)rl_MemAlloc(sizeof(size_t));
                 *(group->name_len) = strlen(name);
-                group->name = (char*)MemAlloc((sizeof(char) * *(group->name_len)) + 1);
+                group->name = (char*)rl_MemAlloc((sizeof(char) * *(group->name_len)) + 1);
                 strcpy(group->name, name);
-                group->types_len = (size_t*)MemAlloc(sizeof(size_t));
+                group->types_len = (size_t*)rl_MemAlloc(sizeof(size_t));
                 *(group->types_len) = strlen(types);
-                group->types = (char*)MemAlloc((sizeof(char) * *(group->types_len)) + 1);
+                group->types = (char*)rl_MemAlloc((sizeof(char) * *(group->types_len)) + 1);
                 strcpy(group->types, types);
                 gCurrentGroup->next = group;
                 return group;
@@ -174,14 +174,14 @@ void DestroyGroup(char* name)
     if (tag == NULL) {
         gCurrentGroup->entities = NULL;
         gCurrentGroup->next = NULL;
-        MemFree(gCurrentGroup->types);
-        MemFree(gCurrentGroup->types_len);
-        MemFree(gCurrentGroup->name);
-        MemFree(gCurrentGroup->name_len);
-        MemFree(gCurrentGroup);
+        rl_MemFree(gCurrentGroup->types);
+        rl_MemFree(gCurrentGroup->types_len);
+        rl_MemFree(gCurrentGroup->name);
+        rl_MemFree(gCurrentGroup->name_len);
+        rl_MemFree(gCurrentGroup);
     } else {
         backLink = tag->next;
-        MemFree(tag);
+        rl_MemFree(tag);
         tag = backLink;
         goto loop;
     }
@@ -194,10 +194,10 @@ void DestroyGroupByRef(Group* group)
     // Deleting all tags of the group before deleting the group itself
     loop:
     if (tag == NULL)
-        MemFree(group);
+        rl_MemFree(group);
     else {
         backLink = tag->next;
-        MemFree(tag);
+        rl_MemFree(tag);
         tag = backLink;
         goto loop;
     }
@@ -211,7 +211,7 @@ void SzCheckGroupType(SzEntity* obj, char* group)
 
     iterTypes:
     if (type == NULL) { // If neither token equals the needed type, throw a runtime error
-        char* errorstr = (char*)MemAlloc(sizeof(char*));
+        char* errorstr = (char*)rl_MemAlloc(sizeof(char*));
         sprintf(errorstr, "Wrong type has been tried to add into group \"%s\".", group);
         SzRuntimeError(NULL, errorstr);
     }
@@ -219,7 +219,7 @@ void SzCheckGroupType(SzEntity* obj, char* group)
         type = strtok(NULL, ",");       // switch to next token
         goto iterTypes;                 // and return to check,
     }                                   // else pass further
-    MemFree(typesStr);
+    rl_MemFree(typesStr);
     typesStr = NULL;
 }
 
@@ -239,7 +239,7 @@ int* EnlistMemory(SzEntity* obj, char* group)
     }
 
     // Tag creation
-    tag = (SzTag*)MemAlloc(sizeof(SzTag));
+    tag = (SzTag*)rl_MemAlloc(sizeof(SzTag));
     *tag = (SzTag){
         .essence = obj,
         .next = NULL
@@ -261,7 +261,7 @@ int* EnlistMemoryByRef(SzEntity* obj, Group* group)
 
     iterTypes:
     if (type == NULL) { // If neither token equals the needed type, throw a runtime error
-        char* errorstr = (char*)MemAlloc(sizeof(char*));
+        char* errorstr = (char*)rl_MemAlloc(sizeof(char*));
         sprintf(errorstr, "Wrong type has been tried to add into group \"%s\".", group->name);
         SzRuntimeError(NULL, errorstr);
     }
@@ -280,7 +280,7 @@ int* EnlistMemoryByRef(SzEntity* obj, Group* group)
     }
 
     // Tag creation
-    tag = (SzTag*)MemAlloc(sizeof(SzTag));
+    tag = (SzTag*)rl_MemAlloc(sizeof(SzTag));
     *tag = (SzTag){
         .essence = obj,
         .next = NULL

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string.h>
+#include <raylib.h>
 
 typedef enum {
     OK,
@@ -10,7 +11,7 @@ typedef enum {
 } SzError;
 
 #define CREATE_STR(VAR, STR) \
-    char* VAR = (char*)MemAlloc((strlen(STR) * sizeof(char*)) + 1); \
+    char* VAR = (char*)rl_MemAlloc((strlen(STR) * sizeof(char*)) + 1); \
     strcpy(VAR, STR);
 
 void SzRuntimeError(char* title, char* text);

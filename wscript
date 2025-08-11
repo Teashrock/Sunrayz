@@ -186,24 +186,23 @@ def configure(conf):
     # Patch zone
     for _, _, f in os.walk(os.path.join(BUILD_DIR, "patches")):
         for i in f:
-            shutil.copy(os.path.join(BUILD_DIR, "patches", i), os.path.join(BUILD_DIR, out))
             patch_list.append(i)
     if platform.system() == "Windows":
         Logs.warn("Converting patches' ends-of-line to CR LF, necessary on Windows...")
         for i in patch_list:
-            sp = subprocess.Popen(["unix2dos", os.path.join(BUILD_DIR, out, i)])
+            sp = subprocess.Popen(["unix2dos", os.path.join(BUILD_DIR, "patches", i)])
             sp.wait()
         Logs.info("Done!")
 
     # Raylib and Raygui patches
     Logs.warn("Applying architecture patches for Raylib and Raygui...")
-    os.chdir("deps/raylib/src")
-    sp = subprocess.Popen(["patch", "-Np1", "-i", os.path.join(BUILD_DIR, out, "raylib_utils.patch")])
+    os.chdir(BUILD_DIR + "/deps/raylib/src")
+    sp = subprocess.Popen(["patch", "-Np1", "-i", os.path.join(BUILD_DIR, "patches", "raylib_utils.patch")])
     sp.wait()
-    sp = subprocess.Popen(["patch", "-Np1", "-i", os.path.join(BUILD_DIR, out, "raylib_raylib.patch")])
+    sp = subprocess.Popen(["patch", "-Np1", "-i", os.path.join(BUILD_DIR, "patches", "raylib_raylib.patch")])
     sp.wait()
     os.chdir(BUILD_DIR + "/deps/raygui/src")
-    sp = subprocess.Popen(["patch", "-Np1", "-i", os.path.join(BUILD_DIR, out, "raygui.patch")])
+    sp = subprocess.Popen(["patch", "-Np1", "-i", os.path.join(BUILD_DIR, "patches", "raygui.patch")])
     sp.wait()
     
     # Dividing raygui.h into two separate parts
@@ -248,26 +247,29 @@ def configure(conf):
     if platform.system() == "Linux":
         Logs.warn("Patching Raylib Makefile...")
         os.chdir("deps/raylib/src")
-        sp = subprocess.Popen(["patch", "-Np1", "-i", os.path.join(BUILD_DIR, out, "raylib_makefile_linux.patch")])
+        sp = subprocess.Popen(["patch", "-Np1", "-i", os.path.join(BUILD_DIR, "patches", "raylib_makefile_linux.patch")])
         sp.wait()
         os.chdir(BUILD_DIR)
     
     if platform.system() == "Haiku":
         Logs.warn("Patching Raylib Makefile...")
         os.chdir("deps/raylib/src")
-        sp = subprocess.Popen(["patch", "-Np1", "-i", os.path.join(BUILD_DIR, out, "raylib_makefile_haiku.patch")])
+        sp = subprocess.Popen(["patch", "-Np1", "-i", os.path.join(BUILD_DIR, "patches", "raylib_makefile_haiku.patch")])
         sp.wait()
         os.chdir(BUILD_DIR)
 
         Logs.warn("Applying special Raylib patch for Haiku OS...")
         os.chdir("deps/raylib")
-        sp = subprocess.Popen(["patch", "-Np1", "-i", os.path.join(BUILD_DIR, out, "raylib_haiku.patch")])
+        sp = subprocess.Popen(["patch", "-Np1", "-i", os.path.join(BUILD_DIR, "patches", "raylib_haiku.patch")])
         sp.wait()
         os.chdir(BUILD_DIR)
+    
+    Logs.info("All patches were applied successfully!")
 
     os.chdir(os.path.join(BUILD_DIR, "deps", "raylib", "src"))    
-    Logs.warn("Prefixing all Raylib types and functions to ensure namespacing...")
-    do_namespacing()
+    Logs.warn("Now prefixing all Raylib types and functions to ensure namespacing...")
+    for i in do_namespacing():
+        Logs.warn(f"Processing {i}...")
     os.chdir(BUILD_DIR)
     
     Logs.info("All done here!")
@@ -277,7 +279,7 @@ def configure(conf):
         # This is necessary on MinGW
         Logs.warn("Preparing Kuroko Makefile...")
         os.chdir("deps/kuroko")
-        sp = subprocess.Popen(["patch", "-Np1", "-i", os.path.join(BUILD_DIR, out, "kuroko_makefile_windows.patch")])
+        sp = subprocess.Popen(["patch", "-Np1", "-i", os.path.join(BUILD_DIR, "patches", "kuroko_makefile_windows.patch")])
         sp.wait()
         Logs.info("Done!")
         Logs.warn("Checking if GCC can floor without libm...")
@@ -311,13 +313,13 @@ int main(int argc, char * argv[]) {
         #    kf.write(p)
         Logs.warn("Patching Kuroko module_socket.c...")
         os.chdir("deps/kuroko/src")
-        sp = subprocess.Popen(["patch", "-Np1", "-i", os.path.join(BUILD_DIR, out, "kuroko_module_socket_windows.patch")])
+        sp = subprocess.Popen(["patch", "-Np1", "-i", os.path.join(BUILD_DIR, "patches", "kuroko_module_socket_windows.patch")])
         sp.wait()
         Logs.info("Done!")
     elif platform.system() == "Haiku" and not "kuroko" in clist:
         Logs.warn("Patching Kuroko Makefile... ")
         os.chdir("deps/kuroko")
-        sp = subprocess.Popen(["patch", "-Np1", "-i", os.path.join(BUILD_DIR, out, "kuroko_makefile_haiku.patch")])
+        sp = subprocess.Popen(["patch", "-Np1", "-i", os.path.join(BUILD_DIR, "patches", "kuroko_makefile_haiku.patch")])
         sp.wait()
         Logs.info("Done!")
     

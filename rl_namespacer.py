@@ -210,11 +210,8 @@ def pick_typedefs(line: str) -> None:
     # Looking for typedefs
     for i in range(len(split_line)):
         if found_typedef:
-            #if g_string == 965:
-            #    print(split_line)
             if split_line[i].rstrip() == "{":
                 typedef_nesting += 1
-                print(str(g_string) + " Typedef nested! It's now " + str(typedef_nesting))
             if not split_line[-1].strip().rstrip(";") in raylib_kept_types \
             and split_line[-1].strip().endswith(";") and not split_line[-1].strip().endswith(");") \
             and len(split_line) >= 3 and split_line[-2].strip() in raylib_typedefs \
@@ -245,7 +242,6 @@ def pick_typedefs(line: str) -> None:
             if split_line[i] == "}":
                 if typedef_nesting > 0:
                     typedef_nesting -= 1
-                    print(str(g_string) + " Typedef outed! It's now " + str(typedef_nesting))
                     if typedef_nesting == 0:
                         found_typedef = False
                         if split_line[i + 1].strip()[-1] == ",": # Handling typedef having two names

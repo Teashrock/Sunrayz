@@ -202,8 +202,6 @@ def configure(conf):
     sp = subprocess.Popen(["patch", "-Np1", "-i", os.path.join(BUILD_DIR, "patches", "raylib_raylib.patch")])
     sp.wait()
     os.chdir(BUILD_DIR + "/deps/raygui/src")
-    sp = subprocess.Popen(["patch", "-Np1", "-i", os.path.join(BUILD_DIR, "patches", "raygui.patch")])
-    sp.wait()
     
     # Dividing raygui.h into two separate parts
     p : str = ""

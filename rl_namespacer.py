@@ -283,6 +283,7 @@ def do_namespacing(file_list: list=RAYLIB_CHANGED_FILES) -> None:
             for line in lines:
                 new_line = line
                 for a_name in raylib_names:
+                    if not a_name: continue # TODO: refactor this to proper preventing of empty names at all
                     new_line = new_line.replace(f" {a_name}(", f" rl_{a_name}(")
                     new_line = new_line.replace(f"*{a_name}(", f"*rl_{a_name}(")
                     new_line = new_line.replace(f"({a_name}(", f"(rl_{a_name}(")
@@ -297,6 +298,7 @@ def do_namespacing(file_list: list=RAYLIB_CHANGED_FILES) -> None:
                     new_line = new_line.replace(f" {a_type},", f" Rl_{a_type},")
                     new_line = new_line.replace(f",{a_type};", f",Rl_{a_type};")
                 for a_name in raylib_typedef_names:
+                    if not a_name: continue # TODO: refactor this to proper preventing of empty names at all
                     new_line = new_line.replace(f"({a_name})(", f"(rl_{a_name})(")
                     new_line = new_line.replace(f"(*{a_name})(", f"(*rl_{a_name})(")
                     new_line = new_line.replace(f"({a_name} ", f"(rl_{a_name} ")

@@ -264,11 +264,10 @@ def do_namespacing(file_list: list=RAYLIB_CHANGED_FILES) -> None:
     global raylib_typedefs
     global raylib_names
     global g_string
-    def check_string(s: str, left_pos: str, type_: str, mid_pos: str, name: str, right_pos: str, type_prefix: str, name_prefix: str) -> str:
-        ns1: str = f"{left_pos}{type_}{mid_pos}{name}{right_pos}"
-        if ns in s:
-            ns2: str = f"{left_pos}{type_prefix}{type_}{mid_pos}{name_prefix{name}{right_pos}"
-            return s.replace(ns1, ns2)
+    def check_string(s: str, left_pos: str, type_: str, mid_pos: str, name: str, right_pos: str):
+        ns: str = f"{left_pos}{type_}{mid_pos}{name}{right_pos}"
+        if s == ns:
+            pass
 
     # Modes
     # 0 - names

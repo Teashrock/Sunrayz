@@ -221,6 +221,7 @@ def pick_typedefs(line: str) -> None:
             if split_line[-1].strip().endswith(");"):
                 lsl = split_line[i].strip()
                 bracket_pos = int()
+                # TODO: Does it all really need .find() if it's .startswith()?
                 if lsl.startswith("("):
                     bracket_pos = lsl.find("(") + 1
                 elif lsl.startswith("(*"):
@@ -264,10 +265,11 @@ def do_namespacing(file_list: list=RAYLIB_CHANGED_FILES) -> None:
     global raylib_typedefs
     global raylib_names
     global g_string
+    # Checks if a string corresponds with the pattern, and returns the replaced string if yes
     def check_string(s: str, left_pos: str, type_: str, mid_pos: str, name: str, right_pos: str, type_prefix: str, name_prefix: str) -> str:
         ns1: str = f"{left_pos}{type_}{mid_pos}{name}{right_pos}"
         if ns in s:
-            ns2: str = f"{left_pos}{type_prefix}{type_}{mid_pos}{name_prefix{name}{right_pos}"
+            ns2: str = f"{left_pos}{type_prefix}{type_}{mid_pos}{name_prefix}{name}{right_pos}"
             return s.replace(ns1, ns2)
 
     # Modes
@@ -302,7 +304,7 @@ def do_namespacing(file_list: list=RAYLIB_CHANGED_FILES) -> None:
             for line in lines:
                 new_line = line
                 for a_name in raylib_names:
-                    if not a_name: continue # TODO: refactor this up to proper preventing of empty names at all
+                    if not a_name: continue # TODO: refactor this up in check_fn_pattern to proper preventing of empty names at all
                     new_line = new_line.replace(f" {a_name}(", f" rl_{a_name}(")
                     new_line = new_line.replace(f"*{a_name}(", f"*rl_{a_name}(")
                     new_line = new_line.replace(f"({a_name}(", f"(rl_{a_name}(")
@@ -323,7 +325,7 @@ def do_namespacing(file_list: list=RAYLIB_CHANGED_FILES) -> None:
                     new_line = new_line.replace(f" {a_type},", f" Rl_{a_type},")
                     new_line = new_line.replace(f",{a_type};", f",Rl_{a_type};")
                 for a_name in raylib_typedef_names:
-                    if not a_name: continue # TODO: refactor this up to proper preventing of empty names at all
+                    if not a_name: continue # TODO: refactor this up in pick_typedefs to proper preventing of empty names at all
                     new_line = new_line.replace(f"({a_name})(", f"(rl_{a_name})(")
                     new_line = new_line.replace(f"(*{a_name})(", f"(*rl_{a_name})(")
                     new_line = new_line.replace(f"({a_name} ", f"(rl_{a_name} ")

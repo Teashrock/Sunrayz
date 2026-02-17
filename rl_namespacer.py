@@ -221,13 +221,12 @@ def pick_typedefs(line: str) -> None:
             if split_line[-1].strip().endswith(");"):
                 lsl = split_line[i].strip()
                 bracket_pos = int()
-                # TODO: Does it all really need .find() if it's .startswith()?
                 if lsl.startswith("("):
-                    bracket_pos = lsl.find("(") + 1
+                    bracket_pos = 1
                 elif lsl.startswith("(*"):
-                    bracket_pos = lsl.find("(*") + 2
+                    bracket_pos = 2
                 elif lsl.startswith("*(*"):
-                    bracket_pos = lsl.find("*(*") + 3
+                    bracket_pos = 3
                 else:
                     continue
                 tname = str()

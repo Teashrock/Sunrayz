@@ -2,7 +2,7 @@ VERSION    = "master"
 APPNAME    = "sunrayz"
 REVISION   = ""
 BUILD_TYPE = "debug"
-DYNAMIC_LINKING = True
+DYNAMIC_LINKING = False
 
 top = '.'
 out = "build"

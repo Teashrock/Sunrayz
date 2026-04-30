@@ -58,6 +58,8 @@ UTIL_LIST = {
     "git": 2
 }
 
+INCS = [".", "deps/raylib/src", "deps/raylib/src/external", "deps/raygui/src"]
+
 global patch_list
 patch_list : list = list()
 
@@ -65,20 +67,32 @@ global download_only
 download_only : bool = False
 
 def options(opt):
-    if platform.system() == "Windows":
-        os.environ["PATH"] = "C:\\mingw32\\bin;C:\\mingw32\\libexec\\gcc\\x86_64-w64-mingw32\\8.1.0;" + os.environ["PATH"]
+    #if platform.system() == "Windows":
+    #    os.environ["PATH"] = "C:\\mingw32\\bin;C:\\mingw32\\libexec\\gcc\\x86_64-w64-mingw32\\8.1.0;" + os.environ["PATH"]
     opt.load('compiler_c')
 
 def configure(conf):
     delim : str = ""
     ext : str = ""
     if not download_only:
+        clangd_conf = open(".clangd", "w")
+        clangd_conf.write("CompileFlags:\n  Add:\n")
         if platform.system() == "Windows":
             delim = ";"
             ext = ".exe"
+            clangd_conf.write("    - --target=x86_64-w64-windows-gnu\n")
+            for i in INCS:
+                if i == ".":
+                    clangd_conf.write("    - -I" + BUILD_DIR + "\n")
+                else:
+                    clangd_conf.write(f"    - -I{BUILD_DIR + "\\" + i.replace("/", "\\")}\n")
+            gcc_loc = os.path.dirname(os.path.dirname(shutil.which("gcc"))) # pyright: ignore[reportArgumentType, reportCallIssue, reportOptionalMemberAccess]
+            #clangd_conf.write(f" -I, {gcc_loc}\\include, ")
+            #clangd_conf.write(f" -I, {gcc_loc}\\x86_64-w64-mingw32\\include ]\n")
         else:
             delim = ":"
-        util_check_paths : list = os.getenv("PATH").split(delim)
+        clangd_conf.close()
+        util_check_paths : list = os.getenv("PATH").split(delim) # pyright: ignore[reportOptionalMemberAccess]
         for key in UTIL_LIST.keys():
             found : bool = False
             if UTIL_LIST[key] == 0 or \
@@ -297,6 +311,9 @@ def purge(ctx):
     try:
         os.remove(os.path.join(BUILD_DIR, "fonts_linked.list"))
     except: pass
+    try:
+        os.remove(os.path.join(BUILD_DIR, ".clangd"))
+    except: pass
     for _, _, f in os.walk(os.path.join(BUILD_DIR, "src", "assets_gen", "fonts")):
         for each in f:
             if each.endswith('.c'):
@@ -315,6 +332,7 @@ def distclean(ctx):
     purge(ctx)
 
 def uncache(ctx):
+    shutil.rmtree(os.path.join(BUILD_DIR, ".cache"))
     shutil.rmtree(os.path.join(BUILD_DIR, "cache"))
 
 def build(ctx):
@@ -428,7 +446,7 @@ def build(ctx):
         ctx.program(
             source       = SRCS,
             target       = EXE_NAME,
-            includes     = [".", "deps/raylib/src", "deps/raylib/src/external", "deps/raygui/src"],
+            includes     = INCS,
             lib          = libs,
             libpath      = [os.path.join(DEPS_DIR, "raylib", "src")],
             install_path = INSTALLPATH,

@@ -19,14 +19,14 @@ SzConstruct
         ├───SzEntity
         ├───...
         ├────SzConstruct
-        │            ├───SzEntity
-        │            ├───SzEntity
-        │            ├───SzEntity
-        │            └───...
+        │           ├───SzEntity
+        │           ├───SzEntity
+        │           ├───SzEntity
+        │           ┖───...
         ├────SzConstruct
-        │            ├───SzEntity
-        │            ├───SzEntity
-        │            ├───SzEntity
-        │            └───...
+        │           ├───SzEntity
+        │           ├───SzEntity
+        │           ├───SzEntity
+        │           ┖───...
         ...
 ```

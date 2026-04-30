@@ -1,4 +1,3 @@
-import os
 import re
 
 RAYLIB_CHANGED_FILES = [
@@ -118,11 +117,14 @@ typedef_nesting = 0
 
 g_string = 0
 
-### Finding a comment in a line (single or multiline) 
 def find_comment(s: str, oc: int) -> bool:
-    # oc = 0 => multiline comment begins
-    # oc = 1 => multiline comment ends
-    # oc = 2 => single-line comment
+    """
+    Finding a comment in a line (single or multiline)
+    s => the string to scan
+    oc = 0 => multiline comment begins
+    oc = 1 => multiline comment ends
+    oc = 2 => single-line comment
+    """
     if len(s) >= 2:
         cs = str()
         if oc == 0: cs = "/*"
@@ -133,18 +135,22 @@ def find_comment(s: str, oc: int) -> bool:
                 return True
     return False
 
-### Detects if a function already belongs to a namespace
 def detect_substring_in_list(s: str, l: list) -> bool:
+    """
+    Detects if a function already belongs to a namespace
+    """
     for each in l:
         if "".join(list(s)[0:len(each)]) == each:
             return True
     return False
 
-### Checking if a line contains token pattern of a C function
-### Return codes:
-### "-1" - No function name pattern found
-### anything else - Function name
 def check_fn_pattern(line: str) -> str:
+    """
+    Checking if a line contains token pattern of a C function
+    Return codes:
+    "-1" - No function name pattern found
+    anything else - Function name
+    """
     global block_comment
     global if_nesting
     global in_check
@@ -185,6 +191,13 @@ def check_fn_pattern(line: str) -> str:
     return "-1"
 
 def pick_typedefs(line: str) -> None:
+    """
+    Traversing a C code line to pick up
+    any sort of typedef in it.
+    
+    Arguments:
+    line => the line to scan
+    """
     global found_typedef
     global typedef_nesting
     split_line = line.split(" ")

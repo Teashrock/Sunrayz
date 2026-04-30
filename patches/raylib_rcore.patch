@@ -1,0 +1,42 @@
+--- a/rcore.c	2026-04-23 01:18:40.000000000 +0300
++++ b/rcore.c	2026-04-30 18:49:05.567836000 +0300
+@@ -112,6 +112,7 @@
+ #include <stdarg.h>                 // Required for: va_list, va_start(), va_end() [Used in TraceLog()]
+ #include <time.h>                   // Required for: time() [Used in InitTimer()]
+ #include <math.h>                   // Required for: tan() [Used in BeginMode3D()], atan2f() [Used in LoadVrStereoConfig()]
++#include <stddef.h>                 // Required for: size_t
+ 
+ #if defined(PLATFORM_MEMORY) || defined(PLATFORM_WEB)
+     #define SW_GL_FRAMEBUFFER_COPY_BGRA false
+@@ -1940,23 +1941,28 @@
+ //----------------------------------------------------------------------------------
+ // Internal memory allocator
+ // NOTE: Initializes to zero by default
+-void *MemAlloc(unsigned int size)
++void *MemAlloc(size_t size)
+ {
++    loop:;
+     void *ptr = RL_CALLOC(size, 1);
++    if (ptr == NULL) goto loop;
+     return ptr;
+ }
+ 
+ // Internal memory reallocator
+-void *MemRealloc(void *ptr, unsigned int size)
++void *MemRealloc(void *ptr, size_t size)
+ {
++    loop:;
+     void *ret = RL_REALLOC(ptr, size);
++    if (ptr == NULL) goto loop;
+     return ret;
+ }
+ 
+ // Internal memory free
+ void MemFree(void *ptr)
+ {
+-    RL_FREE(ptr);
++    if (ptr != NULL)
++        RL_FREE(ptr);
+ }
+ 
+ //----------------------------------------------------------------------------------

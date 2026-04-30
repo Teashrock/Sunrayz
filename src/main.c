@@ -4,9 +4,6 @@
 #include <string.h>
 #include <time.h>
 
-#include <kuroko/kuroko.h>
-#include <kuroko/vm.h>
-
 #include "base.h"
 #include "error.h"
 #include "gui.h"
@@ -55,10 +52,6 @@ int main(int argc, char* argv[])
     //printf("%s\n", APP_LOC);
     exit(0);
     #endif
-
-    // Initializing Kuroko
-    krk_initVM(0);
-    krk_startModule("__main__");
 
     rl_SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     rl_InitWindow(screenWidth, screenHeight, "Sunrayz");
@@ -203,7 +196,6 @@ int main(int argc, char* argv[])
 
     // De-Initialization
     DestroyGroup("free_at_shutdown");
-    krk_freeVM();
 
     //--------------------------------------------------------------------------------------
     rl_CloseWindow();        // Close window and OpenGL context

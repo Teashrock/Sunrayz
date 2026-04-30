@@ -20,7 +20,7 @@ from waflib import Logs
 c_compiler['win32'] = ['gcc']
 
 RAYLIB_REPO    = "https://github.com/raysan5/raylib"
-RAYLIB_VERSION = "5.0"
+RAYLIB_VERSION = "6.0"
 
 RAYGUI_REPO    = "https://github.com/raysan5/raygui"
 RAYGUI_VERSION = "4.0"
@@ -205,7 +205,7 @@ def configure(conf):
     # Raylib and Raygui patches
     Logs.warn("Applying architecture patches for Raylib and Raygui...")
     os.chdir(BUILD_DIR + "/deps/raylib/src")
-    sp = subprocess.Popen(["patch", "-Np1", "-i", os.path.join(BUILD_DIR, "patches", "raylib_utils.patch")])
+    sp = subprocess.Popen(["patch", "-Np1", "-i", os.path.join(BUILD_DIR, "patches", "raylib_rcore.patch")])
     sp.wait()
     sp = subprocess.Popen(["patch", "-Np1", "-i", os.path.join(BUILD_DIR, "patches", "raylib_raylib.patch")])
     sp.wait()

@@ -58,7 +58,7 @@ UTIL_LIST = {
     "git": 2
 }
 
-INCS = [".", "deps/raylib/src", "deps/raylib/src/external", "deps/raygui/src"]
+INCS = [".", "deps/raylib/src", "deps/raylib/src/external", "deps/raygui/src", "deps/LuaJIT/src"]
 
 global patch_list
 patch_list : list = list()

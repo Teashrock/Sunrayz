@@ -166,7 +166,7 @@ def configure(conf):
 
     if not download_only:
         if platform.system() == "Windows":
-	        os.environ["PATH"] = "C:\\mingw32\\bin;C:\\mingw32\\libexec\\gcc\\x86_64-w64-mingw32\\8.1.0;" + os.environ["PATH"]
+            os.environ["PATH"] = "C:\\mingw32\\bin;C:\\mingw32\\libexec\\gcc\\x86_64-w64-mingw32\\8.1.0;" + os.environ["PATH"]
         conf.load('compiler_c')
         conf.env.THIS = os.getcwd()
         DEPS_DIR = os.path.join(conf.env.THIS, "deps")

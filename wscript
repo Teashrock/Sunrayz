@@ -25,9 +25,6 @@ RAYLIB_VERSION = "5.0"
 RAYGUI_REPO    = "https://github.com/raysan5/raygui"
 RAYGUI_VERSION = "4.0"
 
-KUROKO_REPO    = "https://github.com/kuroko-lang/kuroko"
-KUROKO_VERSION = "1.4.0"
-
 LUAJIT_REPO    = "https://github.com/LuaJIT/LuaJIT"
 LUAJIT_VERSION = "2.0.5"
 
@@ -87,8 +84,7 @@ def configure(conf):
             if UTIL_LIST[key] == 0 or \
                 (UTIL_LIST[key] == 1 and platform.system() == "Windows") or \
                 (UTIL_LIST[key] == 2 and (RAYLIB_VERSION == "master" or \
-                    RAYGUI_VERSION == "master" or \
-                    KUROKO_VERSION == "master")):
+                    RAYGUI_VERSION == "master")):
                 for each in util_check_paths:
                     if os.path.exists(os.path.join(each, key + ext)):
                         if key == "gcc":
@@ -175,7 +171,6 @@ def configure(conf):
     if not os.path.exists(DEPS_DIR): os.mkdir(DEPS_DIR)
     download("raylib", RAYLIB_VERSION, RAYLIB_REPO)
     download("raygui", RAYGUI_VERSION, RAYGUI_REPO)
-    download("kuroko", KUROKO_VERSION, KUROKO_REPO)
     download("LuaJIT", LUAJIT_VERSION, LUAJIT_REPO)
     #download("gettext", GETTEXT_VERSION, GETTEXT_REPO)
 
@@ -262,55 +257,6 @@ def configure(conf):
         os.chdir(BUILD_DIR)
     
     Logs.info("All patches were applied successfully!")
-
-    # Kuroko patches
-    if platform.system() == "Windows" and not "kuroko" in clist:
-        # This is necessary on MinGW
-        Logs.warn("Preparing Kuroko Makefile...")
-        os.chdir("deps/kuroko")
-        sp = subprocess.Popen(["patch", "-Np1", "-i", os.path.join(BUILD_DIR, "patches", "kuroko_makefile_windows.patch")])
-        sp.wait()
-        Logs.info("Done!")
-        Logs.warn("Checking if GCC can floor without libm...")
-        with open("floor_check.c", "w") as test_c:
-            test_c.write("""#include <stdio.h>
-#include <stdlib.h>
-int main(int argc, char * argv[]) {
-	return printf("%f", __builtin_floor(strtod(argv[1],NULL)));
-}""")
-        floor_check = subprocess.run(["gcc", "-o", "NUL", "-x", "c", "floor_check.c"])
-        if floor_check.returncode != 0 or floor_check.stderr != None:
-            Logs.error("False!")
-            Logs.warn("Current GCC can't floor without libm, patching Kuroko Makefile...")
-            with open("Makefile", "r") as kf:
-                p = kf.read().replace('SUNRAYZ_FLOOR_WITHOUT_LIBM_CHECK', 'LDLIBS += -lm', 1)
-            with open("Makefile", "w") as kf:
-                kf.write(p)
-        else:
-            Logs.info("Success!")
-            Logs.warn("Current GCC can floor by itself, clearing Kuroko Makefile...")
-            with open("Makefile", "r") as kf:
-                p = kf.read().replace('SUNRAYZ_FLOOR_WITHOUT_LIBM_CHECK', '', 1)
-            with open("Makefile", "w") as kf:
-                kf.write(p)
-        Logs.info("Done!")
-        os.chdir(BUILD_DIR)
-        #Logs.warn("Patching Kuroko rline.c... ")
-        #with open("deps/kuroko/src/vendor/rline.c", "r") as kf:
-        #    p = kf.read().replace('#include "wcwidth._h"', "#include \"wcwidth._h\"\n#define ENABLE_VIRTUAL_TERMINAL_INPUT 0x0200\n#define ENABLE_VIRTUAL_TERMINAL_PROCESSING 0x0004", 1)
-        #with open("deps/kuroko/src/vendor/rline.c", "w") as kf:
-        #    kf.write(p)
-        Logs.warn("Patching Kuroko module_socket.c...")
-        os.chdir("deps/kuroko/src")
-        sp = subprocess.Popen(["patch", "-Np1", "-i", os.path.join(BUILD_DIR, "patches", "kuroko_module_socket_windows.patch")])
-        sp.wait()
-        Logs.info("Done!")
-    elif platform.system() == "Haiku" and not "kuroko" in clist:
-        Logs.warn("Patching Kuroko Makefile... ")
-        os.chdir("deps/kuroko")
-        sp = subprocess.Popen(["patch", "-Np1", "-i", os.path.join(BUILD_DIR, "patches", "kuroko_makefile_haiku.patch")])
-        sp.wait()
-        Logs.info("Done!")
     
     Logs.warn("Now beginning to transform fonts...")
     for _, _, f in os.walk(os.path.join("assets", "fonts")):
@@ -379,9 +325,6 @@ def build(ctx):
     if ctx.cmd == "clean":
         if platform.system() == "Windows":
             os.environ["CC"] = "x86_64-w64-mingw32-gcc"
-        os.chdir(os.path.join(DEPS_DIR, "kuroko"))
-        sp = subprocess.Popen([MAKE_COMMAND, "clean"])
-        sp.wait()
         os.chdir(os.path.join(DEPS_DIR, "raylib", "src"))
         sp = subprocess.Popen([MAKE_COMMAND, "clean"])
         sp.wait()
@@ -403,28 +346,6 @@ def build(ctx):
             OPT  = "-O1"
         if not os.path.exists(os.path.join(os.getcwd(), "result", platform.system() + "-" + BUILD_TYPE)):
             os.makedirs(os.path.join(os.getcwd(), "result", platform.system() + "-" + BUILD_TYPE))
-        
-        krklib_name = ""
-        if platform.system() == "Windows":
-            krklib_name = "libkuroko.dll"
-        else:
-            krklib_name = "libkuroko.so"
-        if not "kuroko" in clist:
-            if not os.path.exists(os.path.join(DEPS_DIR, "kuroko", krklib_name)):
-                # Kuroko build
-                Logs.warn("Building Kuroko...")
-                # cd kuroko
-                os.chdir(os.path.join(DEPS_DIR, "kuroko"))
-                if platform.system() == "Windows":
-                    # set CC=i686-w64-mingw32-gcc
-                    os.environ["CC"] = "x86_64-w64-mingw32-gcc"
-            # mingw32-make
-            if platform.system() == "Haiku":
-                os.environ["KRK_DISABLE_THREADS"] = "1"
-            sp = subprocess.Popen([MAKE_COMMAND, MAKE_ARGUMENTS])
-            sp.wait()
-            os.chdir(BUILD_DIR)
-            clistfile.write("kuroko\n")
 
         rllib_name = ""
         if platform.system() == "Windows":
@@ -492,11 +413,11 @@ def build(ctx):
             pass
         libs = []
         if platform.system() == "Windows":
-            libs = ["raylib", "kuroko", "opengl32", "gdi32", "winmm"]
+            libs = ["raylib", "opengl32", "gdi32", "winmm"]
         elif platform.system() == "Haiku":
             libs = ["raylib", "root", "be", "GL"]
         elif platform.system() == "Linux":
-            libs = ["raylib", "kuroko", "GL", "m"]
+            libs = ["raylib", "GL", "m"]
         _rllibpath = []
         #if platform.system() == "Linux":
         #    _rllibpath = "deps/raylib"
@@ -507,9 +428,9 @@ def build(ctx):
         ctx.program(
             source       = SRCS,
             target       = EXE_NAME,
-            includes     = [".", "deps/raylib/src", "deps/raylib/src/external", "deps/raygui/src", "deps/kuroko/src"],
+            includes     = [".", "deps/raylib/src", "deps/raylib/src/external", "deps/raygui/src"],
             lib          = libs,
-            libpath      = [os.path.join(DEPS_DIR, "kuroko"), os.path.join(DEPS_DIR, "raylib", "src")],
+            libpath      = [os.path.join(DEPS_DIR, "raylib", "src")],
             install_path = INSTALLPATH,
             cflags       = ccflags,
             ldflags      = lflags
@@ -519,11 +440,6 @@ def build(ctx):
         if platform.system() == "Haiku":
             LIB_DIR = "lib"
             #os.mkdir(os.path.join(BUILD_DIR, "result", platform.system() + "-" + BUILD_TYPE, LIB_DIR))
-            
-        ctx.install_files(
-            os.path.join(BUILD_DIR, "result", platform.system() + "-" + BUILD_TYPE, LIB_DIR),
-            ["deps/kuroko/" + krklib_name]
-        )
 
         if platform.system() == "Windows":
             Logs.warn("Copying necessary dlls...")

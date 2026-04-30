@@ -1,9 +1,10 @@
 .lock-waf_*_build
-.waf3-2.0.22-aaee2b4cd084b3f1e699ecd3fe442edd
-waf3-2.0.22-aaee2b4cd084b3f1e699ecd3fe442edd
+.waf3-*
+waf3-*
 __pycache__
 result
 build
+.cache
 cache
 deps/*
 src/external
@@ -14,3 +15,4 @@ fonts_linked.list
 .*.swp
 src/assets_gen/fonts
 log.txt
+.clangd

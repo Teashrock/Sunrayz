@@ -1,4 +1,5 @@
-//#include <raygui.h>
+#include <raylib.h>
+#include <raygui.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -53,12 +54,12 @@ int main(int argc, char* argv[])
     exit(0);
     #endif
 
-    rl_SetConfigFlags(FLAG_WINDOW_RESIZABLE);
-    rl_InitWindow(screenWidth, screenHeight, "Sunrayz");
-    rl_SetWindowMinSize(screenWidth, screenHeight);
-    rl_SetWindowSize(screenWidth, screenHeight);
-    rl_MaximizeWindow();
-    rl_SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
+    SetConfigFlags(FLAG_WINDOW_RESIZABLE);
+    InitWindow(screenWidth, screenHeight, "Sunrayz");
+    SetWindowMinSize(screenWidth, screenHeight);
+    SetWindowSize(screenWidth, screenHeight);
+    MaximizeWindow();
+    SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
     
     srand(time(NULL));
@@ -67,9 +68,9 @@ int main(int argc, char* argv[])
     SzConstruct* menuPanel = CreateConstruct(NULL);
     SzConstruct* panel1    = CreateConstruct(menuPanel);
 
-    SzEntity* panel = CreateRec(0, 0, rl_GetScreenWidth(), uniValues[0]);
+    SzEntity* panel = CreateRec(0, 0, GetScreenWidth(), uniValues[0]);
     AddEntity(menuPanel, panel);
-    SzEntity* sceneMenu  = CreateRec(0, uniValues[0], 260, rl_GetScreenHeight());
+    SzEntity* sceneMenu  = CreateRec(0, uniValues[0], 260, GetScreenHeight());
 
     SzEntity* buttonDefaultFont = CreateFont(
         GetFontLibertinusSerif_Regular(),
@@ -78,7 +79,7 @@ int main(int argc, char* argv[])
         2048,
         FONT_CREATION_METHOD_RAW
     );
-	rl_GuiSetFont(*((Rl_Font*)buttonDefaultFont->essence));
+	GuiSetFont(*((Font*)buttonDefaultFont->essence));
             
     #define TEST_TEXT_MARGIN 5
     
@@ -140,15 +141,15 @@ int main(int argc, char* argv[])
     *dbg = false;
 
     // Main game loop
-    while (!rl_WindowShouldClose())    // Detect window close button or ESC key
+    while (!WindowShouldClose())    // Detect window close button or ESC key
     {
         // Draw
         //----------------------------------------------------------------------------------
-        rl_BeginDrawing();
+        BeginDrawing();
 
-            rl_ClearBackground(WHITE);
+            ClearBackground(WHITE);
 
-            rl_DrawRectangleRec(*(Rl_Rectangle*)panel->essence, WHITE);
+            DrawRectangleRec(*(Rectangle*)panel->essence, WHITE);
 
             DrawTextButton((SzTextButton*)fileMenuButton->essence);
             //GuiLabelButton((Rectangle){((SzTextButton*)fileMenuButton->essence)->posX + ((SzTextButton*)fileMenuButton->essence)->margin, ((SzTextButton*)fileMenuButton->essence)->posY, ((SzTextButton*)fileMenuButton->essence)->width, ((SzTextButton*)fileMenuButton->essence)->height}, ((SzTextButton*)fileMenuButton->essence)->text, NULL);
@@ -190,7 +191,7 @@ int main(int argc, char* argv[])
             GuiLabelButton(aboutButtonRect, "About", NULL);
             //DrawRectangleRec(*(Rectangle*)sceneMenu->essence, ORANGE);*/
 
-        rl_EndDrawing();
+        EndDrawing();
         //----------------------------------------------------------------------------------
     }
 
@@ -198,7 +199,7 @@ int main(int argc, char* argv[])
     DestroyGroup("free_at_shutdown");
 
     //--------------------------------------------------------------------------------------
-    rl_CloseWindow();        // Close window and OpenGL context
+    CloseWindow();        // Close window and OpenGL context
     //--------------------------------------------------------------------------------------
     
     return 0;

@@ -15,6 +15,7 @@ typedef struct _SzConstruct {
     struct _SzConstruct* parent;
     SzEntity* parts;
     struct _SzConstruct* child;
+    struct _SzConstruct** children;
 } SzConstruct;
 
 SzConstruct* CreateConstruct(SzConstruct* parent);

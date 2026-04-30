@@ -15,7 +15,6 @@ import subprocess
 import sys
 import json
 from font2code import font_transform
-from rl_namespacer import do_namespacing
 from waflib.Tools.compiler_c import c_compiler
 from waflib import Logs
 c_compiler['win32'] = ['gcc']
@@ -263,20 +262,6 @@ def configure(conf):
         os.chdir(BUILD_DIR)
     
     Logs.info("All patches were applied successfully!")
-
-    os.chdir(os.path.join(BUILD_DIR, "deps", "raylib", "src"))    
-    Logs.warn("Now prefixing all Raylib types and functions to ensure namespacing...")
-    for i in do_namespacing():
-        Logs.warn(f"Processing {i}...")
-    os.chdir(os.path.join(BUILD_DIR, "deps", "raygui", "src"))
-    for i in do_namespacing(["raygui.h"]):
-        Logs.warn(f"Processing {i}...")
-    os.chdir(os.path.join(BUILD_DIR, "src", "external"))
-    for i in do_namespacing(["raygui.c"]):
-        Logs.warn(f"Processing {i}...")
-    os.chdir(BUILD_DIR)
-    
-    Logs.info("All done here!")
 
     # Kuroko patches
     if platform.system() == "Windows" and not "kuroko" in clist:

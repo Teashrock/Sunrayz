@@ -51,5 +51,3 @@ def rl_parse(path: str = ""):
             rl_lua.write("ffi.cdef[[\n")
             rl_lua.write(rl_sheet)
             rl_lua.write("]]\n\nreturn ffi.C")
-
-rl_parse("raylib.h")

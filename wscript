@@ -403,8 +403,8 @@ def build(ctx):
         os.chdir(SRC_DIR)
 
         SRCS = []
-        src_path_len = len(os.path.join(BUILD_DIR, "src").split(os.path.sep))
-        for n, _, f in os.walk(os.path.join(BUILD_DIR, "src")):
+        src_path_len = len(SRC_DIR.split(os.path.sep))
+        for n, _, f in os.walk(SRC_DIR):
             i : int = 0
             n_split = n.split(os.path.sep)
             while i < src_path_len - 1:

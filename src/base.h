@@ -6,6 +6,12 @@
 
 #include "error.h"
 
+#if _WIN32
+static const char* pathDelimiter = "\\";
+#else
+static const char* pathDelimiter = "/";
+#endif
+
 typedef struct _SzSignal {
     char* name;
     SzError (*trigger)(void);

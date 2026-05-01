@@ -235,9 +235,12 @@ def configure(conf):
         raygui_c.write("#include <raygui.h>\n")
         raygui_c.write(raygui_code)
     
+    Logs.warn("Changing Platorm platform backend to PLATFORM_DESKTOP_RGFW...")
+    with open("deps/raylib/src/Makefile", "r") as rf:
+        p = rf.read().replace("TARGET_PLATFORM   = PLATFORM_DESKTOP_GLFW", "TARGET_PLATFORM   = PLATFORM_DESKTOP_RGFW", 1)
     p = ""
-    Logs.warn("Changing Raylib build type to shared... ")
     if DYNAMIC_LINKING:
+        Logs.warn("Changing Raylib build type to shared... ")
         with open("deps/raylib/src/Makefile", "r") as rf:
             p = rf.read().replace("RAYLIB_LIBTYPE       ?= STATIC", "RAYLIB_LIBTYPE       ?= SHARED", 1)
     

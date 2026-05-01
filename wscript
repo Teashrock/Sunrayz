@@ -80,7 +80,7 @@ def configure(conf):
         if platform.system() == "Windows":
             delim = ";"
             ext = ".exe"
-            clangd_conf.write("    - --target=x86_64-w64-windows-gnu\n    - -std=c17\n")
+            clangd_conf.write("    - --target=x86_64-w64-windows-gnu\n    - -xc\n    - -std=c17\n")
             for i in INCS:
                 if i == ".":
                     clangd_conf.write("    - -I" + BUILD_DIR + "\n")

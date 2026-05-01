@@ -95,7 +95,10 @@ def rl_parse(path: str = ""):
         with open("raylib.lua.c", "w") as rl_lua_c:
             rl_lua_c.write("#include <lua.h>\n#include <lauxlib.h>\n\n")
             for func_name in rl_names:
-                rl_lua_c.write("static int lua_{}(lua_State* L) {\n".format(func_name))
-                rl_lua_c.write("\t")
+                rl_lua_c.write("static int lua_{}(lua_State* L) ".format(func_name))
+                rl_lua_c.write(r"{")
+                rl_lua_c.write("\n\t")
             rl_lua_c.write("int luaopen_raylib(lua_State* L) {\n")
             rl_lua_c.write("}\n")
+
+rl_parse("raylib.h")

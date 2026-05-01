@@ -71,27 +71,25 @@ def check_fn_pattern_old(line: str) -> str:
             continue
     return "-1"
 
-def check_fn_pattern(line: str) -> tuple[str, str]:
+def check_fn_pattern(line: str) -> str:
     if line.startswith("RLAPI"):
         decl_end_position = line.find(";")
         lbracket_pos = line.find("(")
         lspace_pos = lbracket_pos
         while line[lspace_pos] != " ":
             lspace_pos -= 1
-        return (line[:decl_end_position + 1].lstrip("RLAPI "), line[lspace_pos + 1:lbracket_pos])
-    return ("-1", "-1")
+        return line[:decl_end_position + 1].lstrip("RLAPI ")
+    return "-1"
 
 def rl_parse(path: str = ""):
     if not path:
         path = "raylib.h"
-    rl_names = set()
     rl_sheet = str()
     with open(path, "r") as raylib_h:
         for line in raylib_h.readlines():
             result = check_fn_pattern(line)
-            if result != ("-1", "-1"):
-                rl_names.add(result[1])
-                rl_sheet += ("\t" + result[0] + "\n")
+            if result != "-1":
+                rl_sheet += ("\t" + result + "\n")
         with open("raylib.lua", "w") as rl_lua:
             rl_lua.write("local ffi = require(\"ffi\")\n\n")
             rl_lua.write("ffi.cdef[[\n")

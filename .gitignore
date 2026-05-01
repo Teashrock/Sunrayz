@@ -16,4 +16,4 @@ fonts_linked.list
 src/assets_gen/fonts
 log.txt
 .clangd
-rl2lua_test/raylib.lua.c
+rl2lua_test/raylib.lua

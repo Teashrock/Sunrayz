@@ -91,14 +91,11 @@ def rl_parse(path: str = ""):
             result = check_fn_pattern(line)
             if result != ("-1", "-1"):
                 rl_names.add(result[1])
-                rl_sheet += (result[0] + "\n")
+                rl_sheet += ("\t" + result[0] + "\n")
         with open("raylib.lua", "w") as rl_lua:
-            rl_lua.write("#include <lua.h>\n#include <lauxlib.h>\n\n")
-            for func_name in rl_names:
-                rl_lua.write("static int lua_{}(lua_State* L) ".format(func_name))
-                rl_lua.write(r"{")
-                rl_lua.write("\n\t")
-            rl_lua.write("int luaopen_raylib(lua_State* L) {\n")
-            rl_lua.write("}\n")
+            rl_lua.write("local ffi = require(\"ffi\")\n\n")
+            rl_lua.write("ffi.cdef[[\n")
+            rl_lua.write(rl_sheet)
+            rl_lua.write("]]\n\nreturn ffi.C")
 
 rl_parse("raylib.h")

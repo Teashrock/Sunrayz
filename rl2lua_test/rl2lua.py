@@ -10,15 +10,21 @@ def check_pattern(line: str) -> str:
         return line[:line.find(";") + 1]
     elif in_enum:
         if line.startswith(r"}"):
-            in_struct = False
+            in_enum = False
             return line[:line.find(";") + 1]
-        elif line.find(",") != -1:
+        elif "," in line and line.find(",") < line.find("//"):
             return line[:line.find(",") + 1]
+        elif "= " in line:
+            return line[:line.find(" ", line.find("= ") + 2)]
+        elif line.strip().startswith("//"):
+            return "-1"
         else:
-            return line[:line.find(",") + 1]
+            for i in range(len(line)):
+                if line[i] != " ":
+                    return line[:line.find(" ", i)]
     if line.startswith("typedef"):
         if line.split(" ")[1] == "struct" \
-        and line.find(r"{") != -1:
+        and r"{" in line:
             in_struct = True
             return line[:line.find(r"{") + 1]
         elif line.split(" ")[1] == "enum":

@@ -72,6 +72,12 @@ int main(int argc, char* argv[])
     bool* dbg = malloc(sizeof(bool));
     *dbg = false;
 
+    // Lua script implementation
+    char* script_dir = strcat(GetApplicationDirectory(), strcat(pathDelimiter, "scripts"));
+    if (!DirectoryExists(script_dir)) {
+        // Here be code for queueing an error message
+    }
+
     // Main game loop
     while (!WindowShouldClose())    // Detect window close button or ESC key
     {

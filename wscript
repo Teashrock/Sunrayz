@@ -14,7 +14,7 @@ import shutil
 import subprocess
 import sys
 import json
-from font2code import font_transform
+from asset2code import font_transform
 from waflib.Tools.compiler_c import c_compiler
 from waflib import Logs
 c_compiler['win32'] = ['gcc']

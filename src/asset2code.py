@@ -1,4 +1,5 @@
 import os.path
+from typing import IO
 
 def font_transform(filename : str):
     nonascii_list = ['-', '+', '~', '.']

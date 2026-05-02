@@ -3,7 +3,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
 
 #include <lua.h>
 #include <lualib.h>
@@ -66,8 +65,6 @@ int main(int argc, char* argv[])
     MaximizeWindow();
     SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
-    
-    srand(time(NULL));
     
     bool* dbg = malloc(sizeof(bool));
     *dbg = false;

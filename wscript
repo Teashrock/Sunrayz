@@ -26,7 +26,7 @@ RAYGUI_REPO    = "https://github.com/raysan5/raygui"
 RAYGUI_VERSION = "4.0"
 
 LUAJIT_REPO    = "https://github.com/LuaJIT/LuaJIT"
-LUAJIT_VERSION = "2.0.5"
+LUAJIT_VERSION = "master"
 
 GETTEXT_REPO    = "https://ftp.gnu.org"
 GETTEXT_VERSION = "0.21.1"
@@ -111,7 +111,7 @@ def configure(conf):
                     exit(1)
 
     clist : list = []
-    def download(what : str, version : str, repo : str):
+    def download(what : str, version : str, repo : str, extension: str = "tar.gz") -> None:
         try:
             clistfile = open("downloaded.list", "r")
             clist = clistfile.readlines()
@@ -122,45 +122,52 @@ def configure(conf):
             if version == "master":
                 sp = subprocess.Popen(["git", "clone", "--recursive", repo, os.path.join(CACHE_DIR, what)])
                 sp.wait()
+                shutil.move(os.path.join(CACHE_DIR, what), DEPS_DIR)
             else:
                 if not os.path.exists(CACHE_DIR):
                     os.mkdir(CACHE_DIR)
-                tar_path_name = os.path.join(CACHE_DIR, ("{}-{}.tar.gz".format(what, version)))
+                tar_path_name = os.path.join(CACHE_DIR, ("{}-{}.{}".format(what, version, extension)))
                 if not os.path.exists(os.path.join(os.path.dirname(tar_path_name), tar_path_name.split(os.path.sep)[-1].split('.')[0].split('-')[0])):
                     if not os.path.exists(tar_path_name):
                         with open(tar_path_name, "wb") as tarar:
                             if repo.split("://")[1].split('/')[0] == "github.com":
-                                Logs.warn("Downloading {}-{}.tar.gz, this may take a while...".format(what, version))
+                                Logs.warn("Downloading {}-{}.{}, this may take a while...".format(what, version, extension))
                                 try:
                                     import requests
-                                    cnt = requests.get(repo + ("/archive/refs/tags/%s.tar.gz" % version), allow_redirects=True).content
+                                    cnt = requests.get(repo + ("/archive/refs/tags/{}.{}".format(version, extension)), allow_redirects=True).content
                                     if cnt == b"404: Not Found":
-                                        cnt = requests.get(repo + ("/archive/refs/tags/v%s.tar.gz" % version), allow_redirects=True).content
+                                        cnt = requests.get(repo + ("/archive/refs/tags/v{}.{}".format(version, extension)), allow_redirects=True).content
                                 except ModuleNotFoundError:
                                     import urllib.request
                                     try:
-                                        cnt = urllib.request.urlopen(repo + ("/archive/refs/tags/%s.tar.gz") % version).read()
+                                        cnt = urllib.request.urlopen(repo + ("/archive/refs/tags/{}.{}").format(version, extension)).read()
                                     except urllib.error.HTTPError:
-                                        cnt = urllib.request.urlopen(repo + ("/archive/refs/tags/v%s.tar.gz") % version).read()
+                                        cnt = urllib.request.urlopen(repo + ("/archive/refs/tags/v{}.{}").format(version, extension)).read()
                             elif repo.split("://")[1].split('/')[0] == "ftp.gnu.org" and repo == GETTEXT_REPO:
-                                Logs.warn("Downloading {}-{}.tar.gz, this may take a while...".format(what, version))
+                                Logs.warn("Downloading {}-{}.{}, this may take a while...".format(what, version, extension))
                                 try:
                                     import requests
-                                    cnt = requests.get(repo + ("/pub/gnu/{}/{}-{}.tar.gz").format(what, what, version), allow_redirects=True).content
+                                    cnt = requests.get(repo + ("/pub/gnu/{}/{}-{}.{}").format(what, what, version, extension), allow_redirects=True).content
                                     if cnt == b"404: Not Found":
                                         pass
                                 except ModuleNotFoundError:
                                     import urllib.request
                                     try:
-                                        cnt = urllib.request.urlopen(repo + ("/pub/gnu/{}/{}-{}.tar.gz").format(what, what, version)).read()
+                                        cnt = urllib.request.urlopen(repo + ("/pub/gnu/{}/{}-{}.{}").format(what, what, version, extension)).read()
                                     except urllib.error.HTTPError:
                                         pass
                             tarar.write(cnt)
                     if not os.path.exists(os.path.join(DEPS_DIR, what)):
-                        import tarfile
-                        tf = tarfile.open(tar_path_name, 'r')
-                        Logs.warn(("Extracting {}-{}.tar.gz...").format(what, version))
-                        tf.extractall(DEPS_DIR)
+                        if extension == "tar.gz":
+                            import tarfile
+                            tf = tarfile.open(tar_path_name, 'r')
+                            Logs.warn(("Extracting {}-{}.{}...").format(what, version, extension))
+                            tf.extractall(DEPS_DIR)
+                        elif extension == "zip":
+                            from zipfile import ZipFile
+                            Logs.warn(("Extracting {}-{}.{}...").format(what, version, extension))
+                            with ZipFile(tar_path_name, 'r') as zip_file:
+                                zip_file.extractall(DEPS_DIR)
                         shutil.move(os.path.join(DEPS_DIR, "{}-{}".format(what, version)), os.path.join(DEPS_DIR, what))
                 Logs.info("Done!")
             try:
@@ -185,7 +192,7 @@ def configure(conf):
     if not os.path.exists(DEPS_DIR): os.mkdir(DEPS_DIR)
     download("raylib", RAYLIB_VERSION, RAYLIB_REPO)
     download("raygui", RAYGUI_VERSION, RAYGUI_REPO)
-    download("LuaJIT", LUAJIT_VERSION, LUAJIT_REPO)
+    download("LuaJIT", LUAJIT_VERSION, LUAJIT_REPO, "zip")
     #download("gettext", GETTEXT_VERSION, GETTEXT_REPO)
 
     if download_only:
@@ -235,7 +242,7 @@ def configure(conf):
         raygui_c.write("#include <raygui.h>\n")
         raygui_c.write(raygui_code)
     
-    Logs.warn("Changing Platorm platform backend to PLATFORM_DESKTOP_RGFW...")
+    Logs.warn("Changing Raylib platform backend to PLATFORM_DESKTOP_RGFW...")
     with open("deps/raylib/src/Makefile", "r") as rf:
         p = rf.read().replace("TARGET_PLATFORM   = PLATFORM_DESKTOP_GLFW", "TARGET_PLATFORM   = PLATFORM_DESKTOP_RGFW", 1)
     p = ""
@@ -251,6 +258,63 @@ def configure(conf):
             p = rf.read().replace("RAYLIB_BUILD_MODE    ?= RELEASE", "RAYLIB_BUILD_MODE    ?= DEBUG", 1)
     
         with open("deps/raylib/src/Makefile", "w") as rf:
+            rf.write(p)
+    
+    if platform.system() == "Windows":
+        Logs.warn("Patching LuaJIT Makefile...")
+        with open("deps/LuaJIT/Makefile", "r") as rf:
+            p = rf.read().replace("""ifeq (,$(findstring Windows,$(OS)))
+  HOST_SYS:= $(shell uname -s)
+else
+  HOST_SYS= Windows
+endif""", "HOST_SYS= Windows", 1)
+    
+        with open("deps/LuaJIT/Makefile", "w") as rf:
+            rf.write(p)
+            
+        with open("deps/LuaJIT/Makefile", "r") as rf:
+            p = rf.read().replace("""
+
+ifeq (Darwin,$(TARGET_SYS))
+  INSTALL_SONAME= $(INSTALL_DYLIBNAME)
+  INSTALL_SOSHORT1= $(INSTALL_DYLIBSHORT1)
+  INSTALL_SOSHORT2= $(INSTALL_DYLIBSHORT2)
+  LDCONFIG= :
+endif""", "", 1)
+    
+        with open("deps/LuaJIT/Makefile", "w") as rf:
+            rf.write(p)
+
+        with open("deps/LuaJIT/src/Makefile", "r") as rf:
+            p = rf.read().replace("""ifeq (Windows,$(findstring Windows,$(OS))$(MSYSTEM)$(TERM))
+  HOST_SYS= Windows
+else
+  HOST_SYS:= $(shell uname -s)
+  ifneq (,$(findstring MINGW,$(HOST_SYS)))
+    HOST_SYS= Windows
+    HOST_MSYS= mingw
+  endif
+  ifneq (,$(findstring MSYS,$(HOST_SYS)))
+    HOST_SYS= Windows
+    HOST_MSYS= mingw
+  endif
+  ifneq (,$(findstring CYGWIN,$(HOST_SYS)))
+    HOST_SYS= Windows
+    HOST_MSYS= cygwin
+  endif
+endif""", "HOST_SYS= Windows", 1)
+    
+        with open("deps/LuaJIT/src/Makefile", "w") as rf:
+            rf.write(p)
+
+        with open("deps/LuaJIT/src/Makefile", "r") as rf:
+            p = rf.read().replace(
+                r"GIT_RELVER= [ -d ../.git ] && $(GIT) show -s --format=%ct >luajit_relver.txt 2>/dev/null || cat ../.relver >luajit_relver.txt 2>/dev/null || :",
+                r"GIT_RELVER= if exist ..\\.git ( $(GIT) show -s --format=%%ct >luajit_relver.txt ) else ( type ..\\.relver >luajit_relver.txt )",
+                1
+            )
+    
+        with open("deps/LuaJIT/src/Makefile", "w") as rf:
             rf.write(p)
     
     if platform.system() == "Linux":
@@ -295,7 +359,11 @@ def purge(ctx):
     except: pass
     try:
         shutil.rmtree(os.path.join(BUILD_DIR, "deps"))
-    except: pass
+    except:
+        if platform.system() == "Windows":
+            try:
+                subprocess.run(["rmdir", "/s", "/q", os.path.join(BUILD_DIR, "deps")], shell=True)
+            except: pass
     try:
         shutil.rmtree(os.path.join(BUILD_DIR, "result"))
     except: pass
@@ -387,17 +455,29 @@ def build(ctx):
                 os.chdir(os.path.join(DEPS_DIR, "raylib", "src"))
                 if platform.system() == "Windows":
     	    		# del /q /s raylib.rc.data raylib.dll.rc.data
-                	os.remove("raylib.rc.data")
-                	os.remove("raylib.dll.rc.data")
+                    os.remove("raylib.rc.data")
+                    os.remove("raylib.dll.rc.data")
                 	# windres raylib.rc -o raylib.rc.data
                 	# windres raylib.dll.rc -o raylib.dll.rc.data
-                	os.system("windres raylib.rc -o raylib.rc.data")
-                	os.system("windres raylib.dll.rc -o raylib.dll.rc.data")
+                    os.system("windres raylib.rc -o raylib.rc.data")
+                    os.system("windres raylib.dll.rc -o raylib.dll.rc.data")
                 # mingw32-make
-                sp = subprocess.Popen([MAKE_COMMAND, MAKE_ARGUMENTS])
-                sp.wait()
+                subprocess.run([MAKE_COMMAND, MAKE_ARGUMENTS])
                 os.chdir(BUILD_DIR)
                 clistfile.write("raylib\n")
+
+        lualib_name = ""
+        if platform.system() == "Windows":
+            lualib_name = "lua51.dll"
+        else:
+            lualib_name = "liblua.so.5.1"
+        if not "luajit" in clist:
+            Logs.warn("\nBuilding LuaJIT...")
+            os.chdir(os.path.join(DEPS_DIR, "LuaJIT"))
+            sp = subprocess.Popen([MAKE_COMMAND, "-j1"])
+            sp.wait()
+            os.chdir(BUILD_DIR)
+            clistfile.write("luajit\n")
 
         clistfile.close()
         os.chdir(SRC_DIR)
@@ -434,24 +514,25 @@ def build(ctx):
             pass
         libs = []
         if platform.system() == "Windows":
-            libs = ["raylib", "opengl32", "gdi32", "winmm"]
+            libs = ["raylib", "lua51", "opengl32", "gdi32", "winmm"]
         elif platform.system() == "Haiku":
-            libs = ["raylib", "root", "be", "GL"]
+            libs = ["raylib", "lua51", "root", "be", "GL"]
         elif platform.system() == "Linux":
-            libs = ["raylib", "GL", "m"]
+            libs = ["raylib", "lua51", "GL", "m"]
         _rllibpath = []
         #if platform.system() == "Linux":
         #    _rllibpath = "deps/raylib"
         #else:
         #    _rllibpath = "deps/raylib/src"
         _rllibpath = "deps/raylib/src"
+        _lualibpath = "deps/LuaJIT/src"
 
         ctx.program(
             source       = SRCS,
             target       = EXE_NAME,
             includes     = INCS,
             lib          = libs,
-            libpath      = [os.path.join(DEPS_DIR, "raylib", "src")],
+            libpath      = [os.path.join(DEPS_DIR, "raylib", "src"), os.path.join(DEPS_DIR, "LuaJIT", "src")],
             install_path = INSTALLPATH,
             cflags       = ccflags,
             ldflags      = lflags
@@ -478,6 +559,10 @@ def build(ctx):
                 os.path.join(BUILD_DIR, "result", platform.system() + "-" + BUILD_TYPE, LIB_DIR),
                 [os.path.join(_rllibpath, rllib_name)]
             )
+        ctx.install_files(
+            os.path.join(BUILD_DIR, "result", platform.system() + "-" + BUILD_TYPE, LIB_DIR),
+            [os.path.join(_lualibpath, lualib_name)]
+        )
 
 def run(ctx):
     global EXE_NAME

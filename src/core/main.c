@@ -30,6 +30,12 @@ char *strsep(char **stringp, const char *delim) {
 }
 #endif
 
+int testTask(void) {
+    ClearBackground(WHITE);
+
+    return 0;
+}
+
 int main(int argc, char* argv[])
 {
     // Initialization
@@ -70,7 +76,7 @@ int main(int argc, char* argv[])
     *dbg = false;
 
     // Lua script implementation
-    char* scriptDirArray[] = {GetApplicationDirectory(), "scripts"};
+    char* scriptDirArray[] = {GetApplicationDirectory(), "system"};
     char* scriptDir = TextJoin(scriptDirArray, 2, pathDelimiter);
     if (!DirectoryExists(scriptDir)) {
         // Here be code for queueing an error message

@@ -25,6 +25,7 @@
 			"error.h": "c",
 			"raygui.h": "c"
 		},
-		"activestate.promptRuntimeCreation": false
+		"activestate.promptRuntimeCreation": false,
+		"editor.semanticHighlighting.enabled": true
 	}
 }

@@ -16,6 +16,7 @@ typedef enum {
 } SzQueueState;
 
 typedef struct _SzTask {
+    int (*content)(void);
     struct _SzTask* next;
     SzTaskState state;
 } SzTask;

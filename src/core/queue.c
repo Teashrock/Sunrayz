@@ -10,6 +10,7 @@ SzTask* CreateTask(SzQueue* q) {
     }
     ptr = (SzTask*)MemAlloc(sizeof(SzTask));
     *ptr = (SzTask){
+        .content = NULL,
         .state = TASK_NEW,
         .next = NULL
     };

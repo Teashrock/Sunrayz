@@ -14,7 +14,7 @@ import shutil
 import subprocess
 import sys
 import json
-from asset2code import font_transform
+from asset2code import asset_transform
 from waflib.Tools.compiler_c import c_compiler
 from waflib import Logs
 c_compiler['win32'] = ['gcc']
@@ -281,7 +281,7 @@ def configure(conf):
             Logs.warn("Transforming " + each + "...")
             if not os.path.exists(BUILD_DIR + "/src/assets_gen/fonts"):
                 os.mkdir(BUILD_DIR + "/src/assets_gen/fonts")
-            font_transform(each)
+            asset_transform(each, "font")
     Logs.info("Done!")
 
 def download(ctx):

@@ -3,17 +3,17 @@
 #include <pthread.h>
 #include <raylib.h>
 
-SzTask* CreateTask(SzQueue* q) {
-    SzTask* ptr = q->tasks;
-    while (ptr != NULL) {
-        ptr = ptr->next;
-    }
-    ptr = (SzTask*)MemAlloc(sizeof(SzTask));
+void CreateTask(SzQueue* q, int (* taskRoutine)(void)) {
+    SzTask* ptr = (SzTask*)MemAlloc(sizeof(SzTask));
     *ptr = (SzTask){
-        .content = NULL,
+        .content = taskRoutine,
         .state = TASK_NEW,
         .next = NULL
     };
+    SzTask* roll = q->tasks;
+    while (ptr != NULL) {
+        ptr = ptr->next;
+    }
     while (ptr->state == TASK_NEW); // Standing by
     if (ptr->content() == 0)
         ptr->state = TASK_DONE;

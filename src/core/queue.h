@@ -29,6 +29,6 @@ typedef struct _SzQueue {
     SzTask* tasks;
 } SzQueue;
 
-SzTask* CreateTask(SzQueue* assign_to);
+void CreateTask(SzQueue* assignTo, int (* taskRoutine)(void));
 SzQueue* CreateQueue(void);
 void FlushQueue(SzQueue*);

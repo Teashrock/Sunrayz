@@ -1,6 +1,7 @@
 #pragma once
 
 #include <pthread.h>
+#include <stddef.h>
 
 typedef enum {
     TASK_DONE,
@@ -28,4 +29,6 @@ typedef struct _SzQueue {
     SzTask* tasks;
 } SzQueue;
 
+SzTask* CreateTask(SzQueue* assign_to);
 SzQueue* CreateQueue(void);
+void FlushQueue(SzQueue*);

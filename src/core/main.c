@@ -85,7 +85,7 @@ int main(int argc, char* argv[])
 
     // Test area
     SzQueue* test_queue = CreateQueue();
-    SzTask* test_task = CreateTask(test_queue);
+    CreateTask(test_queue, testTask);
 
     // Main game loop
     while (!WindowShouldClose())    // Detect window close button or ESC key

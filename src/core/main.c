@@ -1,5 +1,6 @@
 #include <raylib.h>
 #include <raygui.h>
+#include <semaphore.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -94,7 +95,7 @@ int main(int argc, char* argv[])
         //----------------------------------------------------------------------------------
         BeginDrawing();
 
-            test_queue->state = QUEUE_RUNNING;
+            sem_post(test_queue->movement);
 
         EndDrawing();
         //----------------------------------------------------------------------------------

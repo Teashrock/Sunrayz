@@ -2,6 +2,7 @@
 
 #include <pthread.h>
 #include <raylib.h>
+#include <semaphore.h>
 
 void CreateTask(SzQueue* q, int (* taskRoutine)(void)) {
     SzTask* ptr = (SzTask*)MemAlloc(sizeof(SzTask));
@@ -23,7 +24,8 @@ void* QueueRoutine(void* arg) {
     SzQueue* q = (SzQueue*)arg;
     SzTask* currentTask = q->tasks;
     while (true) {
-        while (q->state == QUEUE_STANDBY); // Doing nothing while the queue is standing by
+        if (q->state == QUEUE_STANDBY)
+            sem_wait(q->movement); // Doing nothing while the queue is standing by
         currentTask->state = TASK_READY;
     }
 }

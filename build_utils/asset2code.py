@@ -31,7 +31,7 @@ def asset_transform(filename : str, asset_type: str):
         except:
             fonts_linked = []
         if not (fn_noext + ".c\n") in fonts_linked:
-            result_dir = os.path.join("src", "assets_gen", "fonts") + os.path.sep
+            result_dir = os.path.join("src", "codegen", "assets", "fonts") + os.path.sep
             byte_file : IO = open(os.path.join("assets", "fonts") + os.path.sep + filename, "rb")
             code_file : IO = open(result_dir + fn_noext + ".c", "w")
             code_file.write("#include \"fonts.h\"\n\n#include <stdlib.h>\n\n")

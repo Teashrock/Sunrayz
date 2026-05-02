@@ -13,7 +13,7 @@ compiler.path
 downloaded.list
 fonts_linked.list
 .*.swp
-src/assets_gen/fonts
+src/codegen/assets
 log.txt
 .clangd
 rl2lua_test/raylib.lua

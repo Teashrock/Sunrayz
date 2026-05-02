@@ -2,6 +2,7 @@
 
 #include <pthread.h>
 #include <stddef.h>
+#include <semaphore.h>
 
 typedef enum {
     TASK_DONE,
@@ -24,6 +25,7 @@ typedef struct _SzTask {
 
 typedef struct _SzQueue {
     pthread_t* thread;
+    sem_t movement;
     SzQueueState state;
     int task_limit;
     SzTask* tasks;

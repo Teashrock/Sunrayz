@@ -70,8 +70,9 @@ int main(int argc, char* argv[])
     *dbg = false;
 
     // Lua script implementation
-    char* script_dir = strcat(GetApplicationDirectory(), strcat(pathDelimiter, "scripts"));
-    if (!DirectoryExists(script_dir)) {
+    char* scriptDirArray[] = {GetApplicationDirectory(), "scripts"};
+    char* scriptDir = TextJoin(scriptDirArray, 2, pathDelimiter);
+    if (!DirectoryExists(scriptDir)) {
         // Here be code for queueing an error message
     }
 

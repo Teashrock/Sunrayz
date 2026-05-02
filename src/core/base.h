@@ -2,6 +2,12 @@
 
 #include <raylib.h>
 
+#if _WIN32
+static const char* pathDelimiter = "\\";
+#else
+static const char* pathDelimiter = "/";
+#endif
+
 typedef struct _SzEntity {
     struct _SzConstruct* parent;
     void* essence;

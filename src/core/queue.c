@@ -24,7 +24,7 @@ void* QueueRoutine(void* arg) {
     SzTask* currentTask = q->tasks;
     while (true) {
         while (q->state == QUEUE_STANDBY); // Doing nothing while the queue is standing by
-        //currentTask
+        currentTask->state = TASK_READY;
     }
 }
 
@@ -39,4 +39,18 @@ SzQueue* CreateQueue(void) {
     pthread_create(ptr->thread, NULL, QueueRoutine, ptr);
 
     return ptr;
+}
+
+void FlushQueue(SzQueue* q) {
+    q->state = QUEUE_STANDBY;
+    pthread_join(*(q->thread), NULL);
+    q->thread = NULL;
+    SzTask* curr_task = q->tasks;
+    while (curr_task != NULL) {
+        SzTask* next_task = curr_task->next;
+        MemFree(curr_task);
+        SzTask* curr_task = next_task;
+    }
+    q->tasks = NULL;
+    MemFree(q);
 }

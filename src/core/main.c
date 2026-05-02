@@ -10,6 +10,7 @@
 #include <luajit.h>
 
 #include "base.h"
+#include "queue.h"
 
 const int uniValues[] = {
     30 // Menu and panel collision point
@@ -82,6 +83,10 @@ int main(int argc, char* argv[])
         // Here be code for queueing an error message
     }
 
+    // Test area
+    SzQueue* test_queue = CreateQueue();
+    SzTask* test_task = CreateTask(test_queue);
+
     // Main game loop
     while (!WindowShouldClose())    // Detect window close button or ESC key
     {
@@ -89,13 +94,14 @@ int main(int argc, char* argv[])
         //----------------------------------------------------------------------------------
         BeginDrawing();
 
-            //ClearBackground(WHITE);
+            test_queue->state = QUEUE_RUNNING;
 
         EndDrawing();
         //----------------------------------------------------------------------------------
     }
 
     // De-Initialization
+    FlushQueue(test_queue);
     lua_close(L);
 
     //--------------------------------------------------------------------------------------

@@ -14,7 +14,9 @@ SzTask* CreateTask(SzQueue* q) {
         .state = TASK_NEW,
         .next = NULL
     };
-    q->state = QUEUE_RUNNING;
+    while (ptr->state == TASK_NEW); // Standing by
+    if (ptr->content() == 0)
+        ptr->state = TASK_DONE;
 }
 
 void* QueueRoutine(void* arg) {

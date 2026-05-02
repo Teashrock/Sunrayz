@@ -14,7 +14,7 @@ import shutil
 import subprocess
 import sys
 import json
-from asset2code import asset_transform
+from build_utils.asset2code import asset_transform
 from waflib.Tools.compiler_c import c_compiler
 from waflib import Logs
 c_compiler['win32'] = ['gcc']

@@ -13,7 +13,7 @@ To provide players and visual novel developers with stable, optimised, and light
 ## Programming Languages
 
 At the current moment (01.05.2026), the are three programming languages used in the project:
-- C17: the engine itself, it's core heart
+- C99: the engine itself, it's core heart
 - Lua: apps and games written with the engine
 - Python: the build system (considered to replace with Lua eventually)
 

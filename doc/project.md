@@ -4,7 +4,7 @@
 
 ## Name
 
-Sunrayz is a name of triple wordplay: "sun raise", "sun rays", and "Raylib". The final -z intentionally marks the phonetic ambiguousness.
+Sunrayz is a name of triple wordplay: "sun-raise", "sun rays", and "Raylib". The final -z intentionally marks the phonetic ambiguousness.
 
 ## The End Goal
 

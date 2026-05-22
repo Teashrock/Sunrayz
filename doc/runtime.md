@@ -1,4 +1,4 @@
-# Reader-Task System
+# Sunrayz Runtime
 
 **Reader**s and **Task**s are the cornerstone of Sunrayz execution. There are two main Readers active in the runtime: executional and preparational.
 - The executional Reader moves in real time, when the player interacts with the game, performing whatever the player wants.

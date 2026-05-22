@@ -1,7 +1,6 @@
 #pragma once
 
 #include <raylib.h>
-#include "error.h"
 
 typedef struct _SzEntity {
     struct _SzConstruct* parent;

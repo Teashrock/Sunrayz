@@ -6,16 +6,8 @@
 
 typedef enum {
     TASK_DONE,
-    TASK_NEW,
-    TASK_PREPARING,
-    TASK_READY
+    TASK_WAIT
 } SzTaskState;
-
-typedef enum {
-    QUEUE_CLEANING,
-    QUEUE_RUNNING,
-    QUEUE_STANDBY
-} SzQueueState;
 
 typedef struct _SzTask {
     int (*content)(void);
@@ -23,14 +15,4 @@ typedef struct _SzTask {
     SzTaskState state;
 } SzTask;
 
-typedef struct _SzQueue {
-    pthread_t* thread;
-    sem_t movement;
-    SzQueueState state;
-    int task_limit;
-    SzTask* tasks;
-} SzQueue;
-
-void CreateTask(SzQueue* assignTo, int (* taskRoutine)(void));
-SzQueue* CreateQueue(void);
-void FlushQueue(SzQueue*);
+void CreateTask(int (* taskRoutine)(void));

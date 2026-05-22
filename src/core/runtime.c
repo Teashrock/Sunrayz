@@ -1,6 +1,5 @@
 #include "runtime.h"
 
-#include <pthread.h>
 #include <raylib.h>
 #include <semaphore.h>
 
@@ -11,4 +10,19 @@ void CreateTask(int (* taskRoutine)(void)) {
         .state = TASK_WAIT,
         .next = NULL
     };
+}
+
+void* ReaderRoutine(void* arg) {
+    return arg;
+}
+
+SzReader* CreateReader(char* script) {
+    SzReader* ptr = (SzReader*)MemAlloc(sizeof(SzReader));
+    *ptr = (SzReader){
+        .thread = NULL,
+        .script = fopen(script, "r"),
+        .mode = READER_FORWARD
+    };
+    pthread_create(ptr->thread, NULL, ReaderRoutine, ptr);
+    return ptr;
 }

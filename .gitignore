@@ -2,6 +2,7 @@
 .waf3-*
 waf3-*
 __pycache__
+src/codegen/__pycache__
 result
 build
 .cache
@@ -13,7 +14,7 @@ compiler.path
 downloaded.list
 fonts_linked.list
 .*.swp
-src/codegen/assets
+src/generated/assets
 log.txt
 .clangd
 rl2lua_test/raylib.lua

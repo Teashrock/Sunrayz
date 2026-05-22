@@ -385,18 +385,18 @@ def purge(ctx):
     try:
         os.remove(os.path.join(BUILD_DIR, ".clangd"))
     except: pass
-    for _, _, f in os.walk(os.path.join(BUILD_DIR, "src", "codegen", "assets", "fonts")):
+    for _, _, f in os.walk(os.path.join(BUILD_DIR, "src", "generated", "assets", "fonts")):
         for each in f:
             if each.endswith('.c'):
-                os.remove(os.path.join(BUILD_DIR, "src", "codegen", "assets", "fonts", each))
+                os.remove(os.path.join(BUILD_DIR, "src", "generated", "assets", "fonts", each))
     try:
         os.remove(os.path.join(BUILD_DIR, "src", "external", "raygui.c"))
     except: pass
     
-    if not os.path.exists(os.path.join("src", "codegen", "assets", "fonts")):
-        os.mkdir(os.path.join("src", "codegen", "assets", "fonts"))
+    if not os.path.exists(os.path.join("src", "generated", "assets", "fonts")):
+        os.mkdir(os.path.join("src", "generated", "assets", "fonts"))
 
-    with open(os.path.join("src", "codegen", "assets", "fonts", "fonts.h"), "w") as fonts_h:
+    with open(os.path.join("src", "generated", "assets", "fonts", "fonts.h"), "w") as fonts_h:
         fonts_h.write("#pragma once\n\n// This file only links static fonts with the engine.\n// Edit it only if you know what you're doing.\n")
 
 def distclean(ctx):

@@ -23,6 +23,10 @@ SzReader* CreateReader(char* script) {
         .script = fopen(script, "r"),
         .mode = READER_FORWARD
     };
+    if (!ptr->script) {
+        printf("ERROR: Failed to create SzReader: failed to open %s", script);
+        exit(1);
+    }
     pthread_create(ptr->thread, NULL, ReaderRoutine, ptr);
     return ptr;
 }

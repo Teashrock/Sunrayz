@@ -3,7 +3,6 @@
 #include <semaphore.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 
 #include <lua.h>
 #include <lualib.h>
@@ -11,7 +10,7 @@
 #include <luajit.h>
 
 #include "base.h"
-#include "queue.h"
+#include "runtime.h"
 
 const int uniValues[] = {
     30 // Menu and panel collision point
@@ -78,15 +77,16 @@ int main(int argc, char* argv[])
     *dbg = false;
 
     // Lua script implementation
-    char* scriptDirArray[] = {GetApplicationDirectory(), "system"};
+    char* scriptDirArray[] = {(char*)GetApplicationDirectory(), "system"};
     char* scriptDir = TextJoin(scriptDirArray, 2, pathDelimiter);
     if (!DirectoryExists(scriptDir)) {
-        // Here be code for queueing an error message
+        printf("ERROR: Directory \"%s\" was not found!", scriptDir);
+        exit(1);
     }
 
     // Test area
-    SzQueue* test_queue = CreateQueue();
-    CreateTask(test_queue, testTask);
+    //SzReader* testReader = CreateReader("");
+    CreateTask(testTask);
 
     // Main game loop
     while (!WindowShouldClose())    // Detect window close button or ESC key
@@ -95,14 +95,13 @@ int main(int argc, char* argv[])
         //----------------------------------------------------------------------------------
         BeginDrawing();
 
-            sem_post(test_queue->movement);
+            //sem_post(testReader->movement);
 
         EndDrawing();
         //----------------------------------------------------------------------------------
     }
 
     // De-Initialization
-    FlushQueue(test_queue);
     lua_close(L);
 
     //--------------------------------------------------------------------------------------

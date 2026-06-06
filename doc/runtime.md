@@ -19,4 +19,4 @@ A Reader is an autonomous, asynchronous entity that traverses a game execution s
 
 Actor is an entity that takes a position on its Task queue, awaiting for the player's certain actions. It represents the current state of runtime and keeps the dynamically changing game data.
 - One of Actor's kept data is a list of trigger events. Once the player triggers an event, Actor checks if the triggered event is present in the list, and if it does, Actor picks from it the memory address of a Task to move towards.
-- Upon picking a Task memory address, Actor performs a movement by it, triggering Reader's movement.
+- Upon picking a Task memory address, Actor performs a movement by it, triggering Reader's movement, and accessing the code kept in the Task. The code is then immediately sent to Lua interpreter, and Actor stands by until the player triggers another event.

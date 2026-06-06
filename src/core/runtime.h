@@ -1,6 +1,7 @@
 #pragma once
 
 #include <pthread.h>
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <semaphore.h>
@@ -21,12 +22,24 @@ typedef struct _SzTask {
     SzTaskState state;
 } SzTask;
 
-typedef struct _SzReader {
+typedef struct {
     pthread_t* thread;
     sem_t movement;
     FILE* script;
     SzReaderMode mode;
 } SzReader;
 
-void CreateTask(int (* taskRoutine)(void));
+// Event-type pair
+typedef struct _SzETPair {
+    bool (*rlEventFunction)(void);
+    void* address;
+    struct _SzETPair* next;
+} SzETPair;
+
+typedef struct {
+    SzETPair* events;
+} SzActor;
+
+void CreateTask(int (*taskRoutine)(void));
 SzReader* CreateReader(char* script);
+SzActor* CreateActor(void);

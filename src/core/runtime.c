@@ -3,7 +3,7 @@
 #include <raylib.h>
 #include <semaphore.h>
 
-void CreateTask(int (* taskRoutine)(void)) {
+void CreateTask(int (*taskRoutine)(void)) {
     SzTask* ptr = (SzTask*)MemAlloc(sizeof(SzTask));
     *ptr = (SzTask){
         .content = taskRoutine,
@@ -13,6 +13,7 @@ void CreateTask(int (* taskRoutine)(void)) {
 }
 
 void* ReaderRoutine(void* arg) {
+    SzReader* ptr = arg;
     return arg;
 }
 
@@ -29,4 +30,11 @@ SzReader* CreateReader(char* script) {
     }
     pthread_create(ptr->thread, NULL, ReaderRoutine, ptr);
     return ptr;
+}
+
+SzActor* CreateActor(void) {
+    SzActor* ptr = (SzActor*)MemAlloc(sizeof(SzActor));
+    *ptr = (SzActor){
+        .events = NULL
+    };
 }

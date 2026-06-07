@@ -181,12 +181,12 @@ def configure(conf):
             clistfile.write(what + "\n")
             clistfile.close()
 
+    DEPS_DIR = os.path.join(BUILD_DIR, "deps")
     if not download_only:
         if platform.system() == "Windows":
             os.environ["PATH"] = "C:\\mingw32\\bin;C:\\mingw32\\libexec\\gcc\\x86_64-w64-mingw32\\8.1.0;" + os.environ["PATH"]
         conf.load('compiler_c')
         conf.env.THIS = os.getcwd()
-        DEPS_DIR = os.path.join(conf.env.THIS, "deps")
         Logs.warn("Configuring...")
     if download_only:
         Logs.warn("Downloading...")
@@ -246,6 +246,9 @@ def configure(conf):
     Logs.warn("Changing Raylib platform backend to PLATFORM_DESKTOP_RGFW...")
     with open("deps/raylib/src/Makefile", "r") as rf:
         p = rf.read().replace("TARGET_PLATFORM   = PLATFORM_DESKTOP_GLFW", "TARGET_PLATFORM   = PLATFORM_DESKTOP_RGFW", 1)
+
+    with open("deps/raylib/src/Makefile", "w") as rf:
+        rf.write(p)
     p = ""
     if DYNAMIC_LINKING:
         Logs.warn("Changing Raylib build type to shared... ")
@@ -259,63 +262,6 @@ def configure(conf):
             p = rf.read().replace("RAYLIB_BUILD_MODE    ?= RELEASE", "RAYLIB_BUILD_MODE    ?= DEBUG", 1)
     
         with open("deps/raylib/src/Makefile", "w") as rf:
-            rf.write(p)
-    
-    if platform.system() == "Windows":
-        Logs.warn("Patching LuaJIT Makefile...")
-        with open("deps/LuaJIT/Makefile", "r") as rf:
-            p = rf.read().replace("""ifeq (,$(findstring Windows,$(OS)))
-  HOST_SYS:= $(shell uname -s)
-else
-  HOST_SYS= Windows
-endif""", "HOST_SYS= Windows", 1)
-    
-        with open("deps/LuaJIT/Makefile", "w") as rf:
-            rf.write(p)
-            
-        with open("deps/LuaJIT/Makefile", "r") as rf:
-            p = rf.read().replace("""
-
-ifeq (Darwin,$(TARGET_SYS))
-  INSTALL_SONAME= $(INSTALL_DYLIBNAME)
-  INSTALL_SOSHORT1= $(INSTALL_DYLIBSHORT1)
-  INSTALL_SOSHORT2= $(INSTALL_DYLIBSHORT2)
-  LDCONFIG= :
-endif""", "", 1)
-    
-        with open("deps/LuaJIT/Makefile", "w") as rf:
-            rf.write(p)
-
-        with open("deps/LuaJIT/src/Makefile", "r") as rf:
-            p = rf.read().replace("""ifeq (Windows,$(findstring Windows,$(OS))$(MSYSTEM)$(TERM))
-  HOST_SYS= Windows
-else
-  HOST_SYS:= $(shell uname -s)
-  ifneq (,$(findstring MINGW,$(HOST_SYS)))
-    HOST_SYS= Windows
-    HOST_MSYS= mingw
-  endif
-  ifneq (,$(findstring MSYS,$(HOST_SYS)))
-    HOST_SYS= Windows
-    HOST_MSYS= mingw
-  endif
-  ifneq (,$(findstring CYGWIN,$(HOST_SYS)))
-    HOST_SYS= Windows
-    HOST_MSYS= cygwin
-  endif
-endif""", "HOST_SYS= Windows", 1)
-    
-        with open("deps/LuaJIT/src/Makefile", "w") as rf:
-            rf.write(p)
-
-        with open("deps/LuaJIT/src/Makefile", "r") as rf:
-            p = rf.read().replace(
-                r"GIT_RELVER= [ -d ../.git ] && $(GIT) show -s --format=%ct >luajit_relver.txt 2>/dev/null || cat ../.relver >luajit_relver.txt 2>/dev/null || :",
-                r"GIT_RELVER= if exist ..\\.git ( $(GIT) show -s --format=%%ct >luajit_relver.txt ) else ( type ..\\.relver >luajit_relver.txt )",
-                1
-            )
-    
-        with open("deps/LuaJIT/src/Makefile", "w") as rf:
             rf.write(p)
     
     if platform.system() == "Linux":

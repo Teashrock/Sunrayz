@@ -344,8 +344,8 @@ endif""", "HOST_SYS= Windows", 1)
     for _, _, f in os.walk(os.path.join("assets", "fonts")):
         for each in f:
             Logs.warn("Transforming " + each + "...")
-            if not os.path.exists(BUILD_DIR + "/src/assets_gen/fonts"):
-                os.mkdir(BUILD_DIR + "/src/assets_gen/fonts")
+            if not os.path.exists(BUILD_DIR + "/src/generated/fonts"):
+                os.mkdir(BUILD_DIR + "/src/generated/fonts")
             asset_transform(each, "font")
     Logs.info("Done!")
 

@@ -36,8 +36,18 @@ typedef struct _SzETPair {
     struct _SzETPair* next;
 } SzETPair;
 
+typedef enum {
+    VAR_TYPE_LUA
+} SzVariableType;
+
+typedef struct _SzVariable {
+    SzVariableType type;
+    struct _SzVariable* next;
+} SzVariable;
+
 typedef struct {
     SzETPair* events;
+    SzVariable* vars;
 } SzActor;
 
 void CreateTask(int (*taskRoutine)(void));

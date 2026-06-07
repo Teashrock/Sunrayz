@@ -9,13 +9,10 @@
 #include <lualib.h>
 #include <lauxlib.h>
 #include <luajit.h>
+#include <string.h>
 
 #include "base.h"
 #include "runtime.h"
-
-const int uniValues[] = {
-    30 // Menu and panel collision point
-};
 
 #ifdef __HAIKU__
 static char* APP_LOC = NULL;
@@ -73,9 +70,6 @@ int main(int argc, char* argv[])
     MaximizeWindow();
     SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
-    
-    bool* dbg = malloc(sizeof(bool));
-    *dbg = false;
 
     // Lua script implementation
     char* scriptDirArray[] = {(char*)GetApplicationDirectory(), "system"};
@@ -88,15 +82,25 @@ int main(int argc, char* argv[])
     // Listing lua files
     FilePathList luaFiles = LoadDirectoryFilesEx(scriptDir, ".lua", true);
     for (int i = 0; i < luaFiles.count; i++) {
-        printf("%s\n", luaFiles.paths[i]);
+        char* path = (char*)MemAlloc(sizeof(strlen(luaFiles.paths[i])));
+        char* token = NULL;
+        strcpy(path, luaFiles.paths[i]);
+        while (!(token = strtok(path, pathDelimiter))) {
+            if (path != NULL)
+                path = NULL;
+            printf("%s\n", token);
+            if (strcmp(token, "first.lua")) // Right now, first.lua is our starting file
+                luaL_loadfile(L, luaFiles.paths[i]);
+        };
+        MemFree(path);
+        token = NULL;
+        path = NULL;
     }
-
-    //char* luaFile = TextJoin(scriptDir, int count, const char *delimiter)
-    luaL_loadfile(L, scriptDir);
 
     // Test area
     //SzReader* testReader = CreateReader("");
-    CreateTask(testTask);
+    SzActor* actor = CreateActor();
+    SzTask* task = CreateTask(testTask);
 
     // Main game loop
     while (!WindowShouldClose())    // Detect window close button or ESC key

@@ -35,6 +35,8 @@ SzReader* CreateReader(char* script) {
 SzActor* CreateActor(void) {
     SzActor* ptr = (SzActor*)MemAlloc(sizeof(SzActor));
     *ptr = (SzActor){
-        .events = NULL
+        .events = NULL,
+        .vars = NULL
     };
+    return ptr;
 }

@@ -517,9 +517,11 @@ def build(ctx):
             os.path.join(BUILD_DIR, "result", platform.system() + "-" + BUILD_TYPE, LIB_DIR),
             [os.path.join(_lualibpath, lualib_name)]
         )
+        if not os.path.exists(os.path.join(BUILD_DIR, "result", platform.system() + "-" + BUILD_TYPE, "system")):
+            os.makedirs(os.path.join(BUILD_DIR, "result", platform.system() + "-" + BUILD_TYPE, "system"))
         shutil.copy(
             os.path.join(BUILD_DIR, "build", "lua", "raylib.lua"),
-            os.path.join(BUILD_DIR, "result", platform.system() + "-" + BUILD_TYPE, "system")
+            os.path.join(BUILD_DIR, "result", platform.system() + "-" + BUILD_TYPE, "system", "raylib.lua")
         )
 
 def run(ctx):

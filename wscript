@@ -395,7 +395,7 @@ def purge(ctx):
     except: pass
     
     if not os.path.exists(os.path.join("src", "generated", "assets", "fonts")):
-        os.mkdir(os.path.join("src", "generated", "assets", "fonts"))
+        os.makedirs(os.path.join("src", "generated", "assets", "fonts"))
 
     with open(os.path.join("src", "generated", "assets", "fonts", "fonts.h"), "w") as fonts_h:
         fonts_h.write("#pragma once\n\n// This file only links static fonts with the engine.\n// Edit it only if you know what you're doing.\n")

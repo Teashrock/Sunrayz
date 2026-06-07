@@ -1,6 +1,7 @@
 #include <raylib.h>
 #include <raygui.h>
 #include <semaphore.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -62,7 +63,7 @@ int main(int argc, char* argv[])
     #endif
 
     // Initializing Lua
-    lua_State *L = luaL_newstate();
+    lua_State* L = luaL_newstate();
     luaL_openlibs(L);
 
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
@@ -79,10 +80,19 @@ int main(int argc, char* argv[])
     // Lua script implementation
     char* scriptDirArray[] = {(char*)GetApplicationDirectory(), "system"};
     char* scriptDir = TextJoin(scriptDirArray, 2, pathDelimiter);
-    if (!DirectoryExists(scriptDir)) {
+    /* if (!DirectoryExists(scriptDir)) {
         printf("ERROR: Directory \"%s\" was not found!", scriptDir);
         exit(1);
+    } */
+    
+    // Listing lua files
+    FilePathList luaFiles = LoadDirectoryFilesEx(scriptDir, ".lua", true);
+    for (int i = 0; i < luaFiles.count; i++) {
+        printf("%s\n", luaFiles.paths[i]);
     }
+
+    //char* luaFile = TextJoin(scriptDir, int count, const char *delimiter)
+    luaL_loadfile(L, scriptDir);
 
     // Test area
     //SzReader* testReader = CreateReader("");

@@ -1,6 +1,7 @@
 in_struct = False
 in_enum = False
 
+
 def check_pattern(line: str) -> str:
     global in_struct
     global in_enum
@@ -35,7 +36,8 @@ def check_pattern(line: str) -> str:
         return line[:line.find(";") + 1].lstrip("RLAPI ")
     return "-1"
 
-def rl_parse(path: str = ""):
+
+def rl_parse(path: str = "") -> None:
     if not path:
         path = "raylib.h"
     rl_sheet = str()

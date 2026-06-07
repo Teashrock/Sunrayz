@@ -46,10 +46,11 @@ typedef struct _SzVariable {
 } SzVariable;
 
 typedef struct {
+    pthread_t* thread;
     SzETPair* events;
     SzVariable* vars;
 } SzActor;
 
-void CreateTask(int (*taskRoutine)(void));
+SzTask* CreateTask(int (*taskRoutine)(void));
 SzReader* CreateReader(char* script);
 SzActor* CreateActor(void);

@@ -15,6 +15,7 @@ import subprocess
 import sys
 import json
 from src.codegen.asset2code import asset_transform
+from src.codegen.rl2lua import rl_parse
 from waflib.Tools.compiler_c import c_compiler
 from waflib import Logs
 c_compiler['win32'] = ['gcc']
@@ -480,6 +481,13 @@ def build(ctx):
             clistfile.write("luajit\n")
 
         clistfile.close()
+
+        if not os.path.exists(os.path.join(BUILD_DIR, "build", "lua")):
+            os.mkdir(os.path.join(BUILD_DIR, "build", "lua"))
+        os.chdir(os.path.join(BUILD_DIR, "build", "lua"))
+
+        rl_parse(os.path.join(BUILD_DIR, "deps", "raylib", "src", "raylib.h"))
+
         os.chdir(SRC_DIR)
 
         SRCS = []
@@ -562,6 +570,10 @@ def build(ctx):
         ctx.install_files(
             os.path.join(BUILD_DIR, "result", platform.system() + "-" + BUILD_TYPE, LIB_DIR),
             [os.path.join(_lualibpath, lualib_name)]
+        )
+        shutil.copy(
+            os.path.join(BUILD_DIR, "build", "lua", "raylib.lua"),
+            os.path.join(BUILD_DIR, "result", platform.system() + "-" + BUILD_TYPE, "system")
         )
 
 def run(ctx):

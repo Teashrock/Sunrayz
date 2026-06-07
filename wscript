@@ -515,7 +515,7 @@ def build(ctx):
             ccflags = ['-Wall', '-std=c99', '-D_DEFAULT_SOURCE', '-Wno-missing-braces', MODE, OPT, '-Wl,-rpath,' + INSTALLPATH, '-DPLATFORM_DESKTOP']
         lflags = []
         if platform.system() == "Windows":
-            lflags = [os.path.join(DEPS_DIR, "raylib", "src", "raylib.rc.data"), '-mwindows']
+            lflags = [os.path.join(DEPS_DIR, "raylib", "src", "raylib.rc.data"), '-mwindows', '-mconsole']
         elif platform.system() == "Haiku":
             pass
         elif platform.system() == "Linux":

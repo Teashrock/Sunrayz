@@ -33,7 +33,7 @@ def check_pattern(line: str) -> str:
             return line[:line.find(r"{") + 1]
         return line[:line.find(";") + 1]
     elif line.startswith("RLAPI"):
-        return line[:line.find(";") + 1].lstrip("RLAPI ")
+        return line[len("RLAPI "):line.find(";") + 1]
     return "-1"
 
 

@@ -52,4 +52,5 @@ def rl_parse(path: str = "") -> None:
             rl_lua.write("local ffi = require(\"ffi\")\n\n")
             rl_lua.write("ffi.cdef[[\n")
             rl_lua.write(rl_sheet)
-            rl_lua.write("]]\n\nreturn ffi.C")
+            rl_lua.write("]]\n\nlocal C = ffi.load(\"raylib\")\n\n")
+            rl_lua.write("return C")

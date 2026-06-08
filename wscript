@@ -2,7 +2,7 @@ VERSION    = "master"
 APPNAME    = "sunrayz"
 REVISION   = ""
 BUILD_TYPE = "debug"
-DYNAMIC_LINKING = False
+DYNAMIC_RAYLIB_LINKAGE = True
 
 top = '.'
 out = "build"
@@ -250,7 +250,7 @@ def configure(conf):
     with open("deps/raylib/src/Makefile", "w") as rf:
         rf.write(p)
     p = ""
-    if DYNAMIC_LINKING:
+    if DYNAMIC_RAYLIB_LINKAGE:
         Logs.warn("Changing Raylib build type to shared... ")
         with open("deps/raylib/src/Makefile", "r") as rf:
             p = rf.read().replace("RAYLIB_LIBTYPE       ?= STATIC", "RAYLIB_LIBTYPE       ?= SHARED", 1)
@@ -385,12 +385,12 @@ def build(ctx):
 
         rllib_name = ""
         if platform.system() == "Windows":
-            if DYNAMIC_LINKING:
+            if DYNAMIC_RAYLIB_LINKAGE:
                 rllib_name = "raylib.dll"
             else:
                 rllib_name = "raylib.a"
         else:
-            if DYNAMIC_LINKING:
+            if DYNAMIC_RAYLIB_LINKAGE:
                 rllib_name = "libraylib.so"
             else:
                 rllib_name = "libraylib.a"
@@ -508,7 +508,7 @@ def build(ctx):
             )
             Logs.info("Done!")
     
-        if DYNAMIC_LINKING:
+        if DYNAMIC_RAYLIB_LINKAGE:
             ctx.install_files(
                 os.path.join(BUILD_DIR, "result", platform.system() + "-" + BUILD_TYPE, LIB_DIR),
                 [os.path.join(_rllibpath, rllib_name)]

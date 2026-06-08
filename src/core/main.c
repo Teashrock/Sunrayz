@@ -82,19 +82,19 @@ int main(int argc, char* argv[])
     // Listing lua files
     FilePathList luaFiles = LoadDirectoryFilesEx(scriptDir, ".lua", true);
     for (int i = 0; i < luaFiles.count; i++) {
-        char* path = (char*)MemAlloc(sizeof(strlen(luaFiles.paths[i])));
+        char* path = (char*)MemAlloc(sizeof(char) * (strlen(luaFiles.paths[i]) + 1));
         char* token = NULL;
         strcpy(path, luaFiles.paths[i]);
-        while (!(token = strtok(path, pathDelimiter))) {
-            if (path != NULL)
+        while ((token = strtok(path, pathDelimiter)) != NULL) {
+            if (path != NULL) {
+                MemFree(path);
                 path = NULL;
-            printf("%s\n", token);
-            if (strcmp(token, "first.lua")) // Right now, first.lua is our starting file
+            }
+            if (strcmp(token, "first.lua") == 0) { // Right now, first.lua is our starting file
                 luaL_loadfile(L, luaFiles.paths[i]);
+                lua_pcall(L, 0, LUA_MULTRET, 0);
+            }
         };
-        MemFree(path);
-        token = NULL;
-        path = NULL;
     }
 
     // Test area
@@ -109,7 +109,7 @@ int main(int argc, char* argv[])
         //----------------------------------------------------------------------------------
         BeginDrawing();
 
-            //sem_post(testReader->movement);
+            //task->content();
 
         EndDrawing();
         //----------------------------------------------------------------------------------

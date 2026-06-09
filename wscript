@@ -290,8 +290,8 @@ def configure(conf):
     for _, _, f in os.walk(os.path.join("assets", "fonts")):
         for each in f:
             Logs.warn("Transforming " + each + "...")
-            if not os.path.exists(BUILD_DIR + "/src/generated/fonts"):
-                os.mkdir(BUILD_DIR + "/src/generated/fonts")
+            if not os.path.exists(BUILD_DIR + "/src/generated/assets/fonts"):
+                os.mkdir(BUILD_DIR + "/src/generated/assets/fonts")
             asset_transform(each, "font")
     Logs.info("Done!")
 
@@ -332,10 +332,9 @@ def purge(ctx):
     try:
         os.remove(os.path.join(BUILD_DIR, ".clangd"))
     except: pass
-    for _, _, f in os.walk(os.path.join(BUILD_DIR, "src", "generated", "assets", "fonts")):
-        for each in f:
-            if each.endswith('.c'):
-                os.remove(os.path.join(BUILD_DIR, "src", "generated", "assets", "fonts", each))
+    try:
+        shutil.rmtree(os.path.join(BUILD_DIR, "src", "generated", "assets"))
+    except: pass
     try:
         os.remove(os.path.join(BUILD_DIR, "src", "external", "raygui.c"))
     except: pass

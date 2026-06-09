@@ -104,6 +104,12 @@ int main(int argc, char* argv[])
     SzActor* actor = CreateActor();
     SzTask* task = CreateTask(testTask);
 
+    int startTime = GetTime();
+    int endTime = 3;
+
+    Color colors[4] = {WHITE, RED, RAYWHITE, LIME};
+    int idx = 0;
+
     // Main game loop
     while (!WindowShouldClose())    // Detect window close button or ESC key
     {
@@ -111,7 +117,7 @@ int main(int argc, char* argv[])
         //----------------------------------------------------------------------------------
         BeginDrawing();
 
-            //task->content();
+            // An empty place
 
         EndDrawing();
         //----------------------------------------------------------------------------------

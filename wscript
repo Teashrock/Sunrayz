@@ -291,7 +291,7 @@ def configure(conf):
         for each in f:
             Logs.warn("Transforming " + each + "...")
             if not os.path.exists(BUILD_DIR + "/src/generated/assets/fonts"):
-                os.mkdir(BUILD_DIR + "/src/generated/assets/fonts")
+                os.makedirs(BUILD_DIR + "/src/generated/assets/fonts")
             asset_transform(each, "font")
     Logs.info("Done!")
 

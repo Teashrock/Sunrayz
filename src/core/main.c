@@ -90,7 +90,7 @@ int main(int argc, char* argv[])
                 MemFree(path);
                 path = NULL;
             }
-            if (strcmp(token, "first.lua") == 0) { // Right now, first.lua is our starting file
+            if (!strcmp(token, "first.lua")) { // Right now, first.lua is our starting file
                 luaL_loadfile(L, luaFiles.paths[i]);
                 ChangeDirectory(scriptDir);
                 if (lua_pcall(L, 0, LUA_MULTRET, 0) != LUA_OK)
@@ -104,14 +104,8 @@ int main(int argc, char* argv[])
     SzActor* actor = CreateActor();
     SzTask* task = CreateTask(testTask);
 
-    int startTime = GetTime();
-    int endTime = 3;
-
-    Color colors[4] = {WHITE, RED, RAYWHITE, LIME};
-    int idx = 0;
-
     // Main game loop
-    while (!WindowShouldClose())    // Detect window close button or ESC key
+    /*while (!WindowShouldClose())    // Detect window close button or ESC key
     {
         // Draw
         //----------------------------------------------------------------------------------
@@ -121,7 +115,7 @@ int main(int argc, char* argv[])
 
         EndDrawing();
         //----------------------------------------------------------------------------------
-    }
+    }*/
 
     // De-Initialization
     lua_close(L);

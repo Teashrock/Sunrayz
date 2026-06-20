@@ -432,6 +432,7 @@ def build(ctx):
         os.chdir(os.path.join(BUILD_DIR, "build", "lua"))
 
         rl_parse(os.path.join(BUILD_DIR, "deps", "raylib", "src", "raylib.h"))
+        rl_parse(os.path.join(BUILD_DIR, "deps", "raygui", "src", "raygui.h"))
 
         os.chdir(SRC_DIR)
 
@@ -521,6 +522,10 @@ def build(ctx):
         shutil.copy(
             os.path.join(BUILD_DIR, "build", "lua", "raylib.lua"),
             os.path.join(BUILD_DIR, "result", platform.system() + "-" + BUILD_TYPE, "system", "raylib.lua")
+        )
+        shutil.copy(
+            os.path.join(BUILD_DIR, "build", "lua", "raygui.lua"),
+            os.path.join(BUILD_DIR, "result", platform.system() + "-" + BUILD_TYPE, "system", "raygui.lua")
         )
 
 def run(ctx):

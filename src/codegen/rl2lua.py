@@ -24,13 +24,16 @@ def check_pattern(line: str) -> str:
                 if line[i] != " ":
                     return line[:line.find(" ", i)]
     if line.startswith("typedef"):
-        if line.split(" ")[1] == "struct" \
-        and r"{" in line:
-            in_struct = True
-            return line[:line.find(r"{") + 1]
-        elif line.split(" ")[1] == "enum":
-            in_enum = True
-            return line[:line.find(r"{") + 1]
+        if r"{" in line:
+            if line.split(" ")[1] == "struct":
+                in_struct = True
+            elif line.split(" ")[1] == "enum":
+                in_enum = True
+            if r"}" not in line:
+                return line[:line.find(r"{") + 1]
+            else:
+                in_struct = False
+                in_enum = False
         return line[:line.find(";") + 1]
     elif line.startswith("RLAPI"):
         return line[len("RLAPI "):line.find(";") + 1]

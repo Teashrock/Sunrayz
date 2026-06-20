@@ -416,7 +416,7 @@ def build(ctx):
         if platform.system() == "Windows":
             lualib_name = "lua51.dll"
         else:
-            lualib_name = "liblua.so.5.1"
+            lualib_name = "libluajit.so"
         if not "luajit" in clist:
             Logs.warn("\nBuilding LuaJIT...")
             os.chdir(os.path.join(DEPS_DIR, "LuaJIT"))
@@ -471,7 +471,7 @@ def build(ctx):
         elif platform.system() == "Haiku":
             libs = ["raylib", "lua51", "root", "be", "GL"]
         elif platform.system() == "Linux":
-            libs = ["raylib", "lua51", "GL", "m"]
+            libs = ["raylib", "luajit", "GL", "m"]
         _rllibpath = []
         #if platform.system() == "Linux":
         #    _rllibpath = "deps/raylib"

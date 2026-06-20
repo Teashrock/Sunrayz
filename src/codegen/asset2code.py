@@ -12,10 +12,13 @@ def asset_transform(filename: str, asset_type: str) -> None:
     """
     nonascii_list = ["-", "+", "~", "."]
 
+    asset_dir_name = ""
+    asset_header_name = ""
+
     fn: list = filename.split(".")
     global fn_noext
     fn_noext = str()
-    for i in range(0, len(fn) - 1):
+    for i in range(len(fn) - 1):
         if not fn_noext == "":
             fn_noext += "."
         fn_noext += fn[i]

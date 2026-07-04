@@ -81,17 +81,19 @@ def configure(conf):
         if platform.system() == "Windows":
             delim = ";"
             ext = ".exe"
-            clangd_conf.write("    - --target=x86_64-w64-windows-gnu\n    - -xc\n    - -std=c99\n")
-            for i in INCS:
-                if i == ".":
-                    clangd_conf.write("    - -I" + BUILD_DIR + "\n")
-                else:
-                    clangd_conf.write(f"    - -I{BUILD_DIR + "\\" + i.replace("/", "\\")}\n")
-            gcc_loc = os.path.dirname(os.path.dirname(shutil.which("gcc"))) # pyright: ignore[reportArgumentType, reportCallIssue, reportOptionalMemberAccess]
-            #clangd_conf.write(f" -I, {gcc_loc}\\include, ")
-            #clangd_conf.write(f" -I, {gcc_loc}\\x86_64-w64-mingw32\\include ]\n")
+            clangd_conf.write("    - --target=x86_64-w64-windows-gnu\n")
         else:
             delim = ":"
+            clangd_conf.write("    - --target=x86_64-unknown-linux-gnu\n")
+        clangd_conf.write("    - -xc\n    - -std=c99\n")
+        for i in INCS:
+            if i == ".":
+                clangd_conf.write(f"    - -I{BUILD_DIR}\n")
+            else:
+                if platform.system() == "Windows":
+                    clangd_conf.write(f"    - -I{BUILD_DIR}\\{i.replace("/", "\\")}\n")
+                else:
+                    clangd_conf.write(f"    - -I{BUILD_DIR}/{i}\n")
         clangd_conf.close()
         util_check_paths : list = os.getenv("PATH").split(delim) # pyright: ignore[reportOptionalMemberAccess]
         for key in UTIL_LIST.keys():

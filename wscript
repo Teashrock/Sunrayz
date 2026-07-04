@@ -527,6 +527,10 @@ def build(ctx):
             os.path.join(BUILD_DIR, "build", "lua", "raygui.lua"),
             os.path.join(BUILD_DIR, "result", platform.system() + "-" + BUILD_TYPE, "system", "raygui.lua")
         )
+        shutil.copy(
+            os.path.join(BUILD_DIR, "base_project", "start.lua"),
+            os.path.join(BUILD_DIR, "result", platform.system() + "-" + BUILD_TYPE, "system", "start.lua")
+        )
 
 def run(ctx):
     global EXE_NAME

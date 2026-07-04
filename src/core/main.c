@@ -73,6 +73,7 @@ int main(int argc, char* argv[])
     // Lua script implementation
     char* scriptDirArray[] = {(char*)GetApplicationDirectory(), "system"};
     char* scriptDir = TextJoin(scriptDirArray, 2, pathDelimiter);
+    printf("scriptDir: %s\n", scriptDir);
     /* if (!DirectoryExists(scriptDir)) {
         printf("ERROR: Directory \"%s\" was not found!", scriptDir);
         exit(1);
@@ -81,13 +82,13 @@ int main(int argc, char* argv[])
     // Listing lua files
     FilePathList luaFiles = LoadDirectoryFilesEx(scriptDir, ".lua", true);
     for (int i = 0; i < luaFiles.count; i++) {
-        char* path = (char*)MemAlloc(sizeof(char) * (strlen(luaFiles.paths[i]) + 1));
+        char* pathPtr = (char*)MemAlloc(sizeof(char) * (strlen(luaFiles.paths[i]) + 1));
+        char* pathIter = pathPtr;
         char* token = NULL;
-        strcpy(path, luaFiles.paths[i]);
-        while ((token = strtok(path, pathDelimiter)) != NULL) {
-            if (path != NULL) {
-                MemFree(path);
-                path = NULL;
+        strcpy(pathIter, luaFiles.paths[i]);
+        while ((token = strtok(pathIter, pathDelimiter)) != NULL) {
+            if (pathIter != NULL) {
+                pathIter = NULL;
             }
             if (!strcmp(token, "start.lua")) { // Right now, start.lua is our starting file
                 luaL_loadfile(L, luaFiles.paths[i]);
@@ -96,6 +97,8 @@ int main(int argc, char* argv[])
                     printf("Lua error: %s\n", lua_tostring(L, -1));
             }
         };
+        MemFree(pathPtr);
+        pathPtr = NULL;
     }
 
     // Test area

@@ -3,7 +3,6 @@
 #include <semaphore.h>
 #include <stdbool.h>
 #include <stdio.h>
-#include <stdlib.h>
 
 #include <lua.h>
 #include <lualib.h>
@@ -90,7 +89,7 @@ int main(int argc, char* argv[])
                 MemFree(path);
                 path = NULL;
             }
-            if (!strcmp(token, "first.lua")) { // Right now, first.lua is our starting file
+            if (!strcmp(token, "start.lua")) { // Right now, start.lua is our starting file
                 luaL_loadfile(L, luaFiles.paths[i]);
                 ChangeDirectory(scriptDir);
                 if (lua_pcall(L, 0, LUA_MULTRET, 0) != LUA_OK)

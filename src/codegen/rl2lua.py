@@ -58,5 +58,9 @@ def rl_parse(path: str = "") -> None:
             lua_file.write("local ffi = require(\"ffi\")\n\n")
             lua_file.write("ffi.cdef[[\n")
             lua_file.write(rl_sheet)
-            lua_file.write("]]\n\nlocal C = ffi.load(\"raylib\")\n\n")
-            lua_file.write("return C\n")
+            lua_file.write("]]\n\n")
+            if file_name == "raylib":
+                lua_file.write("local C = ffi.load(\"raylib\")\n\n")
+                lua_file.write("return C\n")
+            elif file_name == "raygui":
+                lua_file.write("return ffi.C")

@@ -1,0 +1,29 @@
+--- a/Makefile	2026-07-06 14:06:33.486713814 +0300
++++ b/Makefile	2026-07-06 14:07:46.745261786 +0300
+@@ -873,16 +873,8 @@
+ 
+ # Compile raygui module
+ # NOTE: raygui header should be distributed with raylib.h
+-raygui.o : raygui.c
++raygui.o : raygui.c raygui.h raylib.h
+ 	$(CC) -c $< $(CFLAGS) $(INCLUDE_PATHS)
+-raygui.c:
+-ifeq ($(PLATFORM_SHELL), cmd)
+-	@echo #define RAYGUI_IMPLEMENTATION > raygui.c
+-	@echo #include "$(RAYLIB_MODULE_RAYGUI_PATH)/raygui.h" >> raygui.c
+-else
+-	@echo "#define RAYGUI_IMPLEMENTATION" > raygui.c
+-	@echo "#include \"$(RAYLIB_MODULE_RAYGUI_PATH)/raygui.h\"" >> raygui.c
+-endif
+ 
+ # Compile android_native_app_glue module
+ android_native_app_glue.o : $(NATIVE_APP_GLUE)/android_native_app_glue.c
+@@ -984,7 +976,7 @@
+ 	@echo "removed all generated files!"
+ 
+ clean_shell_sh:
+-	rm -fv *.o $(RAYLIB_RELEASE_PATH)/lib$(RAYLIB_LIB_NAME).a $(RAYLIB_RELEASE_PATH)/lib$(RAYLIB_LIB_NAME).web.a $(RAYLIB_RELEASE_PATH)/lib$(RAYLIB_LIB_NAME).so* raygui.c $(RAYLIB_RELEASE_PATH)/*-protocol.h $(RAYLIB_RELEASE_PATH)/*-protocol-code.h $(RAYLIB_RELEASE_PATH)/*-protocol-code.c
++	rm -fv *.o $(RAYLIB_RELEASE_PATH)/lib$(RAYLIB_LIB_NAME).a $(RAYLIB_RELEASE_PATH)/lib$(RAYLIB_LIB_NAME).web.a $(RAYLIB_RELEASE_PATH)/lib$(RAYLIB_LIB_NAME).so* $(RAYLIB_RELEASE_PATH)/*-protocol.h $(RAYLIB_RELEASE_PATH)/*-protocol-code.h $(RAYLIB_RELEASE_PATH)/*-protocol-code.c
+ ifeq ($(TARGET_PLATFORM),PLATFORM_ANDROID)
+ 	rm -fv $(NATIVE_APP_GLUE)/android_native_app_glue.o
+ endif

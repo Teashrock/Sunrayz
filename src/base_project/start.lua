@@ -1,5 +1,4 @@
 local rl = require("raylib")
-local rg = require("raygui")
 
 print(string.char(10) .. "=================================")
 print("Hello, world from Lua in Sunrayz!")
@@ -32,7 +31,7 @@ while not rl.api.WindowShouldClose() do
 
     rl.types.rectangle(24, 24, 120, 30)
 
-    rg.GuiButton(rl.types.rectangle(24, 24, 120, 30), "#191#Show Message")
+    rl.api.GuiButton(rl.types.rectangle(24, 24, 120, 30), "#191#Show Message")
 
     rl.api.EndDrawing()
 end

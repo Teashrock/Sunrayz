@@ -220,6 +220,8 @@ def configure(conf):
     sp = subprocess.Popen(["patch", "-Np1", "-i", os.path.join(BUILD_DIR, "patches", "raylib_raylib.patch")])
     sp.wait()
     os.chdir(BUILD_DIR + "/deps/raygui/src")
+    sp = subprocess.Popen(["patch", "-Np1", "-i", os.path.join(BUILD_DIR, "patches", "raygui.patch")])
+    sp.wait()
     
     # Dividing raygui.h into two separate parts
     p : str = ""
@@ -236,18 +238,25 @@ def configure(conf):
                     raygui_code += line
             if line.strip() == "#if defined(RAYGUI_IMPLEMENTATION)":
                 rg_line_found = True
-    with open("raygui.h", "w") as raygui_h:
+    with open(os.path.join(BUILD_DIR, "deps", "raylib", "src", "raygui.h"), "w") as raygui_h:
         raygui_h.write(p)
     os.chdir(BUILD_DIR)
-    if not os.path.exists(BUILD_DIR + "/src/external"):
-        os.mkdir(BUILD_DIR + "/src/external")
-    with open(BUILD_DIR + "/src/external/raygui.c", "w") as raygui_c:
+    if not os.path.exists(os.path.join(BUILD_DIR, "deps", "raygui", "src")):
+        os.mkdir(os.path.join(BUILD_DIR, "deps", "raylib", "src"))
+    with open(os.path.join(BUILD_DIR, "deps", "raylib", "src", "raygui.c"), "w") as raygui_c:
         raygui_c.write("#include <raygui.h>\n")
         raygui_c.write(raygui_code)
     
     Logs.warn("Changing Raylib platform backend to PLATFORM_DESKTOP_RGFW...")
     with open("deps/raylib/src/Makefile", "r") as rf:
         p = rf.read().replace("TARGET_PLATFORM   = PLATFORM_DESKTOP_GLFW", "TARGET_PLATFORM   = PLATFORM_DESKTOP_RGFW", 1)
+
+    with open("deps/raylib/src/Makefile", "w") as rf:
+        rf.write(p)
+    
+    Logs.warn("Enabling Raygui as a module in Raylib...")
+    with open("deps/raylib/src/Makefile", "r") as rf:
+        p = rf.read().replace("RAYLIB_MODULE_RAYGUI ?= FALSE", "RAYLIB_MODULE_RAYGUI ?= TRUE", 1)
 
     with open("deps/raylib/src/Makefile", "w") as rf:
         rf.write(p)
@@ -266,8 +275,12 @@ def configure(conf):
         with open("deps/raylib/src/Makefile", "w") as rf:
             rf.write(p)
     
+    Logs.warn("Patching Raylib Makefile...")
+    os.chdir("deps/raylib/src")
+    sp = subprocess.Popen(["patch", "-Np1", "-i", os.path.join(BUILD_DIR, "patches", "raylib_makefile.patch")])
+    sp.wait()
+    os.chdir(BUILD_DIR)
     if platform.system() == "Linux":
-        Logs.warn("Patching Raylib Makefile...")
         os.chdir("deps/raylib/src")
         sp = subprocess.Popen(["patch", "-Np1", "-i", os.path.join(BUILD_DIR, "patches", "raylib_makefile_linux.patch")])
         sp.wait()
@@ -433,8 +446,10 @@ def build(ctx):
             os.mkdir(os.path.join(BUILD_DIR, "build", "lua"))
         os.chdir(os.path.join(BUILD_DIR, "build", "lua"))
 
-        rl_parse(os.path.join(BUILD_DIR, "deps", "raylib", "src", "raylib.h"))
-        rl_parse(os.path.join(BUILD_DIR, "deps", "raygui", "src", "raygui.h"))
+        rl_parse([
+            os.path.join(BUILD_DIR, "deps", "raylib", "src", "raylib.h"),
+            os.path.join(BUILD_DIR, "deps", "raygui", "src", "raygui.h")
+        ])
 
         os.chdir(SRC_DIR)
 
@@ -524,10 +539,6 @@ def build(ctx):
         shutil.copy(
             os.path.join(BUILD_DIR, "build", "lua", "raylib.lua"),
             os.path.join(BUILD_DIR, "result", platform.system() + "-" + BUILD_TYPE, "system", "raylib.lua")
-        )
-        shutil.copy(
-            os.path.join(BUILD_DIR, "build", "lua", "raygui.lua"),
-            os.path.join(BUILD_DIR, "result", platform.system() + "-" + BUILD_TYPE, "system", "raygui.lua")
         )
         shutil.copy(
             os.path.join(BUILD_DIR, "src", "base_project", "start.lua"),

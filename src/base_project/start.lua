@@ -1,4 +1,5 @@
 local rl = require("raylib")
+local rg = require("raygui")
 
 print(string.char(10) .. "=================================")
 print("Hello, world from Lua in Sunrayz!")
@@ -13,15 +14,15 @@ local colors = {
 
 local color_index = 1
 
-local start_time = rl.GetTime()
+local start_time = rl.api.GetTime()
 local end_time = 3
 
-while not rl.WindowShouldClose() do
-    rl.BeginDrawing()
+while not rl.api.WindowShouldClose() do
+    rl.api.BeginDrawing()
 
-    rl.ClearBackground(colors[color_index])
-    if rl.GetTime() - start_time >= end_time then
-        start_time = rl.GetTime()
+    rl.api.ClearBackground(colors[color_index])
+    if rl.api.GetTime() - start_time >= end_time then
+        start_time = rl.api.GetTime()
         if color_index < #colors then
             color_index = color_index + 1
         else
@@ -29,5 +30,9 @@ while not rl.WindowShouldClose() do
         end
     end
 
-    rl.EndDrawing()
+    rl.types.rectangle(24, 24, 120, 30)
+
+    rg.GuiButton(rl.types.rectangle(24, 24, 120, 30), "#191#Show Message")
+
+    rl.api.EndDrawing()
 end

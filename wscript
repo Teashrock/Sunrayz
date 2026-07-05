@@ -530,7 +530,7 @@ def build(ctx):
             os.path.join(BUILD_DIR, "result", platform.system() + "-" + BUILD_TYPE, "system", "raygui.lua")
         )
         shutil.copy(
-            os.path.join(BUILD_DIR, "base_project", "start.lua"),
+            os.path.join(BUILD_DIR, "src", "base_project", "start.lua"),
             os.path.join(BUILD_DIR, "result", platform.system() + "-" + BUILD_TYPE, "system", "start.lua")
         )
 

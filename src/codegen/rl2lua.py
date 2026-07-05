@@ -1,3 +1,6 @@
+import os
+
+
 in_struct = False
 in_enum = False
 
@@ -46,7 +49,7 @@ def rl_parse(path: str = "") -> None:
     if not path:
         path = "raylib.h"
     rl_sheet = str()
-    file_name = path.split("/")[-1].split(".")[0]
+    file_name = path.split(os.path.sep)[-1].split(".")[0]
     with open(path, "r") as raylib_h:
         for line in raylib_h.readlines():
             result = check_pattern(line)

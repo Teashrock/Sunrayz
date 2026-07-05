@@ -1,0 +1,13 @@
+--- a/raygui.h	2026-07-06 14:30:15.969651140 +0300
++++ b/raygui.h	2026-07-06 14:31:12.047440308 +0300
+@@ -330,6 +330,10 @@
+     #elif defined(USE_LIBTYPE_SHARED)
+         #define RAYGUIAPI __declspec(dllimport)     // We are using the library as a Win32 shared library (.dll)
+     #endif
++#else
++    #if defined(BUILD_LIBTYPE_SHARED)
++        #define RAYGUIAPI __attribute__((visibility("default"))) // Building as a Unix shared library (.so/.dylib)
++    #endif
+ #endif
+ 
+ // Function specifiers definition

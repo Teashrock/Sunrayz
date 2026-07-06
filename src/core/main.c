@@ -73,7 +73,6 @@ int main(int argc, char* argv[])
     // Lua script implementation
     char* scriptDirArray[] = {(char*)GetApplicationDirectory(), "system"};
     char* scriptDir = TextJoin(scriptDirArray, 2, pathDelimiter);
-    printf("scriptDir: %s\n", scriptDir);
     /* if (!DirectoryExists(scriptDir)) {
         printf("ERROR: Directory \"%s\" was not found!", scriptDir);
         exit(1);

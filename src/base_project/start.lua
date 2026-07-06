@@ -16,6 +16,8 @@ local color_index = 1
 local start_time = rl.api.GetTime()
 local end_time = 3
 
+local showmessage = false
+
 while not rl.api.WindowShouldClose() do
     rl.api.BeginDrawing()
 
@@ -29,9 +31,22 @@ while not rl.api.WindowShouldClose() do
         end
     end
 
-    rl.types.rectangle(24, 24, 120, 30)
+    local result = rl.api.GuiButton(rl.types.rectangle(24, 24, 120, 30), "#191#Show Message")
+    if result == 0 then
+        result = false
+    else
+        result = true
+    end
+    if result then
+        showmessage = true
+    end
 
-    rl.api.GuiButton(rl.types.rectangle(24, 24, 120, 30), "#191#Show Message")
+    if showmessage then
+        local result = rl.api.GuiMessageBox(rl.types.rectangle(85, 70, 250, 100), "#191#Message Box", "Hi! This is a message!", "Nice;Cool")
+        if result >= 0 then
+            showmessage = false
+        end
+    end
 
     rl.api.EndDrawing()
 end

@@ -38,9 +38,8 @@ int main(int argc, char* argv[])
 {
     // Initialization
     //--------------------------------------------------------------------------------------
-
-    #define screenWidth  800
-    #define screenHeight 600
+    #define SCREEN_WIDTH_DEFAULT 1280
+    #define SCREEN_HEIGHT_DEFAULT 1024
     
     #ifdef __HAIKU__
     //image_info info;
@@ -58,6 +57,31 @@ int main(int argc, char* argv[])
     exit(0);
     #endif
 
+    // Initializing main config
+    int screenWidth, screenHeight;
+    int maximizeWindow, fullscreen;
+    char* currentCfgSection;
+    char* cfgName = TextJoin((char*[]){(char*)GetApplicationDirectory(), "settings.cfg"}, 2, pathDelimiter);
+    if (FileExists(cfgName)) {
+        FILE* cfg = fopen(cfgName, "rt");
+        fscanf(cfg, "[%s]\n", currentCfgSection);
+        fscanf(cfg, "screenWidth=%d\n", &screenWidth);
+        fscanf(cfg, "screenHeight=%d\n", &screenHeight);
+        fscanf(cfg, "maximizeWindow=%d\n", &maximizeWindow);
+        fscanf(cfg, "fullscreen=%d\n", &fullscreen);
+        fclose(cfg);
+    } else {
+        screenHeight = SCREEN_HEIGHT_DEFAULT;
+        screenWidth = SCREEN_WIDTH_DEFAULT;
+        FILE* cfg = fopen(cfgName, "wt");
+        fprintf(cfg, "[Main]\n");
+        fprintf(cfg, "screenWidth=%d\n", SCREEN_WIDTH_DEFAULT);
+        fprintf(cfg, "screenHeight=%d\n", SCREEN_HEIGHT_DEFAULT);
+        fprintf(cfg, "maximizeWindow=0\n");
+        fprintf(cfg, "fullscreen=0\n");
+        fclose(cfg);
+    }
+
     // Initializing Lua
     lua_State* L = luaL_newstate();
     luaL_openlibs(L);
@@ -66,17 +90,19 @@ int main(int argc, char* argv[])
     InitWindow(screenWidth, screenHeight, "Sunrayz");
     SetWindowMinSize(screenWidth, screenHeight);
     SetWindowSize(screenWidth, screenHeight);
-    MaximizeWindow();
+    if (maximizeWindow)
+        MaximizeWindow();
+    //if (!fullscreen)
+    //    ToggleFullscreen();
     SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
 
     // Lua script implementation
-    char* scriptDirArray[] = {(char*)GetApplicationDirectory(), "system"};
-    char* scriptDir = TextJoin(scriptDirArray, 2, pathDelimiter);
-    /* if (!DirectoryExists(scriptDir)) {
-        printf("ERROR: Directory \"%s\" was not found!", scriptDir);
-        exit(1);
-    } */
+    char* scriptDir = TextJoin(
+        (char*[]){(char*)GetApplicationDirectory(), "system"},
+        2,
+        pathDelimiter
+    );
     
     // Listing lua files
     FilePathList luaFiles = LoadDirectoryFilesEx(scriptDir, ".lua", true);

@@ -260,6 +260,13 @@ def configure(conf):
 
     with open("deps/raylib/src/Makefile", "w") as rf:
         rf.write(p)
+    
+    Logs.warn("Disabling 3D backend in Raylib...")
+    with open("deps/raylib/src/Makefile", "r") as rf:
+        p = rf.read().replace("RAYLIB_MODULE_MODELS ?= TRUE", "RAYLIB_MODULE_MODELS ?= FALSE", 1)
+
+    with open("deps/raylib/src/Makefile", "w") as rf:
+        rf.write(p)
     p = ""
     if DYNAMIC_RAYLIB_LINKAGE:
         Logs.warn("Changing Raylib build type to shared... ")

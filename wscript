@@ -91,7 +91,7 @@ def configure(conf):
                 clangd_conf.write(f"    - -I{BUILD_DIR}\n")
             else:
                 if platform.system() == "Windows":
-                    clangd_conf.write(f"    - -I{BUILD_DIR}\\{i.replace("/", "\\")}\n")
+                    clangd_conf.write("    - -I{}\\{}\n".format(BUILD_DIR, i.replace("/", "\\")))
                 else:
                     clangd_conf.write(f"    - -I{BUILD_DIR}/{i}\n")
         clangd_conf.close()
@@ -247,12 +247,20 @@ def configure(conf):
         raygui_c.write("#include <raygui.h>\n")
         raygui_c.write(raygui_code)
     
-    Logs.warn("Changing Raylib platform backend to PLATFORM_DESKTOP_RGFW...")
-    with open("deps/raylib/src/Makefile", "r") as rf:
-        p = rf.read().replace("TARGET_PLATFORM   = PLATFORM_DESKTOP_GLFW", "TARGET_PLATFORM   = PLATFORM_DESKTOP_RGFW", 1)
+    if not platform.system() == "Haiku":
+        Logs.warn("Changing Raylib platform backend to PLATFORM_DESKTOP_RGFW...")
+        with open("deps/raylib/src/Makefile", "r") as rf:
+            p = rf.read().replace("TARGET_PLATFORM   = PLATFORM_DESKTOP_GLFW", "TARGET_PLATFORM   = PLATFORM_DESKTOP_RGFW", 1)
 
-    with open("deps/raylib/src/Makefile", "w") as rf:
-        rf.write(p)
+        with open("deps/raylib/src/Makefile", "w") as rf:
+            rf.write(p)
+    else:
+        Logs.warn("Disabling audio backend in Raylib (because of Miniaudio)...")
+        with open("deps/raylib/src/Makefile", "r") as rf:
+            p = rf.read().replace("RAYLIB_MODULE_AUDIO  ?= TRUE", "RAYLIB_MODULE_AUDIO  ?= FALSE", 1)
+
+        with open("deps/raylib/src/Makefile", "w") as rf:
+            rf.write(p)
     
     Logs.warn("Enabling Raygui as a module in Raylib...")
     with open("deps/raylib/src/Makefile", "r") as rf:
@@ -294,7 +302,7 @@ def configure(conf):
         os.chdir(BUILD_DIR)
     
     if platform.system() == "Haiku":
-        Logs.warn("Patching Raylib Makefile...")
+        Logs.warn("Applying special Raylib Makefile patch for Haiku OS...")
         os.chdir("deps/raylib/src")
         sp = subprocess.Popen(["patch", "-Np1", "-i", os.path.join(BUILD_DIR, "patches", "raylib_makefile_haiku.patch")])
         sp.wait()
@@ -494,7 +502,7 @@ def build(ctx):
         if platform.system() == "Windows":
             libs = ["raylib", "lua51", "opengl32", "gdi32", "winmm"]
         elif platform.system() == "Haiku":
-            libs = ["raylib", "lua51", "root", "be", "GL"]
+            libs = ["raylib", "luajit", "root", "be", "GL"]
         elif platform.system() == "Linux":
             libs = ["raylib", "luajit", "GL", "m"]
         _rllibpath = []

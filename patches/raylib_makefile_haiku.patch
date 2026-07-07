@@ -1,14 +1,5 @@
 --- a/Makefile	2021-07-30 09:24:55.162529280 +0000
 +++ b/Makefile	2021-07-30 09:17:30.342622208 +0000
-@@ -81,7 +81,7 @@
- 
- # Use external GLFW library instead of rglfw module
- # TODO: Review usage of examples on Linux.
--USE_EXTERNAL_GLFW    ?= FALSE
-+USE_EXTERNAL_GLFW    ?= TRUE
- 
- # Use Wayland display server protocol on Linux desktop
- # by default it uses X11 windowing system
 @@ -130,6 +130,9 @@
          ifeq ($(UNAMEOS),Darwin)
              PLATFORM_OS = OSX
@@ -19,15 +10,6 @@
      endif
  endif
  ifeq ($(PLATFORM),PLATFORM_RPI)
-@@ -203,7 +206,7 @@
- # Define raylib graphics api depending on selected platform
- ifeq ($(PLATFORM),PLATFORM_DESKTOP)
-     # By default use OpenGL 3.3 on desktop platforms
--    GRAPHICS ?= GRAPHICS_API_OPENGL_33
-+    GRAPHICS = GRAPHICS_API_OPENGL_21
-     #GRAPHICS = GRAPHICS_API_OPENGL_11  # Uncomment to use OpenGL 1.1
-     #GRAPHICS = GRAPHICS_API_OPENGL_21  # Uncomment to use OpenGL 2.1
- endif
 @@ -520,6 +523,14 @@
  				cd $(RAYLIB_RELEASE_PATH) && ln -fs lib$(RAYLIB_LIB_NAME).$(RAYLIB_VERSION).so lib$(RAYLIB_LIB_NAME).$(RAYLIB_API_VERSION).so
  				cd $(RAYLIB_RELEASE_PATH) && ln -fs lib$(RAYLIB_LIB_NAME).$(RAYLIB_VERSION).so lib$(RAYLIB_LIB_NAME).so

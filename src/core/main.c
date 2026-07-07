@@ -58,15 +58,16 @@ int main(int argc, char* argv[])
     #endif
 
     // Initializing main config
-    int screenWidth, screenHeight;
-    int maximizeWindow, fullscreen;
-    char* currentCfgSection;
+    int screenWidth, screenHeight, windowResizable, maximizeWindow, fullscreen;
+    char currentCfgSection[5];
     char* cfgName = TextJoin((char*[]){(char*)GetApplicationDirectory(), "settings.cfg"}, 2, pathDelimiter);
     if (FileExists(cfgName)) {
-        FILE* cfg = fopen(cfgName, "rt");
-        fscanf(cfg, "[%s]\n", currentCfgSection);
+        FILE* cfg = fopen(cfgName, "r");
+        fscanf(cfg, "[%4s]\n", currentCfgSection);
+        //fseek(cfg, 7, SEEK_CUR);
         fscanf(cfg, "screenWidth=%d\n", &screenWidth);
         fscanf(cfg, "screenHeight=%d\n", &screenHeight);
+        fscanf(cfg, "windowResizable=%d\n", &windowResizable);
         fscanf(cfg, "maximizeWindow=%d\n", &maximizeWindow);
         fscanf(cfg, "fullscreen=%d\n", &fullscreen);
         fclose(cfg);
@@ -77,6 +78,7 @@ int main(int argc, char* argv[])
         fprintf(cfg, "[Main]\n");
         fprintf(cfg, "screenWidth=%d\n", SCREEN_WIDTH_DEFAULT);
         fprintf(cfg, "screenHeight=%d\n", SCREEN_HEIGHT_DEFAULT);
+        fprintf(cfg, "windowResizable=1\n");
         fprintf(cfg, "maximizeWindow=0\n");
         fprintf(cfg, "fullscreen=0\n");
         fclose(cfg);
@@ -86,7 +88,8 @@ int main(int argc, char* argv[])
     lua_State* L = luaL_newstate();
     luaL_openlibs(L);
 
-    SetConfigFlags(FLAG_WINDOW_RESIZABLE);
+    if (windowResizable)
+        SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     InitWindow(screenWidth, screenHeight, "Sunrayz");
     SetWindowMinSize(screenWidth, screenHeight);
     SetWindowSize(screenWidth, screenHeight);

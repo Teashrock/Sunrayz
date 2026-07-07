@@ -1,5 +1,4 @@
 #include "base.h"
-#include "error.h"
 
 SzConstruct* CreateConstruct(SzConstruct* parent)
 {

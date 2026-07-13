@@ -64,7 +64,6 @@ int main(int argc, char* argv[])
     if (FileExists(cfgName)) {
         FILE* cfg = fopen(cfgName, "r");
         fscanf(cfg, "[%4s]\n", currentCfgSection);
-        //fseek(cfg, 7, SEEK_CUR);
         fscanf(cfg, "screenWidth=%d\n", &screenWidth);
         fscanf(cfg, "screenHeight=%d\n", &screenHeight);
         fscanf(cfg, "windowResizable=%d\n", &windowResizable);

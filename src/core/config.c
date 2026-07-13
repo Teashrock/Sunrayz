@@ -3,6 +3,8 @@
 #include <raylib.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 /// Reads a string from an opened file
 /// up to the provided character (char until),
@@ -60,7 +62,13 @@ void ReadConfig(char* cfgName) {
                 char* tmpValue;
                 ReadToString(cfg, '\n', tmpValue);
                 // Determining the type of variable to save it properly
-                
+                if (!strcmp(tmpValue, "true")) { // Booleans go first
+                    param->value = 1;
+                } else if (!strcmp(tmpValue, "false")) {
+                    param->value = 0;
+                } else { // Assuming the value is an integer (TODO: implement a proper check)
+                    param->value = atoi(tmpValue);
+                }
             }
         }
     }

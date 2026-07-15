@@ -6,10 +6,11 @@ typedef struct _SzParameter {
     struct _SzParameter* next;
 } SzParameter;
 
-typedef struct {
+typedef struct _SzConfig {
     char* name;
     SzParameter* parameters;
+    struct _SzConfig* next;
 } SzConfig;
 
-void ReadConfig(char* cfgName);
-void WriteConfig(char* cfgName);
+SzConfig* ReadConfig(char* cfgName);
+void WriteConfig(char* cfgName, SzConfig* section);

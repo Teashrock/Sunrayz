@@ -29,18 +29,20 @@ void ReadToString(FILE* f, char until, char* dest) {
 }
 
 /// Reads a configuration file into the engine memory
-void ReadConfig(char* cfgName) {
+SzConfig* ReadConfig(char* cfgName) {
     FILE* cfg = fopen(cfgName, "rt");
     // Counting chars until a newline
     char c[1];
     int charCounter = 0;
+    SzConfig* section;
     while (true) {
         int readResult = fread(c, sizeof(char), 1, cfg);
-        if (readResult != 1)
+        if (readResult != 1) {
             if (feof(cfg))
                 break;
             else if (ferror(cfg))
                 {}
+        }
         charCounter++;
         // When we've found a newline, we return and scan the line
         if (c[0] == '\n') {
@@ -48,7 +50,10 @@ void ReadConfig(char* cfgName) {
             fread(c, sizeof(char), 1, cfg);
             if (c[0] == '[') {
                 // An opening square bracket means a section name
-                SzConfig* section = (SzConfig*)MemAlloc(sizeof(SzConfig));
+                while (section != NULL) {
+                    section = section->next;
+                }
+                section = (SzConfig*)MemAlloc(sizeof(SzConfig));
                 section->parameters = NULL;
                 ReadToString(cfg, ']', section->name);
                 fseek(cfg, 2, SEEK_CUR);
@@ -72,8 +77,25 @@ void ReadConfig(char* cfgName) {
             }
         }
     }
+    return section;
 }
 
-void WriteConfig(char* cfgName) {
-    
+void WriteConfig(char* cfgName, SzConfig* section) {
+    FILE* cfg = fopen(cfgName, "wt");
+    SzConfig* currentSection = section;
+    while (currentSection != NULL) {
+        fprintf(cfg, "[%s]\n", currentSection->name);
+        SzParameter* currentParam = currentSection->parameters;
+        while (currentParam != NULL) {
+            fprintf(
+                cfg,
+                "%s=%d\n",
+                currentParam->name,
+                currentParam->value
+            );
+            currentParam = currentParam->next;
+        }
+        currentSection = currentSection->next;
+    }
+    fclose(cfg);
 }

@@ -135,6 +135,16 @@ void WriteConfig(char* cfgName, SzConfig* section) {
     fclose(cfg);
 }
 
+SzConfig* CreateConfig(char* cfgName) {
+    SzConfig* ptr = (SzConfig*)MemAlloc(sizeof(SzConfig));
+    *ptr = (SzConfig){
+        .name = cfgName,
+        .variables = NULL,
+        .next = NULL
+    };
+    return ptr;
+}
+
 SzVariable* GetConfigVariable(SzConfig* cfg, char* varName) {
     SzVariable* var = cfg->variables;
     while (var != NULL) {

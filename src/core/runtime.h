@@ -39,12 +39,12 @@ typedef struct _SzETPair {
 
 typedef enum {
     VAR_TYPE_LUA
-} SzVariableType;
+} SzVariableClass;
 
 typedef struct _SzVariable {
     char* name;
     void* value;
-    SzVariableType type;
+    SzVariableClass class;
     struct _SzVariable* next;
 } SzVariable;
 

@@ -1,14 +1,10 @@
 #pragma once
 
-typedef struct _SzParameter {
-    char* name;
-    int value;
-    struct _SzParameter* next;
-} SzParameter;
+#include "runtime.h"
 
 typedef struct _SzConfig {
     char* name;
-    SzParameter* parameters;
+    SzVariable* parameters;
     struct _SzConfig* next;
 } SzConfig;
 

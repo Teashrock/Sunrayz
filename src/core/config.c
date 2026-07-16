@@ -1,9 +1,9 @@
 #include "config.h"
+#include "runtime.h"
 
 #include <raylib.h>
 #include <stdbool.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 
 /// Reads a string from an opened file
@@ -59,7 +59,7 @@ SzConfig* ReadConfig(char* cfgName) {
                 fseek(cfg, 2, SEEK_CUR);
             } else {
                 // If it's not a opening square bracket, then we're reading a parameter
-                SzParameter* param = (SzParameter*)MemAlloc(sizeof(SzParameter));
+                SzVariable* param = (SzVariable*)MemAlloc(sizeof(SzVariable));
                 param->next = NULL;
                 ReadToString(cfg, '=', param->name);
                 fseek(cfg, 1, SEEK_CUR);
@@ -85,7 +85,7 @@ void WriteConfig(char* cfgName, SzConfig* section) {
     SzConfig* currentSection = section;
     while (currentSection != NULL) {
         fprintf(cfg, "[%s]\n", currentSection->name);
-        SzParameter* currentParam = currentSection->parameters;
+        SzVariable* currentParam = currentSection->parameters;
         while (currentParam != NULL) {
             fprintf(
                 cfg,

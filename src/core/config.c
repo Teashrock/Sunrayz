@@ -28,6 +28,16 @@ void ReadToString(FILE* f, char until, char* dest) {
     dest[charCount + 1] = '\0';
 }
 
+/// Checks if a string can be seamlessly converted into integer.
+/// Warning: expects a zstring.
+bool IsInteger(char* string) {
+    for (int i = 0; string[i] != '\0'; i++) {
+        if (!(string[i] >= '0' && string[i] <= '9'))
+            return false;
+    }
+    return true;
+}
+
 /// Reads a configuration file into the engine memory
 SzConfig* ReadConfig(char* cfgName) {
     FILE* cfg = fopen(cfgName, "rt");

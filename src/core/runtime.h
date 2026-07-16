@@ -37,9 +37,9 @@ typedef struct _SzETPair {
 } SzETPair;
 
 typedef enum {
-    VAR_TYPE_CONFIG,
-    VAR_TYPE_LUA,
-    VAR_TYPE_SUNRAYZ
+    VAR_CLASS_CONFIG,
+    VAR_CLASS_LUA,
+    VAR_CLASS_SUNRAYZ
 } SzVariableClass;
 
 typedef enum {

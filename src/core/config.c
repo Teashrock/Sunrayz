@@ -95,6 +95,15 @@ SzConfig* ReadConfig(char* cfgName) {
                     MemFree(tmpValue);
                     param->value = newValue;
                     newValue = NULL;
+                } else if (IsBool(tmpValue)) {
+                    bool* newValue = (bool*)MemAlloc(sizeof(bool));
+                    if (!strcmp(tmpValue, "true"))
+                        *newValue = true;
+                    else if (!strcmp(tmpValue, "false"))
+                        *newValue = false;
+                    MemFree(tmpValue);
+                    param->value = newValue;
+                    newValue = NULL;
                 } else {
                     param->value = tmpValue;
                 }

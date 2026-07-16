@@ -606,5 +606,5 @@ def valgrind(ctx):
 
 def valgrind_detailed(ctx):
     global DEBUGGER
-    DEBUGGER = "valgrind -s --leak-check=full"
+    DEBUGGER = "valgrind -s --leak-check=full --show-leak-kinds=all --track-origins=yes"
     run(ctx)

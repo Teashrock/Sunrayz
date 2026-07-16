@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 /// Reads a string from an opened file
 /// up to the provided character (char until),
@@ -122,12 +123,28 @@ void WriteConfig(char* cfgName, SzConfig* section) {
         fprintf(cfg, "[%s]\n", currentSection->name);
         SzVariable* currentVar = currentSection->variables;
         while (currentVar != NULL) {
-            fprintf(
-                cfg,
-                "%s=%d\n",
-                currentVar->name,
-                *(int*)currentVar->value
-            );
+            if (currentVar->type == VAR_TYPE_BOOLEAN || currentVar->type == VAR_TYPE_STRING) {
+                char* boolString = NULL;
+                if (currentVar->type == VAR_TYPE_BOOLEAN) {
+                    if (*(bool*)currentVar->value)
+                        boolString = "true";
+                    else
+                        boolString = "false";
+                }
+                fprintf(
+                    cfg,
+                    "%s=%s\n",
+                    currentVar->name,
+                    boolString
+                );
+            } else {
+                fprintf(
+                    cfg,
+                    "%s=%d\n",
+                    currentVar->name,
+                    *(int*)currentVar->value
+                );
+            }
             currentVar = currentVar->next;
         }
         currentSection = currentSection->next;

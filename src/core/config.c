@@ -154,3 +154,13 @@ SzVariable* GetConfigVariable(SzConfig* cfg, char* varName) {
     }
     return NULL;
 }
+
+void AddConfigVariable(SzConfig* cfg, SzVariable* var) {
+    SzVariable* current;
+    SzVariable* last = cfg->variables;
+    while (last != NULL) {
+        current = last;
+        last = last->next;
+    }
+    current->next = var;
+}

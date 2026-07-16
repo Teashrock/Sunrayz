@@ -42,6 +42,8 @@ typedef enum {
 } SzVariableType;
 
 typedef struct _SzVariable {
+    char* name;
+    void* value;
     SzVariableType type;
     struct _SzVariable* next;
 } SzVariable;

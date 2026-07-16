@@ -93,6 +93,7 @@ SzConfig* ReadConfig(char* cfgName) {
     return section;
 }
 
+/// Writes variables from memory into config file
 void WriteConfig(char* cfgName, SzConfig* section) {
     FILE* cfg = fopen(cfgName, "wt");
     SzConfig* currentSection = section;
@@ -113,6 +114,12 @@ void WriteConfig(char* cfgName, SzConfig* section) {
     fclose(cfg);
 }
 
-SzVariable* GetParameter(SzConfig* cfg, char* paramName) {
-
+SzVariable* GetConfigVariable(SzConfig* cfg, char* paramName) {
+    SzVariable* var = cfg->parameters;
+    while (var != NULL) {
+        if (!strcmp(var->name, paramName))
+            return var;
+        var = var->next;
+    }
+    return NULL;
 }

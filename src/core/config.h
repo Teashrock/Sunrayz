@@ -10,3 +10,4 @@ typedef struct _SzConfig {
 
 SzConfig* ReadConfig(char* cfgName);
 void WriteConfig(char* cfgName, SzConfig* section);
+SzVariable* GetConfigVariable(SzConfig* cfg, char* paramName);

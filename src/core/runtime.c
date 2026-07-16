@@ -3,7 +3,6 @@
 #include <raylib.h>
 #include <semaphore.h>
 #include <stdlib.h>
-#include <time.h>
 
 SzTask* CreateTask(int (*taskRoutine)(void)) {
     SzTask* ptr = (SzTask*)MemAlloc(sizeof(SzTask));
@@ -50,51 +49,55 @@ SzActor* CreateActor(void) {
     return ptr;
 }
 
-SzVariable* CreateIntVariable(char* varName, int varValue, SzVariableClass class) {
+SzVariable* CreateIntVariable(char* varName, int varValue, SzVariableClass varClass) {
     SzVariable* ptr = (SzVariable*)MemAlloc(sizeof(SzVariable));
     int* valuePtr = (int*)MemAlloc(sizeof(int));
     *valuePtr = varValue;
     *ptr = (SzVariable){
         .name = varName,
         .value = valuePtr,
-        .class = class,
+        .type = VAR_TYPE_INTEGER,
+        .class = varClass,
         .next = NULL
     };
     return ptr;
 }
 
-SzVariable* CreateFloatVariable(char* varName, float varValue, SzVariableClass class) {
+SzVariable* CreateFloatVariable(char* varName, float varValue, SzVariableClass varClass) {
     SzVariable* ptr = (SzVariable*)MemAlloc(sizeof(SzVariable));
     float* valuePtr = (float*)MemAlloc(sizeof(float));
     *valuePtr = varValue;
     *ptr = (SzVariable){
         .name = varName,
         .value = valuePtr,
-        .class = class,
+        .type = VAR_TYPE_FLOAT,
+        .class = varClass,
         .next = NULL
     };
     return ptr;
 }
 
-SzVariable* CreateBoolVariable(char* varName, bool varValue, SzVariableClass class) {
+SzVariable* CreateBoolVariable(char* varName, bool varValue, SzVariableClass varClass) {
     SzVariable* ptr = (SzVariable*)MemAlloc(sizeof(SzVariable));
     bool* valuePtr = (bool*)MemAlloc(sizeof(bool));
     *valuePtr = varValue;
     *ptr = (SzVariable){
         .name = varName,
         .value = valuePtr,
-        .class = class,
+        .type = VAR_TYPE_BOOLEAN,
+        .class = varClass,
         .next = NULL
     };
     return ptr;
 }
 
-SzVariable* CreateStringVariable(char* varName, const char* varValue, SzVariableClass class) {
+SzVariable* CreateStringVariable(char* varName, const char* varValue, SzVariableClass varClass) {
     SzVariable* ptr = (SzVariable*)MemAlloc(sizeof(SzVariable));
     *ptr = (SzVariable){
         .name = varName,
         .value = (char*)varValue,
-        .class = class,
+        .type = VAR_TYPE_STRING,
+        .class = varClass,
         .next = NULL
     };
     return ptr;

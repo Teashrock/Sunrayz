@@ -4,10 +4,10 @@
 
 typedef struct _SzConfig {
     char* name;
-    SzVariable* parameters;
+    SzVariable* variables;
     struct _SzConfig* next;
 } SzConfig;
 
 SzConfig* ReadConfig(char* cfgName);
 void WriteConfig(char* cfgName, SzConfig* section);
-SzVariable* GetConfigVariable(SzConfig* cfg, char* paramName);
+SzVariable* GetConfigVariable(SzConfig* cfg, char* varName);

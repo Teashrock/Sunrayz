@@ -64,7 +64,7 @@ SzConfig* ReadConfig(char* cfgName) {
                     section = section->next;
                 }
                 section = (SzConfig*)MemAlloc(sizeof(SzConfig));
-                section->parameters = NULL;
+                section->variables = NULL;
                 ReadToString(cfg, ']', section->name);
                 fseek(cfg, 2, SEEK_CUR);
             } else {
@@ -99,25 +99,25 @@ void WriteConfig(char* cfgName, SzConfig* section) {
     SzConfig* currentSection = section;
     while (currentSection != NULL) {
         fprintf(cfg, "[%s]\n", currentSection->name);
-        SzVariable* currentParam = currentSection->parameters;
-        while (currentParam != NULL) {
+        SzVariable* currentVar = currentSection->variables;
+        while (currentVar != NULL) {
             fprintf(
                 cfg,
                 "%s=%d\n",
-                currentParam->name,
-                *(int*)currentParam->value
+                currentVar->name,
+                *(int*)currentVar->value
             );
-            currentParam = currentParam->next;
+            currentVar = currentVar->next;
         }
         currentSection = currentSection->next;
     }
     fclose(cfg);
 }
 
-SzVariable* GetConfigVariable(SzConfig* cfg, char* paramName) {
-    SzVariable* var = cfg->parameters;
+SzVariable* GetConfigVariable(SzConfig* cfg, char* varName) {
+    SzVariable* var = cfg->variables;
     while (var != NULL) {
-        if (!strcmp(var->name, paramName))
+        if (!strcmp(var->name, varName))
             return var;
         var = var->next;
     }

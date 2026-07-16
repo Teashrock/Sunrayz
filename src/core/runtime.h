@@ -58,4 +58,7 @@ typedef struct {
 SzTask* CreateTask(int (*taskRoutine)(void));
 SzReader* CreateReader(char* script);
 SzActor* CreateActor(void);
-SzVariable* CreateVariable(char* varName, void* varValue, SzVariableClass class);
+SzVariable* CreateIntVariable(char* varName, int varValue, SzVariableClass class);
+SzVariable* CreateFloatVariable(char* varName, float varValue, SzVariableClass class);
+SzVariable* CreateBoolVariable(char* varName, bool varValue, SzVariableClass class);
+SzVariable* CreateStringVariable(char* varName, const char* varValue, SzVariableClass class);

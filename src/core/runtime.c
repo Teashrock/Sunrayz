@@ -50,11 +50,50 @@ SzActor* CreateActor(void) {
     return ptr;
 }
 
-SzVariable* CreateVariable(char* varName, void* varValue, SzVariableClass class) {
+SzVariable* CreateIntVariable(char* varName, int varValue, SzVariableClass class) {
+    SzVariable* ptr = (SzVariable*)MemAlloc(sizeof(SzVariable));
+    int* valuePtr = (int*)MemAlloc(sizeof(int));
+    *valuePtr = varValue;
+    *ptr = (SzVariable){
+        .name = varName,
+        .value = valuePtr,
+        .class = class,
+        .next = NULL
+    };
+    return ptr;
+}
+
+SzVariable* CreateFloatVariable(char* varName, float varValue, SzVariableClass class) {
+    SzVariable* ptr = (SzVariable*)MemAlloc(sizeof(SzVariable));
+    float* valuePtr = (float*)MemAlloc(sizeof(float));
+    *valuePtr = varValue;
+    *ptr = (SzVariable){
+        .name = varName,
+        .value = valuePtr,
+        .class = class,
+        .next = NULL
+    };
+    return ptr;
+}
+
+SzVariable* CreateBoolVariable(char* varName, bool varValue, SzVariableClass class) {
+    SzVariable* ptr = (SzVariable*)MemAlloc(sizeof(SzVariable));
+    bool* valuePtr = (bool*)MemAlloc(sizeof(bool));
+    *valuePtr = varValue;
+    *ptr = (SzVariable){
+        .name = varName,
+        .value = valuePtr,
+        .class = class,
+        .next = NULL
+    };
+    return ptr;
+}
+
+SzVariable* CreateStringVariable(char* varName, const char* varValue, SzVariableClass class) {
     SzVariable* ptr = (SzVariable*)MemAlloc(sizeof(SzVariable));
     *ptr = (SzVariable){
         .name = varName,
-        .value = varValue,
+        .value = (char*)varValue,
         .class = class,
         .next = NULL
     };

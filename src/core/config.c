@@ -38,6 +38,18 @@ bool IsInteger(char* string) {
     return true;
 }
 
+/// Checks if a string can be seamlessly converted into a boolean.
+/// Warning: expects a zstring.
+bool IsBool(char* string) {
+    char tokenTrue[] = {'t', 'r', 'u', 'e'};
+    char tokenFalse[] = {'f', 'a', 'l', 's', 'e'};
+    for (int i = 0; string[i] != '\0'; i++) {
+        if (string[i] != tokenTrue[i] || string[i] != tokenFalse[i])
+            return false;
+    }
+    return true;
+}
+
 /// Reads a configuration file into the engine memory
 SzConfig* ReadConfig(char* cfgName) {
     FILE* cfg = fopen(cfgName, "rt");

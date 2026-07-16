@@ -3,7 +3,7 @@
 
 #include <raylib.h>
 #include <stdbool.h>
-#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 /// Reads a string from an opened file
@@ -77,13 +77,16 @@ SzConfig* ReadConfig(char* cfgName) {
                 char* tmpValue;
                 ReadToString(cfg, '\n', tmpValue);
                 // Determining the type of variable to save it properly
-                if (!strcmp(tmpValue, "true")) { // Booleans go first
-                    param->value = 1;
-                } else if (!strcmp(tmpValue, "false")) {
-                    param->value = 0;
-                } else { // Assuming the value is an integer (TODO: implement a proper check)
-                    param->value = atoi(tmpValue);
+                if (IsInteger(tmpValue)) {
+                    int* newValue = (int*)MemAlloc(sizeof(int));
+                    *newValue = atoi(tmpValue);
+                    MemFree(tmpValue);
+                    param->value = newValue;
+                    newValue = NULL;
+                } else {
+                    param->value = tmpValue;
                 }
+                tmpValue = NULL;
             }
         }
     }
@@ -101,11 +104,15 @@ void WriteConfig(char* cfgName, SzConfig* section) {
                 cfg,
                 "%s=%d\n",
                 currentParam->name,
-                currentParam->value
+                *(int*)currentParam->value
             );
             currentParam = currentParam->next;
         }
         currentSection = currentSection->next;
     }
     fclose(cfg);
+}
+
+SzVariable* GetParameter(SzConfig* cfg, char* paramName) {
+
 }

@@ -11,6 +11,7 @@
 #include <string.h>
 
 #include "base.h"
+#include "config.h"
 #include "runtime.h"
 
 #ifdef __HAIKU__
@@ -60,27 +61,40 @@ int main(int argc, char* argv[])
     // Initializing main config
     int screenWidth, screenHeight, windowResizable, maximizeWindow, fullscreen;
     char currentCfgSection[5];
-    char* cfgName = TextJoin((char*[]){(char*)GetApplicationDirectory(), "settings.cfg"}, 2, pathDelimiter);
-    if (FileExists(cfgName)) {
-        FILE* cfg = fopen(cfgName, "r");
-        fscanf(cfg, "[%4s]\n", currentCfgSection);
-        fscanf(cfg, "screenWidth=%d\n", &screenWidth);
-        fscanf(cfg, "screenHeight=%d\n", &screenHeight);
-        fscanf(cfg, "windowResizable=%d\n", &windowResizable);
-        fscanf(cfg, "maximizeWindow=%d\n", &maximizeWindow);
-        fscanf(cfg, "fullscreen=%d\n", &fullscreen);
-        fclose(cfg);
+    char* cfgFileName = TextJoin((char*[]){(char*)GetApplicationDirectory(), "settings.cfg"}, 2, pathDelimiter);
+    SzConfig* cfg;
+    if (FileExists(cfgFileName)) {
+        cfg = ReadConfig(cfgFileName);
+        screenWidth = *(int*)GetConfigVariable(cfg, "screenWidth")->value;
+        screenHeight = *(int*)GetConfigVariable(cfg, "screenHeight")->value;
+        windowResizable = *(bool*)GetConfigVariable(cfg, "windowResizable")->value;
+        maximizeWindow = *(bool*)GetConfigVariable(cfg, "maximizeWindow")->value;
+        fullscreen = *(bool*)GetConfigVariable(cfg, "fullscreen")->value;
     } else {
         screenHeight = SCREEN_HEIGHT_DEFAULT;
         screenWidth = SCREEN_WIDTH_DEFAULT;
-        FILE* cfg = fopen(cfgName, "wt");
-        fprintf(cfg, "[Main]\n");
-        fprintf(cfg, "screenWidth=%d\n", SCREEN_WIDTH_DEFAULT);
-        fprintf(cfg, "screenHeight=%d\n", SCREEN_HEIGHT_DEFAULT);
-        fprintf(cfg, "windowResizable=1\n");
-        fprintf(cfg, "maximizeWindow=0\n");
-        fprintf(cfg, "fullscreen=0\n");
-        fclose(cfg);
+        cfg = CreateConfig("Sunrayz");
+        AddConfigVariable(
+            cfg,
+            CreateIntVariable("screenWidth", SCREEN_WIDTH_DEFAULT, VAR_TYPE_CONFIG)
+        );
+        AddConfigVariable(
+            cfg,
+            CreateIntVariable("screenHeight", SCREEN_HEIGHT_DEFAULT, VAR_TYPE_CONFIG)
+        );
+        AddConfigVariable(
+            cfg,
+            CreateBoolVariable("windowResizable", "true", VAR_TYPE_CONFIG)
+        );
+        AddConfigVariable(
+            cfg,
+            CreateBoolVariable("maximizeWindow", "false", VAR_TYPE_CONFIG)
+        );
+        AddConfigVariable(
+            cfg,
+            CreateBoolVariable("fullscreen", "false", VAR_TYPE_CONFIG)
+        );
+        WriteConfig(cfgFileName, cfg);
     }
 
     // Initializing Lua

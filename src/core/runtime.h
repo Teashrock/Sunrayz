@@ -3,7 +3,6 @@
 #include <pthread.h>
 #include <stdbool.h>
 #include <stddef.h>
-#include <stdlib.h>
 #include <stdio.h>
 #include <semaphore.h>
 
@@ -38,7 +37,9 @@ typedef struct _SzETPair {
 } SzETPair;
 
 typedef enum {
-    VAR_TYPE_LUA
+    VAR_TYPE_CONFIG,
+    VAR_TYPE_LUA,
+    VAR_TYPE_SUNRAYZ
 } SzVariableClass;
 
 typedef struct _SzVariable {

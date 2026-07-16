@@ -2,6 +2,8 @@
 
 #include <raylib.h>
 #include <semaphore.h>
+#include <stdlib.h>
+#include <time.h>
 
 SzTask* CreateTask(int (*taskRoutine)(void)) {
     SzTask* ptr = (SzTask*)MemAlloc(sizeof(SzTask));
@@ -45,5 +47,16 @@ SzActor* CreateActor(void) {
         .vars = NULL
     };
     pthread_create(ptr->thread, NULL, ReaderRoutine, ptr);
+    return ptr;
+}
+
+SzVariable* CreateVariable(char* varName, void* varValue, SzVariableClass class) {
+    SzVariable* ptr = (SzVariable*)MemAlloc(sizeof(SzVariable));
+    *ptr = (SzVariable){
+        .name = varName,
+        .value = varValue,
+        .class = class,
+        .next = NULL
+    };
     return ptr;
 }

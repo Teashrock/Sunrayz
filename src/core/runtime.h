@@ -58,3 +58,4 @@ typedef struct {
 SzTask* CreateTask(int (*taskRoutine)(void));
 SzReader* CreateReader(char* script);
 SzActor* CreateActor(void);
+SzVariable* CreateVariable(char* varName, void* varValue, SzVariableClass class);

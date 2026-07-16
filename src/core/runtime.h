@@ -42,9 +42,17 @@ typedef enum {
     VAR_TYPE_SUNRAYZ
 } SzVariableClass;
 
+typedef enum {
+    VAR_TYPE_INTEGER,
+    VAR_TYPE_FLOAT,
+    VAR_TYPE_BOOLEAN,
+    VAR_TYPE_STRING
+} SzVariableType;
+
 typedef struct _SzVariable {
     char* name;
     void* value;
+    SzVariableType type;
     SzVariableClass class;
     struct _SzVariable* next;
 } SzVariable;

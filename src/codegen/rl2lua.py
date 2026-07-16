@@ -3,11 +3,20 @@ import os
 
 in_struct = False
 in_enum = False
+in_comment = False
 
 
 def check_pattern(line: str) -> str:
     global in_struct
     global in_enum
+    global in_comment
+    if in_comment:
+        if line.rstrip().endswith("*/"):
+            in_comment = False
+        return "-1"
+    if line.startswith("/*"):
+        in_comment = True
+        return "-1"
     if in_struct:
         if line.startswith(r"}"):
             in_struct = False

@@ -559,6 +559,26 @@ def build(ctx):
             os.path.join(BUILD_DIR, "src", "base_project", "start.lua"),
             os.path.join(BUILD_DIR, "result", platform.system() + "-" + BUILD_TYPE, "system", "start.lua")
         )
+        if platform.system() == "Linux":
+            with open(
+                os.path.join(
+                    BUILD_DIR,
+                    "result",
+                    platform.system() + "-" + BUILD_TYPE,
+                    "start.sh"
+                ), "w") as start_sh:
+                start_sh.write("""#!/bin/bash
+
+export SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
+export LD_LIBRARY_PATH="$SCRIPT_DIR:$LD_LIBRARY_PATH"
+exec "$SCRIPT_DIR/sunrayz"
+""")
+            os.chmod(os.path.join(
+                    BUILD_DIR,
+                    "result",
+                    platform.system() + "-" + BUILD_TYPE,
+                    "start.sh"
+                ), 0o755)
 
 def run(ctx):
     global EXE_NAME

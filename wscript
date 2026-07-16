@@ -551,13 +551,12 @@ def build(ctx):
         )
         if not os.path.exists(os.path.join(BUILD_DIR, "result", platform.system() + "-" + BUILD_TYPE, "system")):
             os.makedirs(os.path.join(BUILD_DIR, "result", platform.system() + "-" + BUILD_TYPE, "system"))
-        shutil.copy(
-            os.path.join(BUILD_DIR, "build", "lua", "raylib.lua"),
-            os.path.join(BUILD_DIR, "result", platform.system() + "-" + BUILD_TYPE, "system", "raylib.lua")
-        )
-        shutil.copy(
-            os.path.join(BUILD_DIR, "src", "base_project", "start.lua"),
-            os.path.join(BUILD_DIR, "result", platform.system() + "-" + BUILD_TYPE, "system", "start.lua")
+        ctx.install_files(
+            os.path.join(BUILD_DIR, "result", platform.system() + "-" + BUILD_TYPE, "system"),
+            [
+                os.path.join("src", "base_project", "start.lua"),
+                os.path.join("build", "lua", "raylib.lua")
+            ]
         )
         if platform.system() == "Linux":
             with open(

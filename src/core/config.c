@@ -9,37 +9,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-// Necessary for StringReadUntil to return all values;
-// TODO: Look further and understand how to make it change the passed pointer itself
-// Hint: I need a pointer of pointer!
-struct ReadStrResult {long addr; char* val;};
-
-/// Reads a string from an opened file
-/// up to the provided character (char until),
-/// then writes it by a provided char* pointer (dest).
-/// No need to allocate dest in advance.
-struct ReadStrResult StringReadUntil(FILE* f, char until) {
-    char* dest = NULL;
-    // Counting chars until the specific symbol is met
-    char c[1];
-    int startPosition = ftell(f);
-    int charCount = 0;
-    while (true) {
-        fread(c, sizeof(char), 1, f);
-        if (c[0] == until) {
-            fseek(f, startPosition, SEEK_SET);
-            break;
-        }
-        charCount++;
-    }
-    // Writing the string found into the destination
-    dest = (char*)MemAlloc(sizeof(char) * (charCount + 1));
-    fread(dest, sizeof(char), charCount, f);
-    dest[charCount + 1] = '\0';
-    struct ReadStrResult result = {ftell(f), dest};
-    return result;
-}
-
 /// Reads a configuration file into the engine memory
 SzConfig* ReadConfig(char* cfgName) {
     FILE* cfg = fopen(cfgName, "rt");
@@ -77,22 +46,17 @@ SzConfig* ReadConfig(char* cfgName) {
                 }
                 section = (SzConfig*)MemAlloc(sizeof(SzConfig));
                 section->variables = NULL;
-                struct ReadStrResult result = StringReadUntil(cfg, ']');
-                filePosition = result.addr + 2;
-                section->name = result.val;
+                filePosition = StringReadUntil(cfg, ']', &section->name) + 2;
             } else {
                 // Moving one character backwards to capture the name since the first letter
                 fseek(cfg, -1, SEEK_CUR);
                 // If it's not an opening square bracket, then we're reading a parameter
                 SzVariable* param = (SzVariable*)MemAlloc(sizeof(SzVariable));
                 param->next = NULL;
-                struct ReadStrResult result = StringReadUntil(cfg, '=');
-                fseek(cfg,  result.addr + 1, SEEK_SET);
-                param->name = result.val;
+                fseek(cfg,  StringReadUntil(cfg, '=', &param->name) + 1, SEEK_SET);
                 // Saving the value to a temporary variable
-                result = StringReadUntil(cfg, '\n');
-                filePosition = result.addr + 1;
-                char* tmpValue = result.val;
+                char* tmpValue;
+                filePosition = StringReadUntil(cfg, '\n', &tmpValue) + 1;
                 // Determining the type of variable to save it properly
                 if (StringIsInteger(tmpValue)) {
                     int* newValue = (int*)MemAlloc(sizeof(int));

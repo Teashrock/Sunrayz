@@ -1,6 +1,7 @@
 #pragma once
 
 #include <raylib.h>
+#include <stdio.h>
 
 #if _WIN32
 static const char* pathDelimiter = "\\";
@@ -23,6 +24,7 @@ typedef struct _SzConstruct {
     struct _SzConstruct** children;
 } SzConstruct;
 
+long StringReadUntil(FILE* f, char until, char** dest);
 bool StringIsInteger(char* string);
 bool StringIsBool(char* string);
 SzConstruct* CreateConstruct(SzConstruct* parent);

@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-// Necessary for ReadToString to return all values;
+// Necessary for StringReadUntil to return all values;
 // TODO: Look further and understand how to make it change the passed pointer itself
 // Hint: I need a pointer of pointer!
 struct ReadStrResult {long addr; char* val;};
@@ -16,7 +16,7 @@ struct ReadStrResult {long addr; char* val;};
 /// up to the provided character (char until),
 /// then writes it by a provided char* pointer (dest).
 /// No need to allocate dest in advance.
-struct ReadStrResult ReadToString(FILE* f, char until) {
+struct ReadStrResult StringReadUntil(FILE* f, char until) {
     char* dest = NULL;
     // Counting chars until the specific symbol is met
     char c[1];
@@ -40,7 +40,7 @@ struct ReadStrResult ReadToString(FILE* f, char until) {
 
 /// Checks if a string can be seamlessly converted into integer.
 /// Warning: expects a zstring.
-bool IsInteger(char* string) {
+bool StringIsInteger(char* string) {
     for (int i = 0; string[i] != '\0'; i++) {
         if (!(string[i] >= '0' && string[i] <= '9'))
             return false;
@@ -50,7 +50,7 @@ bool IsInteger(char* string) {
 
 /// Checks if a string can be seamlessly converted into a boolean.
 /// Warning: expects a zstring.
-bool IsBool(char* string) {
+bool StringIsBool(char* string) {
     char* tokenTrue = "true";
     char* tokenFalse = "false";
     for (int i = 0; string[i] != '\0'; i++) {
@@ -97,7 +97,7 @@ SzConfig* ReadConfig(char* cfgName) {
                 }
                 section = (SzConfig*)MemAlloc(sizeof(SzConfig));
                 section->variables = NULL;
-                struct ReadStrResult result = ReadToString(cfg, ']');
+                struct ReadStrResult result = StringReadUntil(cfg, ']');
                 filePosition = result.addr + 2;
                 section->name = result.val;
             } else {
@@ -106,21 +106,21 @@ SzConfig* ReadConfig(char* cfgName) {
                 // If it's not an opening square bracket, then we're reading a parameter
                 SzVariable* param = (SzVariable*)MemAlloc(sizeof(SzVariable));
                 param->next = NULL;
-                struct ReadStrResult result = ReadToString(cfg, '=');
+                struct ReadStrResult result = StringReadUntil(cfg, '=');
                 fseek(cfg,  result.addr + 1, SEEK_SET);
                 param->name = result.val;
                 // Saving the value to a temporary variable
-                result = ReadToString(cfg, '\n');
+                result = StringReadUntil(cfg, '\n');
                 filePosition = result.addr + 1;
                 char* tmpValue = result.val;
                 // Determining the type of variable to save it properly
-                if (IsInteger(tmpValue)) {
+                if (StringIsInteger(tmpValue)) {
                     int* newValue = (int*)MemAlloc(sizeof(int));
                     *newValue = atoi(tmpValue);
                     MemFree(tmpValue);
                     param->value = newValue;
                     newValue = NULL;
-                } else if (IsBool(tmpValue)) {
+                } else if (StringIsBool(tmpValue)) {
                     bool* newValue = (bool*)MemAlloc(sizeof(bool));
                     if (!strcmp(tmpValue, "true"))
                         *newValue = true;

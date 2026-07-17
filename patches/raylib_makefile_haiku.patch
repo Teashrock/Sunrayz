@@ -1,16 +1,101 @@
---- a/Makefile	2021-07-30 09:24:55.162529280 +0000
-+++ b/Makefile	2021-07-30 09:17:30.342622208 +0000
-@@ -130,6 +130,9 @@
-         ifeq ($(UNAMEOS),Darwin)
-             PLATFORM_OS = OSX
+--- a/Makefile	2026-04-22 22:18:40.000000000 +0000
++++ b/Makefile	2026-07-17 19:28:40.087556096 +0000
+@@ -69,7 +69,7 @@
+ # Define target platform
+ PLATFORM             ?= PLATFORM_DESKTOP
+ ifeq ($(PLATFORM), PLATFORM_DESKTOP)
+-    TARGET_PLATFORM   = PLATFORM_DESKTOP_GLFW
++    TARGET_PLATFORM   = PLATFORM_DESKTOP_RGFW
+ else
+     TARGET_PLATFORM   = $(PLATFORM)
+ endif
+@@ -86,10 +86,10 @@
+ RAYLIB_RELEASE_PATH  ?= $(RAYLIB_SRC_PATH)
+ 
+ # Library type used for raylib: STATIC (.a) or SHARED (.so/.dll)
+-RAYLIB_LIBTYPE       ?= STATIC
++RAYLIB_LIBTYPE       ?= SHARED
+ 
+ # Build mode for library: DEBUG or RELEASE
+-RAYLIB_BUILD_MODE    ?= RELEASE
++RAYLIB_BUILD_MODE    ?= DEBUG
+ 
+ # Build output name for the library
+ RAYLIB_LIB_NAME      ?= raylib
+@@ -106,9 +106,9 @@
+ 
+ # Include raylib modules on compilation
+ # NOTE: Some programs like tools could not require those modules
+-RAYLIB_MODULE_AUDIO  ?= TRUE
+-RAYLIB_MODULE_MODELS ?= TRUE
+-RAYLIB_MODULE_RAYGUI ?= FALSE
++RAYLIB_MODULE_AUDIO  ?= FALSE
++RAYLIB_MODULE_MODELS ?= FALSE
++RAYLIB_MODULE_RAYGUI ?= TRUE
+ 
+ # NOTE: Additional libraries have been moved to their own repos:
+ # raygui: https://github.com/raysan5/raygui
+@@ -173,6 +173,9 @@
+         ifndef PLATFORM_SHELL
+             PLATFORM_SHELL = sh
          endif
 +        ifeq ($(UNAMEOS),Haiku)
 +            PLATFORM_OS = HAIKU
 +        endif
      endif
  endif
- ifeq ($(PLATFORM),PLATFORM_RPI)
-@@ -520,6 +523,14 @@
+ ifeq ($(TARGET_PLATFORM),PLATFORM_DRM)
+@@ -505,28 +508,30 @@
+ endif
+ # Use Wayland display on Linux desktop
+ ifeq ($(TARGET_PLATFORM),PLATFORM_DESKTOP_RGFW)
+-    ifeq ($(PLATFORM_OS), LINUX)
++    ifeq ($(PLATFORM_OS), $(filter $(PLATFORM_OS), LINUX HAIKU))
+         ifeq ($(RGFW_LINUX_ENABLE_X11),TRUE)
+             CFLAGS += -DRGFW_X11 -DRGFW_UNIX
+         endif
+-        ifeq ($(RGFW_LINUX_ENABLE_WAYLAND),TRUE)
+-            CFLAGS += -DRGFW_WAYLAND -DEGLAPIENTRY=
+-
+-            WL_PROTOCOLS_DIR := external/RGFW/deps/wayland
+-
+-            wl_generate = \
+-                $(eval protocol=$(1)) \
+-                $(eval basename=$(2)) \
+-                $(shell wayland-scanner client-header $(protocol) $(RAYLIB_SRC_PATH)/$(basename).h) \
+-                $(shell wayland-scanner private-code $(protocol) $(RAYLIB_SRC_PATH)/$(basename)-code.c)
+-
+-            $(call wl_generate, $(WL_PROTOCOLS_DIR)/pointer-constraints-unstable-v1.xml, pointer-constraints-unstable-v1-client-protocol)
+-            $(call wl_generate, $(WL_PROTOCOLS_DIR)/pointer-warp-v1.xml, pointer-warp-v1-client-protocol)
+-            $(call wl_generate, $(WL_PROTOCOLS_DIR)/relative-pointer-unstable-v1.xml, relative-pointer-unstable-v1-client-protocol)
+-            $(call wl_generate, $(WL_PROTOCOLS_DIR)/xdg-decoration-unstable-v1.xml, xdg-decoration-unstable-v1-client-protocol)
+-            $(call wl_generate, $(WL_PROTOCOLS_DIR)/xdg-output-unstable-v1.xml, xdg-output-unstable-v1-client-protocol)
+-            $(call wl_generate, $(WL_PROTOCOLS_DIR)/xdg-shell.xml, xdg-shell-client-protocol)
+-            $(call wl_generate, $(WL_PROTOCOLS_DIR)/xdg-toplevel-icon-v1.xml, xdg-toplevel-icon-v1-client-protocol)
++        ifneq ($(PLATFORM_OS), HAIKU)
++            ifeq ($(RGFW_LINUX_ENABLE_WAYLAND),TRUE)
++                CFLAGS += -DRGFW_WAYLAND -DEGLAPIENTRY=
++
++                WL_PROTOCOLS_DIR := external/RGFW/deps/wayland
++
++                wl_generate = \
++                    $(eval protocol=$(1)) \
++                    $(eval basename=$(2)) \
++                    $(shell wayland-scanner client-header $(protocol) $(RAYLIB_SRC_PATH)/$(basename).h) \
++                    $(shell wayland-scanner private-code $(protocol) $(RAYLIB_SRC_PATH)/$(basename)-code.c)
++
++                $(call wl_generate, $(WL_PROTOCOLS_DIR)/pointer-constraints-unstable-v1.xml, pointer-constraints-unstable-v1-client-protocol)
++                $(call wl_generate, $(WL_PROTOCOLS_DIR)/pointer-warp-v1.xml, pointer-warp-v1-client-protocol)
++                $(call wl_generate, $(WL_PROTOCOLS_DIR)/relative-pointer-unstable-v1.xml, relative-pointer-unstable-v1-client-protocol)
++                $(call wl_generate, $(WL_PROTOCOLS_DIR)/xdg-decoration-unstable-v1.xml, xdg-decoration-unstable-v1-client-protocol)
++                $(call wl_generate, $(WL_PROTOCOLS_DIR)/xdg-output-unstable-v1.xml, xdg-output-unstable-v1-client-protocol)
++                $(call wl_generate, $(WL_PROTOCOLS_DIR)/xdg-shell.xml, xdg-shell-client-protocol)
++                $(call wl_generate, $(WL_PROTOCOLS_DIR)/xdg-toplevel-icon-v1.xml, xdg-toplevel-icon-v1-client-protocol)
++            endif
+         endif
+     endif
+ endif
+@@ -812,6 +817,14 @@
  				cd $(RAYLIB_RELEASE_PATH) && ln -fs lib$(RAYLIB_LIB_NAME).$(RAYLIB_VERSION).so lib$(RAYLIB_LIB_NAME).$(RAYLIB_API_VERSION).so
  				cd $(RAYLIB_RELEASE_PATH) && ln -fs lib$(RAYLIB_LIB_NAME).$(RAYLIB_VERSION).so lib$(RAYLIB_LIB_NAME).so
              endif
@@ -23,5 +108,32 @@
 +				cd $(RAYLIB_RELEASE_PATH) && ln -fsv lib$(RAYLIB_LIB_NAME).so.$(RAYLIB_API_VERSION) lib$(RAYLIB_LIB_NAME).so
 +            endif
          endif
-         ifeq ($(PLATFORM),PLATFORM_RPI)
+         ifeq ($(TARGET_PLATFORM),PLATFORM_DRM)
                  # Compile raylib shared library version $(RAYLIB_VERSION).
+@@ -873,16 +886,8 @@
+ 
+ # Compile raygui module
+ # NOTE: raygui header should be distributed with raylib.h
+-raygui.o : raygui.c
++raygui.o : raygui.c raygui.h raylib.h
+ 	$(CC) -c $< $(CFLAGS) $(INCLUDE_PATHS)
+-raygui.c:
+-ifeq ($(PLATFORM_SHELL), cmd)
+-	@echo #define RAYGUI_IMPLEMENTATION > raygui.c
+-	@echo #include "$(RAYLIB_MODULE_RAYGUI_PATH)/raygui.h" >> raygui.c
+-else
+-	@echo "#define RAYGUI_IMPLEMENTATION" > raygui.c
+-	@echo "#include \"$(RAYLIB_MODULE_RAYGUI_PATH)/raygui.h\"" >> raygui.c
+-endif
+ 
+ # Compile android_native_app_glue module
+ android_native_app_glue.o : $(NATIVE_APP_GLUE)/android_native_app_glue.c
+@@ -984,7 +989,7 @@
+ 	@echo "removed all generated files!"
+ 
+ clean_shell_sh:
+-	rm -fv *.o $(RAYLIB_RELEASE_PATH)/lib$(RAYLIB_LIB_NAME).a $(RAYLIB_RELEASE_PATH)/lib$(RAYLIB_LIB_NAME).web.a $(RAYLIB_RELEASE_PATH)/lib$(RAYLIB_LIB_NAME).so* raygui.c $(RAYLIB_RELEASE_PATH)/*-protocol.h $(RAYLIB_RELEASE_PATH)/*-protocol-code.h $(RAYLIB_RELEASE_PATH)/*-protocol-code.c
++	rm -fv *.o $(RAYLIB_RELEASE_PATH)/lib$(RAYLIB_LIB_NAME).a $(RAYLIB_RELEASE_PATH)/lib$(RAYLIB_LIB_NAME).web.a $(RAYLIB_RELEASE_PATH)/lib$(RAYLIB_LIB_NAME).so* $(RAYLIB_RELEASE_PATH)/*-protocol.h $(RAYLIB_RELEASE_PATH)/*-protocol-code.h $(RAYLIB_RELEASE_PATH)/*-protocol-code.c
+ ifeq ($(TARGET_PLATFORM),PLATFORM_ANDROID)
+ 	rm -fv $(NATIVE_APP_GLUE)/android_native_app_glue.o
+ endif

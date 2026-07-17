@@ -1,0 +1,29 @@
+--- a/minigamepad.h	2026-04-22 22:18:40.000000000 +0000
++++ b/minigamepad.h	2026-07-17 17:56:10.920387584 +0000
+@@ -176,6 +176,8 @@
+     #define MG_LINUX
+ #elif defined(__APPLE__)
+     #define MG_MACOS
++#elif defined(__HAIKU__)
++    #define MG_HAIKU
+ #endif
+ 
+ #ifndef MG_INT_DEFINED
+@@ -548,7 +550,7 @@
+ #if (defined(MG_NATIVE) || defined(MG_IMPLEMENTATION)) && !defined(MG_NATIVE_HEADER)
+ #define MG_NATIVE_HEADER
+ 
+-#ifdef MG_LINUX
++#if defined(MG_LINUX) || defined(MG_HAIKU)
+ 
+ struct mg_input_absinfo {
+     i32 value;
+@@ -620,7 +622,7 @@
+     void* ginput;
+     void* dummy_win;
+ };
+-#elif defined(MG_MACOS)
++#elif defined(MG_MACOS) || defined(MG_HAIKU)
+ struct mg_gamepads_src {
+     void* hidManager;
+ };

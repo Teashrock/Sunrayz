@@ -196,6 +196,8 @@ def configure(conf):
     download("raylib", RAYLIB_VERSION, RAYLIB_REPO)
     download("raygui", RAYGUI_VERSION, RAYGUI_REPO)
     download("LuaJIT", LUAJIT_VERSION, LUAJIT_REPO, "zip")
+    if platform.system() == "Haiku":
+        download("xlibe", "0.3.3", "https://github.com/waddlesplash/xlibe")
     #download("gettext", GETTEXT_VERSION, GETTEXT_REPO)
 
     if download_only:
@@ -222,6 +224,19 @@ def configure(conf):
     os.chdir(BUILD_DIR + "/deps/raygui/src")
     sp = subprocess.Popen(["patch", "-Np1", "-i", os.path.join(BUILD_DIR, "patches", "raygui.patch")])
     sp.wait()
+    if platform.system() == "Haiku":
+        Logs.warn("Applying Haiku-specific Raylib Makefile...")
+        os.chdir(BUILD_DIR + "/deps/raylib/src")
+        sp = subprocess.Popen(["patch", "-Np1", "-i", os.path.join(BUILD_DIR, "patches", "raylib_makefile_haiku.patch")])
+        sp.wait()
+        Logs.warn("Applying Haiku-specific RGFW patches...")
+        os.chdir(BUILD_DIR + "/deps/raylib/src/external/RGFW/deps")
+        sp = subprocess.Popen(["patch", "-Np1", "-i", os.path.join(BUILD_DIR, "patches", "haiku_minigamepad.patch")])
+        sp.wait()
+        os.chdir(BUILD_DIR + "/deps/raylib/src/external/RGFW")
+        sp = subprocess.Popen(["patch", "-Np1", "-i", os.path.join(BUILD_DIR, "patches", "haiku_RGFW.patch")])
+        sp.wait()
+        os.chdir(BUILD_DIR + "/deps/raygui/src")
     
     # Dividing raygui.h into two separate parts
     p : str = ""
@@ -247,17 +262,23 @@ def configure(conf):
         raygui_c.write("#include <raygui.h>\n")
         raygui_c.write(raygui_code)
     
-    if not platform.system() == "Haiku":
-        Logs.warn("Changing Raylib platform backend to PLATFORM_DESKTOP_RGFW...")
-        with open("deps/raylib/src/Makefile", "r") as rf:
-            p = rf.read().replace("TARGET_PLATFORM   = PLATFORM_DESKTOP_GLFW", "TARGET_PLATFORM   = PLATFORM_DESKTOP_RGFW", 1)
+    #Logs.warn("Changing Raylib platform backend to PLATFORM_DESKTOP_RGFW...")
+    #with open("deps/raylib/src/Makefile", "r") as rf:
+    #    p = rf.read().replace("TARGET_PLATFORM   = PLATFORM_DESKTOP_GLFW", "TARGET_PLATFORM   = PLATFORM_DESKTOP_RGFW", 1)
 
-        with open("deps/raylib/src/Makefile", "w") as rf:
-            rf.write(p)
-    else:
+    #with open("deps/raylib/src/Makefile", "w") as rf:
+    #    rf.write(p)
+    if platform.system() == "Haiku":
         Logs.warn("Disabling audio backend in Raylib (because of Miniaudio)...")
         with open("deps/raylib/src/Makefile", "r") as rf:
             p = rf.read().replace("RAYLIB_MODULE_AUDIO  ?= TRUE", "RAYLIB_MODULE_AUDIO  ?= FALSE", 1)
+
+        with open("deps/raylib/src/Makefile", "w") as rf:
+            rf.write(p)
+    
+        Logs.warn("Haiku: Setting path for Xlibe...")
+        with open("deps/raylib/src/Makefile", "r") as rf:
+            p = rf.read().replace("CFLAGS += -DRGFW_X11 -DRGFW_UNIX", "CFLAGS += -DRGFW_X11 -DRGFW_UNIX -DRGFW_NO_XRANDR -DRGFW_NO_X11_CURSOR -I/boot/system/develop/headers -I" + os.path.join(BUILD_DIR, "deps", "xlibe", "include"), 1)
 
         with open("deps/raylib/src/Makefile", "w") as rf:
             rf.write(p)

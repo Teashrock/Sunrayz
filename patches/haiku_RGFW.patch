@@ -1,5 +1,5 @@
 --- a/RGFW.h	2026-04-22 22:18:40.000000000 +0000
-+++ b/RGFW.h	2026-07-17 20:08:41.191627264 +0000
++++ b/RGFW.h	2026-07-17 20:18:11.985399296 +0000
 @@ -199,8 +199,10 @@
  	#define RGFW_WASM
  #endif
@@ -24,25 +24,31 @@
  		#define RGFW_X11
  		#define RGFW_UNIX
  #elif defined(__APPLE__) && !defined(RGFW_MACOS_X11) && !defined(RGFW_X11)  && !defined(RGFW_WASM)  && !defined(RGFW_CUSTOM_BACKEND)
-@@ -6039,7 +6043,11 @@
+@@ -6039,7 +6043,14 @@
  #include <X11/cursorfont.h> /* for hiding */
  #include <X11/extensions/shapeconst.h>
  #include <X11/extensions/shape.h>
 -#include <X11/extensions/XInput2.h>
 +#ifdef __HAIKU__
 +    #include <X11/extensions/XI2.h>
++    #include <X11/extensions/XI2proto.h>
++    typedef xXIEventMask XIEventMask;
++    typedef xXIRawEvent XIRawEvent;
 +#else
 +    #include <X11/extensions/XInput2.h>
 +#endif
  
  #ifdef RGFW_OPENGL
  	#ifndef __gl_h_
-@@ -6058,7 +6066,7 @@
+@@ -6058,7 +6069,10 @@
  		#define GLboolean   unsigned char
  	#endif
  
 -	#include <GL/glx.h> /* GLX defs, xlib.h, gl.h */
-+	//#include <GL/glx.h> /* GLX defs, xlib.h, gl.h */
++	#ifdef __HAIKU__
++	    #include <GL/glxint.h>
++	#else
++	    #include <GL/glx.h> /* GLX defs, xlib.h, gl.h */
  	#ifndef GLX_MESA_swap_control
  		#define  GLX_MESA_swap_control
  	#endif

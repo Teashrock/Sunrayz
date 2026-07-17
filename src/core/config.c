@@ -3,22 +3,29 @@
 
 #include <raylib.h>
 #include <stdbool.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
+
+// Necessary for ReadToString to return all values;
+// TODO: Look further and understand how to make it change the passed pointer itself
+// Hint: I need a pointer of pointer!
+struct ReadStrResult {long addr; char* val;};
 
 /// Reads a string from an opened file
 /// up to the provided character (char until),
 /// then writes it by a provided char* pointer (dest).
 /// No need to allocate dest in advance.
-void ReadToString(FILE* f, char until, char* dest) {
+struct ReadStrResult ReadToString(FILE* f, char until) {
+    char* dest = NULL;
     // Counting chars until the specific symbol is met
     char c[1];
+    int startPosition = ftell(f);
     int charCount = 0;
     while (true) {
         fread(c, sizeof(char), 1, f);
         if (c[0] == until) {
-            fseek(f, -(charCount + 1), SEEK_CUR);
+            fseek(f, startPosition, SEEK_SET);
             break;
         }
         charCount++;
@@ -27,6 +34,8 @@ void ReadToString(FILE* f, char until, char* dest) {
     dest = (char*)MemAlloc(sizeof(char) * (charCount + 1));
     fread(dest, sizeof(char), charCount, f);
     dest[charCount + 1] = '\0';
+    struct ReadStrResult result = {ftell(f), dest};
+    return result;
 }
 
 /// Checks if a string can be seamlessly converted into integer.
@@ -57,20 +66,30 @@ SzConfig* ReadConfig(char* cfgName) {
     // Counting chars until a newline
     char c[1];
     int charCounter = 0;
-    SzConfig* section;
+    long filePosition = ftell(cfg);
+    SzConfig* section = NULL;
     while (true) {
         int readResult = fread(c, sizeof(char), 1, cfg);
-        if (readResult != 1) {
-            if (feof(cfg))
+        if (readResult < 1) {
+            if (feof(cfg)) {
+                fclose(cfg);
                 break;
-            else if (ferror(cfg))
-                {}
+            } else if (ferror(cfg)) {
+                printf("Error reading file %s!\n", cfgName);
+                exit(1);
+            }
         }
         charCounter++;
+        filePosition++;
         // When we've found a newline, we return and scan the line
         if (c[0] == '\n') {
-            fseek(cfg, -(charCounter + 1), SEEK_CUR);
-            fread(c, sizeof(char), 1, cfg);
+            fseek(cfg, filePosition - charCounter, SEEK_SET);
+            int readResult = fread(c, sizeof(char), 1, cfg);
+            if (readResult != 1) {
+                if (feof(cfg)) {
+                    fclose(cfg);
+                }
+            }
             if (c[0] == '[') {
                 // An opening square bracket means a section name
                 while (section != NULL) {
@@ -78,17 +97,22 @@ SzConfig* ReadConfig(char* cfgName) {
                 }
                 section = (SzConfig*)MemAlloc(sizeof(SzConfig));
                 section->variables = NULL;
-                ReadToString(cfg, ']', section->name);
-                fseek(cfg, 2, SEEK_CUR);
+                struct ReadStrResult result = ReadToString(cfg, ']');
+                filePosition = result.addr + 2;
+                section->name = result.val;
             } else {
-                // If it's not a opening square bracket, then we're reading a parameter
+                // Moving one character backwards to capture the name since the first letter
+                fseek(cfg, -1, SEEK_CUR);
+                // If it's not an opening square bracket, then we're reading a parameter
                 SzVariable* param = (SzVariable*)MemAlloc(sizeof(SzVariable));
                 param->next = NULL;
-                ReadToString(cfg, '=', param->name);
-                fseek(cfg, 1, SEEK_CUR);
+                struct ReadStrResult result = ReadToString(cfg, '=');
+                fseek(cfg,  result.addr + 1, SEEK_SET);
+                param->name = result.val;
                 // Saving the value to a temporary variable
-                char* tmpValue;
-                ReadToString(cfg, '\n', tmpValue);
+                result = ReadToString(cfg, '\n');
+                filePosition = result.addr + 1;
+                char* tmpValue = result.val;
                 // Determining the type of variable to save it properly
                 if (IsInteger(tmpValue)) {
                     int* newValue = (int*)MemAlloc(sizeof(int));
@@ -109,8 +133,11 @@ SzConfig* ReadConfig(char* cfgName) {
                     param->value = tmpValue;
                 }
                 tmpValue = NULL;
+                AddConfigVariable(section, param);
             }
+            charCounter = 0;
         }
+        fseek(cfg, filePosition, SEEK_SET);
     }
     return section;
 }
@@ -165,10 +192,12 @@ SzConfig* CreateConfig(char* cfgName) {
 SzVariable* GetConfigVariable(SzConfig* cfg, char* varName) {
     SzVariable* var = cfg->variables;
     while (var != NULL) {
-        if (!strcmp(var->name, varName))
+        if (!strcmp(var->name, varName)) {
             return var;
+        }
         var = var->next;
     }
+    printf("Variable error: %s wasn't found!\n", varName);
     return NULL;
 }
 

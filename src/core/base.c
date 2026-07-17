@@ -37,6 +37,8 @@ bool StringIsInteger(char* string) {
 
 /// Checks if a string can be seamlessly converted into a float.
 /// Warning: expects a zstring.
+/// Warning: Untested!
+/// TODO: Test it.
 bool StringIsFloat(char* string) {
     for (int i = 0; string[i] != '\0'; i++) {
         if (!(string[i] >= '0' && string[i] <= '9'))

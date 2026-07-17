@@ -108,8 +108,8 @@ int main(int argc, char* argv[])
     SetWindowSize(screenWidth, screenHeight);
     if (maximizeWindow)
         MaximizeWindow();
-    //if (!fullscreen)
-    //    ToggleFullscreen();
+    if (!fullscreen)
+        ToggleFullscreen();
     SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
 

@@ -1,4 +1,5 @@
 #include "base.h"
+#include <string.h>
 
 /// Reads a string from an opened file
 /// up to the provided character (char until),
@@ -30,6 +31,17 @@ bool StringIsInteger(char* string) {
     for (int i = 0; string[i] != '\0'; i++) {
         if (!(string[i] >= '0' && string[i] <= '9'))
             return false;
+    }
+    return true;
+}
+
+/// Checks if a string can be seamlessly converted into a float.
+/// Warning: expects a zstring.
+bool StringIsFloat(char* string) {
+    for (int i = 0; string[i] != '\0'; i++) {
+        if (!(string[i] >= '0' && string[i] <= '9'))
+            if (string[i] == '.' && strchr(string, '.') == strrchr(string, '.'))
+                return false;
     }
     return true;
 }

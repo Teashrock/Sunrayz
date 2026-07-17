@@ -11,4 +11,5 @@ static const char* pathDelimiter = "/";
 
 long StringReadUntil(FILE* f, char until, char** dest);
 bool StringIsInteger(char* string);
+bool StringIsFloat(char* string);
 bool StringIsBool(char* string);

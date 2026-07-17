@@ -1,4 +1,6 @@
 #include "config.h"
+
+#include "base.h"
 #include "runtime.h"
 
 #include <raylib.h>
@@ -36,28 +38,6 @@ struct ReadStrResult StringReadUntil(FILE* f, char until) {
     dest[charCount + 1] = '\0';
     struct ReadStrResult result = {ftell(f), dest};
     return result;
-}
-
-/// Checks if a string can be seamlessly converted into integer.
-/// Warning: expects a zstring.
-bool StringIsInteger(char* string) {
-    for (int i = 0; string[i] != '\0'; i++) {
-        if (!(string[i] >= '0' && string[i] <= '9'))
-            return false;
-    }
-    return true;
-}
-
-/// Checks if a string can be seamlessly converted into a boolean.
-/// Warning: expects a zstring.
-bool StringIsBool(char* string) {
-    char* tokenTrue = "true";
-    char* tokenFalse = "false";
-    for (int i = 0; string[i] != '\0'; i++) {
-        if (string[i] != tokenTrue[i] || string[i] != tokenFalse[i])
-            return false;
-    }
-    return true;
 }
 
 /// Reads a configuration file into the engine memory

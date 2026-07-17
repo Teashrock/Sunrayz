@@ -23,4 +23,6 @@ typedef struct _SzConstruct {
     struct _SzConstruct** children;
 } SzConstruct;
 
+bool StringIsInteger(char* string);
+bool StringIsBool(char* string);
 SzConstruct* CreateConstruct(SzConstruct* parent);

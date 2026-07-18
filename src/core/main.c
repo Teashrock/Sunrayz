@@ -3,6 +3,9 @@
 #include <semaphore.h>
 #include <stdbool.h>
 #include <stdio.h>
+#ifdef __HAIKU__
+#include <stdlib.h>
+#endif
 
 #include <lua.h>
 #include <lualib.h>

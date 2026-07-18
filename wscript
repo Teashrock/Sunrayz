@@ -196,8 +196,6 @@ def configure(conf):
     download("raylib", RAYLIB_VERSION, RAYLIB_REPO)
     download("raygui", RAYGUI_VERSION, RAYGUI_REPO)
     download("LuaJIT", LUAJIT_VERSION, LUAJIT_REPO, "zip")
-    if platform.system() == "Haiku":
-        download("xlibe", "0.3.3", "https://github.com/waddlesplash/xlibe")
     #download("gettext", GETTEXT_VERSION, GETTEXT_REPO)
 
     if download_only:
@@ -276,9 +274,9 @@ def configure(conf):
         with open("deps/raylib/src/Makefile", "w") as rf:
             rf.write(p)
     
-        Logs.warn("Haiku: Setting path for Xlibe...")
+        Logs.warn("Haiku: Setting path for Wayland...")
         with open("deps/raylib/src/Makefile", "r") as rf:
-            p = rf.read().replace("CFLAGS += -DRGFW_X11 -DRGFW_UNIX", "CFLAGS += -DRGFW_X11 -DRGFW_UNIX -DRGFW_NO_XRANDR -DRGFW_NO_X11_CURSOR -I/boot/system/develop/headers -I" + os.path.join(BUILD_DIR, "deps", "xlibe", "include"), 1)
+            p = rf.read().replace("CFLAGS += -DRGFW_WAYLAND -DEGLAPIENTRY=", "CFLAGS += -DRGFW_WAYLAND -DEGLAPIENTRY= -I/boot/system/develop/headers", 1)
 
         with open("deps/raylib/src/Makefile", "w") as rf:
             rf.write(p)

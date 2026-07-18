@@ -1,5 +1,5 @@
 --- a/Makefile	2026-04-22 22:18:40.000000000 +0000
-+++ b/Makefile	2026-07-17 19:28:40.087556096 +0000
++++ b/Makefile	2026-07-18 10:39:56.656146432 +0000
 @@ -69,7 +69,7 @@
  # Define target platform
  PLATFORM             ?= PLATFORM_DESKTOP
@@ -35,6 +35,24 @@
  
  # NOTE: Additional libraries have been moved to their own repos:
  # raygui: https://github.com/raysan5/raygui
+@@ -119,13 +119,13 @@
+ 
+ # Enable support for X11 by default on Linux when using GLFW
+ # NOTE: Wayland is disabled by default, only enable if you are sure
+-GLFW_LINUX_ENABLE_WAYLAND  ?= FALSE
+-GLFW_LINUX_ENABLE_X11      ?= TRUE
++GLFW_LINUX_ENABLE_WAYLAND  ?= TRUE
++GLFW_LINUX_ENABLE_X11      ?= FALSE
+ 
+ # Enable support for X11 by default on Linux when using RGFW
+ # NOTE: Wayland is disabled by default, only enable if you are sure
+-RGFW_LINUX_ENABLE_WAYLAND  ?= FALSE
+-RGFW_LINUX_ENABLE_X11      ?= TRUE
++RGFW_LINUX_ENABLE_WAYLAND  ?= TRUE
++RGFW_LINUX_ENABLE_X11      ?= FALSE
+ 
+ # PLATFORM_DESKTOP_SDL: It requires SDL library to be provided externally
+ # WARNING: Library is not included in raylib, it MUST be configured by users
 @@ -173,6 +173,9 @@
          ifndef PLATFORM_SHELL
              PLATFORM_SHELL = sh
@@ -45,7 +63,16 @@
      endif
  endif
  ifeq ($(TARGET_PLATFORM),PLATFORM_DRM)
-@@ -505,28 +508,30 @@
+@@ -256,7 +259,7 @@
+     GRAPHICS ?= GRAPHICS_API_OPENGL_33
+ endif
+ ifeq ($(TARGET_PLATFORM),PLATFORM_DESKTOP_RGFW)
+-    GRAPHICS ?= GRAPHICS_API_OPENGL_33
++    GRAPHICS ?= GRAPHICS_API_OPENGL_SOFTWARE
+     #GRAPHICS = GRAPHICS_API_OPENGL_SOFTWARE    # Uncomment to use software rendering
+     #GRAPHICS = GRAPHICS_API_OPENGL_11          # Uncomment to use OpenGL 1.1
+     #GRAPHICS = GRAPHICS_API_OPENGL_21          # Uncomment to use OpenGL 2.1
+@@ -505,7 +508,7 @@
  endif
  # Use Wayland display on Linux desktop
  ifeq ($(TARGET_PLATFORM),PLATFORM_DESKTOP_RGFW)
@@ -54,48 +81,7 @@
          ifeq ($(RGFW_LINUX_ENABLE_X11),TRUE)
              CFLAGS += -DRGFW_X11 -DRGFW_UNIX
          endif
--        ifeq ($(RGFW_LINUX_ENABLE_WAYLAND),TRUE)
--            CFLAGS += -DRGFW_WAYLAND -DEGLAPIENTRY=
--
--            WL_PROTOCOLS_DIR := external/RGFW/deps/wayland
--
--            wl_generate = \
--                $(eval protocol=$(1)) \
--                $(eval basename=$(2)) \
--                $(shell wayland-scanner client-header $(protocol) $(RAYLIB_SRC_PATH)/$(basename).h) \
--                $(shell wayland-scanner private-code $(protocol) $(RAYLIB_SRC_PATH)/$(basename)-code.c)
--
--            $(call wl_generate, $(WL_PROTOCOLS_DIR)/pointer-constraints-unstable-v1.xml, pointer-constraints-unstable-v1-client-protocol)
--            $(call wl_generate, $(WL_PROTOCOLS_DIR)/pointer-warp-v1.xml, pointer-warp-v1-client-protocol)
--            $(call wl_generate, $(WL_PROTOCOLS_DIR)/relative-pointer-unstable-v1.xml, relative-pointer-unstable-v1-client-protocol)
--            $(call wl_generate, $(WL_PROTOCOLS_DIR)/xdg-decoration-unstable-v1.xml, xdg-decoration-unstable-v1-client-protocol)
--            $(call wl_generate, $(WL_PROTOCOLS_DIR)/xdg-output-unstable-v1.xml, xdg-output-unstable-v1-client-protocol)
--            $(call wl_generate, $(WL_PROTOCOLS_DIR)/xdg-shell.xml, xdg-shell-client-protocol)
--            $(call wl_generate, $(WL_PROTOCOLS_DIR)/xdg-toplevel-icon-v1.xml, xdg-toplevel-icon-v1-client-protocol)
-+        ifneq ($(PLATFORM_OS), HAIKU)
-+            ifeq ($(RGFW_LINUX_ENABLE_WAYLAND),TRUE)
-+                CFLAGS += -DRGFW_WAYLAND -DEGLAPIENTRY=
-+
-+                WL_PROTOCOLS_DIR := external/RGFW/deps/wayland
-+
-+                wl_generate = \
-+                    $(eval protocol=$(1)) \
-+                    $(eval basename=$(2)) \
-+                    $(shell wayland-scanner client-header $(protocol) $(RAYLIB_SRC_PATH)/$(basename).h) \
-+                    $(shell wayland-scanner private-code $(protocol) $(RAYLIB_SRC_PATH)/$(basename)-code.c)
-+
-+                $(call wl_generate, $(WL_PROTOCOLS_DIR)/pointer-constraints-unstable-v1.xml, pointer-constraints-unstable-v1-client-protocol)
-+                $(call wl_generate, $(WL_PROTOCOLS_DIR)/pointer-warp-v1.xml, pointer-warp-v1-client-protocol)
-+                $(call wl_generate, $(WL_PROTOCOLS_DIR)/relative-pointer-unstable-v1.xml, relative-pointer-unstable-v1-client-protocol)
-+                $(call wl_generate, $(WL_PROTOCOLS_DIR)/xdg-decoration-unstable-v1.xml, xdg-decoration-unstable-v1-client-protocol)
-+                $(call wl_generate, $(WL_PROTOCOLS_DIR)/xdg-output-unstable-v1.xml, xdg-output-unstable-v1-client-protocol)
-+                $(call wl_generate, $(WL_PROTOCOLS_DIR)/xdg-shell.xml, xdg-shell-client-protocol)
-+                $(call wl_generate, $(WL_PROTOCOLS_DIR)/xdg-toplevel-icon-v1.xml, xdg-toplevel-icon-v1-client-protocol)
-+            endif
-         endif
-     endif
- endif
-@@ -812,6 +817,14 @@
+@@ -812,6 +815,14 @@
  				cd $(RAYLIB_RELEASE_PATH) && ln -fs lib$(RAYLIB_LIB_NAME).$(RAYLIB_VERSION).so lib$(RAYLIB_LIB_NAME).$(RAYLIB_API_VERSION).so
  				cd $(RAYLIB_RELEASE_PATH) && ln -fs lib$(RAYLIB_LIB_NAME).$(RAYLIB_VERSION).so lib$(RAYLIB_LIB_NAME).so
              endif
@@ -110,7 +96,7 @@
          endif
          ifeq ($(TARGET_PLATFORM),PLATFORM_DRM)
                  # Compile raylib shared library version $(RAYLIB_VERSION).
-@@ -873,16 +886,8 @@
+@@ -873,16 +884,8 @@
  
  # Compile raygui module
  # NOTE: raygui header should be distributed with raylib.h
@@ -128,7 +114,7 @@
  
  # Compile android_native_app_glue module
  android_native_app_glue.o : $(NATIVE_APP_GLUE)/android_native_app_glue.c
-@@ -984,7 +989,7 @@
+@@ -984,7 +987,7 @@
  	@echo "removed all generated files!"
  
  clean_shell_sh:

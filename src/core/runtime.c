@@ -104,6 +104,7 @@ SzVariable* CreateStringVariable(char* varName, const char* varValue, SzVariable
 }
 
 /// Note: expects a pointer to the first variable of a sequence
+/// TODO: Potentially buggy; will segfault if unable to access the previous variable
 void DestroyVariable(SzVariable* firstPointer, char* varName) {
     SzVariable* current = firstPointer;
     SzVariable* previous = NULL;

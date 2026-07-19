@@ -2,10 +2,14 @@
 
 #include <raylib.h>
 
+typedef enum {
+    ENTITY_TYPE_TEXTURE
+} SzEntityType;
+
 typedef struct _SzEntity {
     struct _SzConstruct* parent;
     void* essence;
-    char* type;
+    SzEntityType type;
     struct _SzEntity* next;
     int* id;
 } SzEntity;

@@ -29,3 +29,14 @@ void EntitySetTexture(SzEntity* entity, Texture2D texture) {
     *ptr = texture;
     entity->essence = ptr;
 }
+
+void AttachEntity(SzConstruct* construct, SzEntity* entity) {
+    if (construct->parts == NULL) {
+        construct->parts = entity;
+    }
+    SzEntity* ent = construct->parts;
+    while (ent->next != NULL) {
+        ent = ent->next;
+    }
+    ent->next = entity;
+}

@@ -115,7 +115,14 @@ void WriteConfig(char* cfgName, SzConfig* section) {
                     currentVar->name,
                     boolString
                 );
-            } else if (currentVar->type == VAR_TYPE_FLOAT || currentVar->type == VAR_TYPE_DOUBLE) {
+            } else if (currentVar->type == VAR_TYPE_FLOAT) {
+                fprintf(
+                    cfg,
+                    "%s=%f\n",
+                    currentVar->name,
+                    *(float*)currentVar->value
+                );
+            } else if (currentVar->type == VAR_TYPE_DOUBLE) {
                 fprintf(
                     cfg,
                     "%s=%f\n",

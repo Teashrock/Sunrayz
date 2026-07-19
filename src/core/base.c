@@ -35,11 +35,11 @@ bool StringIsInteger(char* string) {
     return true;
 }
 
-/// Checks if a string can be seamlessly converted into a float.
+/// Checks if a string can be seamlessly converted into a float or double.
 /// Warning: expects a zstring.
 /// Warning: Untested!
 /// TODO: Test it.
-bool StringIsFloat(char* string) {
+bool StringIsFraction(char* string) {
     for (int i = 0; string[i] != '\0'; i++) {
         if (!(string[i] >= '0' && string[i] <= '9'))
             if (string[i] == '.' && strchr(string, '.') == strrchr(string, '.'))

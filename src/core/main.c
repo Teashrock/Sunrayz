@@ -87,15 +87,15 @@ int main(int argc, char* argv[])
         );
         AddConfigVariable(
             cfg,
-            CreateBoolVariable("windowResizable", "true", VAR_CLASS_CONFIG)
+            CreateBoolVariable("windowResizable", true, VAR_CLASS_CONFIG)
         );
         AddConfigVariable(
             cfg,
-            CreateBoolVariable("maximizeWindow", "false", VAR_CLASS_CONFIG)
+            CreateBoolVariable("maximizeWindow", false, VAR_CLASS_CONFIG)
         );
         AddConfigVariable(
             cfg,
-            CreateBoolVariable("fullscreen", "false", VAR_CLASS_CONFIG)
+            CreateBoolVariable("fullscreen", false, VAR_CLASS_CONFIG)
         );
         WriteConfig(cfgFileName, cfg);
     }

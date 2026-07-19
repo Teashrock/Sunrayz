@@ -128,23 +128,12 @@ int main(int argc, char* argv[])
     // Listing lua files
     FilePathList luaFiles = LoadDirectoryFilesEx(scriptDir, ".lua", true);
     for (int i = 0; i < luaFiles.count; i++) {
-        char* pathPtr = (char*)MemAlloc(sizeof(char) * (strlen(luaFiles.paths[i]) + 1));
-        char* pathIter = pathPtr;
-        char* token = NULL;
-        strcpy(pathIter, luaFiles.paths[i]);
-        while ((token = strtok(pathIter, pathDelimiter)) != NULL) {
-            if (pathIter != NULL) {
-                pathIter = NULL;
-            }
-            if (!strcmp(token, "start.lua")) { // Right now, start.lua is our starting file
-                luaL_loadfile(L, luaFiles.paths[i]);
-                ChangeDirectory(scriptDir);
-                if (lua_pcall(L, 0, LUA_MULTRET, 0) != LUA_OK)
-                    printf("Lua error: %s\n", lua_tostring(L, -1));
-            }
-        };
-        MemFree(pathPtr);
-        pathPtr = NULL;
+        if (!strcmp(GetFileName(luaFiles.paths[i]), "start.lua")) { // Right now, start.lua is our starting file
+            luaL_loadfile(L, luaFiles.paths[i]);
+            ChangeDirectory(scriptDir);
+            if (lua_pcall(L, 0, LUA_MULTRET, 0) != LUA_OK)
+                printf("Lua error: %s\n", lua_tostring(L, -1));
+        }
     }
 
     // Test area

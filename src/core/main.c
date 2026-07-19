@@ -62,8 +62,7 @@ int main(int argc, char* argv[])
     #endif
 
     // Initializing main config
-    int screenWidth, screenHeight, windowResizable, maximizeWindow, fullscreen;
-    char currentCfgSection[5];
+    int screenWidth = 0; int screenHeight = 0; int windowResizable = 0; int maximizeWindow = 0; int fullscreen = 0;
     char* cfgFileName = TextJoin((char*[]){(char*)GetApplicationDirectory(), "settings.cfg"}, 2, pathDelimiter);
     SzConfig* cfg;
     if (FileExists(cfgFileName)) {
@@ -74,29 +73,32 @@ int main(int argc, char* argv[])
         maximizeWindow = *(bool*)GetConfigVariable(cfg, "maximizeWindow")->value;
         fullscreen = *(bool*)GetConfigVariable(cfg, "fullscreen")->value;
     } else {
-        screenHeight = SCREEN_HEIGHT_DEFAULT;
-        screenWidth = SCREEN_WIDTH_DEFAULT;
         cfg = CreateConfig("Sunrayz");
         AddConfigVariable(
             cfg,
             CreateIntVariable("screenWidth", SCREEN_WIDTH_DEFAULT, VAR_CLASS_CONFIG)
         );
+        screenWidth = *(int*)GetConfigVariable(cfg, "screenWidth")->value;
         AddConfigVariable(
             cfg,
             CreateIntVariable("screenHeight", SCREEN_HEIGHT_DEFAULT, VAR_CLASS_CONFIG)
         );
+        screenHeight = *(int*)GetConfigVariable(cfg, "screenHeight")->value;
         AddConfigVariable(
             cfg,
             CreateBoolVariable("windowResizable", true, VAR_CLASS_CONFIG)
         );
+        windowResizable = *(bool*)GetConfigVariable(cfg, "windowResizable")->value;
         AddConfigVariable(
             cfg,
             CreateBoolVariable("maximizeWindow", false, VAR_CLASS_CONFIG)
         );
+        maximizeWindow = *(bool*)GetConfigVariable(cfg, "maximizeWindow")->value;
         AddConfigVariable(
             cfg,
             CreateBoolVariable("fullscreen", false, VAR_CLASS_CONFIG)
         );
+        fullscreen = *(bool*)GetConfigVariable(cfg, "fullscreen")->value;
         WriteConfig(cfgFileName, cfg);
     }
 

@@ -23,3 +23,9 @@ SzEntity* CreateEntity(SzConstruct* parent, SzEntityType type) {
     };
     return e;
 }
+
+void EntitySetTexture(SzEntity* entity, Texture2D texture) {
+    Texture2D* ptr = (Texture2D*)MemAlloc(sizeof(Texture2D));
+    *ptr = texture;
+    entity->essence = ptr;
+}

@@ -58,6 +58,7 @@ SzVariable* CreateIntVariable(char* varName, int varValue, SzVariableClass varCl
         .value = valuePtr,
         .type = VAR_TYPE_INTEGER,
         .class = varClass,
+        .previous = NULL,
         .next = NULL
     };
     return ptr;
@@ -72,6 +73,7 @@ SzVariable* CreateFloatVariable(char* varName, float varValue, SzVariableClass v
         .value = valuePtr,
         .type = VAR_TYPE_FLOAT,
         .class = varClass,
+        .previous = NULL,
         .next = NULL
     };
     return ptr;
@@ -86,6 +88,7 @@ SzVariable* CreateBoolVariable(char* varName, bool varValue, SzVariableClass var
         .value = valuePtr,
         .type = VAR_TYPE_BOOLEAN,
         .class = varClass,
+        .previous = NULL,
         .next = NULL
     };
     return ptr;
@@ -98,6 +101,7 @@ SzVariable* CreateStringVariable(char* varName, const char* varValue, SzVariable
         .value = (char*)varValue,
         .type = VAR_TYPE_STRING,
         .class = varClass,
+        .previous = NULL,
         .next = NULL
     };
     return ptr;

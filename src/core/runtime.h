@@ -54,6 +54,7 @@ typedef struct _SzVariable {
     void* value;
     SzVariableType type;
     SzVariableClass class;
+    struct _SzVariable* previous;
     struct _SzVariable* next;
 } SzVariable;
 

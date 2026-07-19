@@ -52,6 +52,7 @@ SzConfig* ReadConfig(char* cfgName) {
                 fseek(cfg, -1, SEEK_CUR);
                 // If it's not an opening square bracket, then we're reading a parameter
                 SzVariable* param = (SzVariable*)MemAlloc(sizeof(SzVariable));
+                param->previous = NULL;
                 param->next = NULL;
                 fseek(cfg,  StringReadUntil(cfg, '=', &param->name) + 1, SEEK_SET);
                 // Saving the value to a temporary variable
@@ -63,6 +64,7 @@ SzConfig* ReadConfig(char* cfgName) {
                     *newValue = atoi(tmpValue);
                     MemFree(tmpValue);
                     param->value = newValue;
+                    param->type = VAR_TYPE_INTEGER;
                     newValue = NULL;
                 } else if (StringIsFraction(tmpValue)) {
                     // We're using float because double is overkill for a config variable
@@ -70,6 +72,7 @@ SzConfig* ReadConfig(char* cfgName) {
                     *newValue = atof(tmpValue);
                     MemFree(tmpValue);
                     param->value = newValue;
+                    param->type = VAR_TYPE_FLOAT;
                     newValue = NULL;
                 } else if (StringIsBool(tmpValue)) {
                     bool* newValue = (bool*)MemAlloc(sizeof(bool));
@@ -79,10 +82,13 @@ SzConfig* ReadConfig(char* cfgName) {
                         *newValue = false;
                     MemFree(tmpValue);
                     param->value = newValue;
+                    param->type = VAR_TYPE_BOOLEAN;
                     newValue = NULL;
                 } else {
                     param->value = tmpValue;
+                    param->type = VAR_TYPE_STRING;
                 }
+                param->class = VAR_CLASS_CONFIG;
                 tmpValue = NULL;
                 AddConfigVariable(section, param);
             }

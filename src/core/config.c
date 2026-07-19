@@ -65,7 +65,6 @@ SzConfig* ReadConfig(char* cfgName) {
                     param->value = newValue;
                     newValue = NULL;
                 } else if (StringIsFraction(tmpValue)) {
-                    printf("tmpValue: %s\n", tmpValue);
                     // We're using float because double is overkill for a config variable
                     float* newValue = (float*)MemAlloc(sizeof(float));
                     *newValue = atof(tmpValue);

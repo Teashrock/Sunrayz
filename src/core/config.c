@@ -156,5 +156,6 @@ void AddConfigVariable(SzConfig* cfg, SzVariable* var) {
             last = last->next;
         }
         current->next = var;
+        var->previous = current;
     }
 }

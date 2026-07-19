@@ -64,6 +64,14 @@ SzConfig* ReadConfig(char* cfgName) {
                     MemFree(tmpValue);
                     param->value = newValue;
                     newValue = NULL;
+                } else if (StringIsFraction(tmpValue)) {
+                    printf("tmpValue: %s\n", tmpValue);
+                    // We're using float because double is overkill for a config variable
+                    float* newValue = (float*)MemAlloc(sizeof(float));
+                    *newValue = atof(tmpValue);
+                    MemFree(tmpValue);
+                    param->value = newValue;
+                    newValue = NULL;
                 } else if (StringIsBool(tmpValue)) {
                     bool* newValue = (bool*)MemAlloc(sizeof(bool));
                     if (!strcmp(tmpValue, "true"))
@@ -107,6 +115,13 @@ void WriteConfig(char* cfgName, SzConfig* section) {
                     "%s=%s\n",
                     currentVar->name,
                     boolString
+                );
+            } else if (currentVar->type == VAR_TYPE_FLOAT || currentVar->type == VAR_TYPE_DOUBLE) {
+                fprintf(
+                    cfg,
+                    "%s=%f\n",
+                    currentVar->name,
+                    *(double*)currentVar->value
                 );
             } else {
                 fprintf(

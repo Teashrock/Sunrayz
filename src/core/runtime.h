@@ -45,6 +45,7 @@ typedef enum {
 typedef enum {
     VAR_TYPE_INTEGER,
     VAR_TYPE_FLOAT,
+    VAR_TYPE_DOUBLE,
     VAR_TYPE_BOOLEAN,
     VAR_TYPE_STRING
 } SzVariableType;
@@ -69,6 +70,7 @@ SzReader* CreateReader(char* script);
 SzActor* CreateActor(void);
 SzVariable* CreateIntVariable(char* varName, int varValue, SzVariableClass varClass);
 SzVariable* CreateFloatVariable(char* varName, float varValue, SzVariableClass varClass);
+SzVariable* CreateDoubleVariable(char* varName, double varValue, SzVariableClass varClass);
 SzVariable* CreateBoolVariable(char* varName, bool varValue, SzVariableClass varClass);
 SzVariable* CreateStringVariable(char* varName, const char* varValue, SzVariableClass varClass);
 void DestroyVariable(SzVariable* firstPointer, char* varName);

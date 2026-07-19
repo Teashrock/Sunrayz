@@ -79,6 +79,21 @@ SzVariable* CreateFloatVariable(char* varName, float varValue, SzVariableClass v
     return ptr;
 }
 
+SzVariable* CreateDoubleVariable(char* varName, double varValue, SzVariableClass varClass) {
+    SzVariable* ptr = (SzVariable*)MemAlloc(sizeof(SzVariable));
+    double* valuePtr = (double*)MemAlloc(sizeof(double));
+    *valuePtr = varValue;
+    *ptr = (SzVariable){
+        .name = varName,
+        .value = valuePtr,
+        .type = VAR_TYPE_DOUBLE,
+        .class = varClass,
+        .previous = NULL,
+        .next = NULL
+    };
+    return ptr;
+}
+
 SzVariable* CreateBoolVariable(char* varName, bool varValue, SzVariableClass varClass) {
     SzVariable* ptr = (SzVariable*)MemAlloc(sizeof(SzVariable));
     bool* valuePtr = (bool*)MemAlloc(sizeof(bool));

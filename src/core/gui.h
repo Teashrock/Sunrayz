@@ -22,3 +22,4 @@ typedef struct _SzConstruct {
 } SzConstruct;
 
 SzConstruct* CreateConstruct(SzConstruct* parent);
+SzEntity* CreateEntity(SzConstruct* parent, SzEntityType type);

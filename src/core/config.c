@@ -125,6 +125,13 @@ void WriteConfig(char* cfgName, SzConfig* section) {
                             currentVar->name,
                             "false"
                         );
+                } else {
+                    fprintf(
+                        cfg,
+                        "%s=%s\n",
+                        currentVar->name,
+                        (char*)currentVar->value
+                    );
                 }
                 break;
                 case VAR_TYPE_FLOAT:

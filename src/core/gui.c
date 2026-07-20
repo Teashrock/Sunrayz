@@ -27,19 +27,19 @@ SzEntity* CreateVisualEntity(SzConstruct* parent, Texture2D texture, Rectangle s
     *ptr = texture;
     e->essence = ptr;
     AddVariable(
-        e->params,
+        &e->params,
         CreateIntVariable("width", sizeRect.width, VAR_CLASS_SUNRAYZ)
     );
     AddVariable(
-        e->params,
+        &e->params,
         CreateIntVariable("height", sizeRect.height, VAR_CLASS_SUNRAYZ)
     );
     AddVariable(
-        e->params,
+        &e->params,
         CreateIntVariable("x", sizeRect.x, VAR_CLASS_SUNRAYZ)
     );
     AddVariable(
-        e->params,
+        &e->params,
         CreateIntVariable("y", sizeRect.y, VAR_CLASS_SUNRAYZ)
     );
     return e;

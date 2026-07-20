@@ -90,7 +90,7 @@ SzConfig* ReadConfig(char* cfgName) {
                 }
                 param->class = VAR_CLASS_SUNRAYZ;
                 tmpValue = NULL;
-                AddVariable(section->variables, param);
+                AddVariable(&section->variables, param);
             }
             charCounter = 0;
         }

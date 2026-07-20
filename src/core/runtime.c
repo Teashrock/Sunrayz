@@ -137,17 +137,17 @@ void DestroyVariable(SzVariable* firstPointer, char* varName) {
     }
 }
 
-void AddVariable(SzVariable* firstPointer, SzVariable* var) {
-    if (firstPointer == NULL) {
-        firstPointer = var;
+void AddVariable(SzVariable** firstPointer, SzVariable* var) {
+    if (*firstPointer == NULL) {
+        *firstPointer = var;
     } else {
         SzVariable* current = NULL;
-        SzVariable* last = firstPointer;
+        SzVariable* last = *firstPointer;
         while (last != NULL) {
             current = last;
             last = last->next;
         }
         current->next = var;
-        var->previous = current;
+        current->next->previous = current;
     }
 }

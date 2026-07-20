@@ -6,6 +6,75 @@ in_enum = False
 in_comment = False
 
 
+banned_types = [
+    "Camera3D",
+    "Camera",
+    "Mesh",
+    "Transform",
+    "ModelAnimPose",
+    "BoneInfo",
+    "Model",
+    "ModelAnimation",
+    "Ray",
+    "RayCollision",
+    "BoundingBox"
+]
+banned_functions = [
+    "LoadModel",
+    "LoadModelFromMesh",
+    "IsModelValid",
+    "UnloadModel",
+    "GetModelBoundingBox",
+    "DrawModel",
+    "DrawModelEx",
+    "DrawModelWires",
+    "DrawModelWiresEx",
+    "DrawBoundingBox",
+    "DrawBillboard",
+    "DrawBillboardRec",
+    "DrawBillboardPro",
+    "UploadMesh",
+    "UpdateMeshBuffer",
+    "UnloadMesh",
+    "DrawMesh",
+    "DrawMeshInstanced",
+    "GetMeshBoundingBox",
+    "GenMeshTangents",
+    "ExportMesh",
+    "ExportMeshAsCode",
+    "GenMeshPoly",
+    "GenMeshPlane",
+    "GenMeshCube",
+    "GenMeshSphere",
+    "GenMeshHemiSphere",
+    "GenMeshCylinder",
+    "GenMeshCone",
+    "GenMeshTorus",
+    "GenMeshKnot",
+    "GenMeshHeightmap",
+    "GenMeshCubicmap",
+    "LoadMaterials",
+    "LoadMaterialDefault",
+    "IsMaterialValid",
+    "UnloadMaterial",
+    "SetMaterialTexture",
+    "SetModelMeshMaterial",
+    "LoadModelAnimations",
+    "UpdateModelAnimation",
+    "UpdateModelAnimationEx",
+    "UnloadModelAnimations",
+    "IsModelAnimationValid",
+    "CheckCollisionSpheres",
+    "CheckCollisionBoxes",
+    "CheckCollisionBoxSphere",
+    "GetRayCollisionSphere",
+    "GetRayCollisionBox",
+    "GetRayCollisionMesh",
+    "GetRayCollisionTriangle",
+    "GetRayCollisionQuad"
+]
+
+
 def check_pattern(line: str) -> str:
     global in_struct
     global in_enum

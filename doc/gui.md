@@ -1,6 +1,6 @@
 # The Basic Entity
 
-Every visual thing in Sunrayz consists of two basic things: **SzConstruct** and **SzEntity**.
+Every visual thing in Sunrayz is a composite made of two basic components: **SzConstruct** and **SzEntity**.
 
 ## SzConstruct
 

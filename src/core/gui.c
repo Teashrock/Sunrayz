@@ -1,4 +1,5 @@
 #include "gui.h"
+#include "raylib.h"
 
 SzConstruct* CreateConstruct(SzConstruct* parent)
 {
@@ -12,7 +13,7 @@ SzConstruct* CreateConstruct(SzConstruct* parent)
     return c;
 }
 
-SzEntity* CreateEntity(SzConstruct* parent, SzEntityType type) {
+SzEntity* CreateVisualEntity(SzConstruct* parent, Texture2D texture, SzEntityType type) {
     SzEntity* e = (SzEntity*)MemAlloc(sizeof(SzEntity));
     *e = (SzEntity){
         .parent = parent,
@@ -21,13 +22,10 @@ SzEntity* CreateEntity(SzConstruct* parent, SzEntityType type) {
         .next = NULL,
         .id = 0
     };
-    return e;
-}
-
-void EntitySetTexture(SzEntity* entity, Texture2D texture) {
     Texture2D* ptr = (Texture2D*)MemAlloc(sizeof(Texture2D));
     *ptr = texture;
-    entity->essence = ptr;
+    e->essence = ptr;
+    return e;
 }
 
 void AttachEntity(SzConstruct* construct, SzEntity* entity) {

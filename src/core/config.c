@@ -90,7 +90,7 @@ SzConfig* ReadConfig(char* cfgName) {
                 }
                 param->class = VAR_CLASS_SUNRAYZ;
                 tmpValue = NULL;
-                AddConfigVariable(section, param);
+                AddVariable(section->variables, param);
             }
             charCounter = 0;
         }
@@ -170,19 +170,4 @@ SzVariable* GetConfigVariable(SzConfig* cfg, char* varName) {
     }
     printf("Variable error: %s wasn't found!\n", varName);
     return NULL;
-}
-
-void AddConfigVariable(SzConfig* cfg, SzVariable* var) {
-    if (cfg->variables == NULL) {
-        cfg->variables = var;
-    } else {
-        SzVariable* current = NULL;
-        SzVariable* last = cfg->variables;
-        while (last != NULL) {
-            current = last;
-            last = last->next;
-        }
-        current->next = var;
-        var->previous = current;
-    }
 }

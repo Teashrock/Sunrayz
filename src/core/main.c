@@ -74,28 +74,28 @@ int main(int argc, char* argv[])
         fullscreen = *(bool*)GetConfigVariable(cfg, "fullscreen")->value;
     } else {
         cfg = CreateConfig("Sunrayz");
-        AddConfigVariable(
-            cfg,
+        AddVariable(
+            cfg->variables,
             CreateIntVariable("screenWidth", SCREEN_WIDTH_DEFAULT, VAR_CLASS_SUNRAYZ)
         );
         screenWidth = *(int*)GetConfigVariable(cfg, "screenWidth")->value;
-        AddConfigVariable(
-            cfg,
+        AddVariable(
+            cfg->variables,
             CreateIntVariable("screenHeight", SCREEN_HEIGHT_DEFAULT, VAR_CLASS_SUNRAYZ)
         );
         screenHeight = *(int*)GetConfigVariable(cfg, "screenHeight")->value;
-        AddConfigVariable(
-            cfg,
+        AddVariable(
+            cfg->variables,
             CreateBoolVariable("windowResizable", true, VAR_CLASS_SUNRAYZ)
         );
         windowResizable = *(bool*)GetConfigVariable(cfg, "windowResizable")->value;
-        AddConfigVariable(
-            cfg,
+        AddVariable(
+            cfg->variables,
             CreateBoolVariable("maximizeWindow", false, VAR_CLASS_SUNRAYZ)
         );
         maximizeWindow = *(bool*)GetConfigVariable(cfg, "maximizeWindow")->value;
-        AddConfigVariable(
-            cfg,
+        AddVariable(
+            cfg->variables,
             CreateBoolVariable("fullscreen", false, VAR_CLASS_SUNRAYZ)
         );
         fullscreen = *(bool*)GetConfigVariable(cfg, "fullscreen")->value;

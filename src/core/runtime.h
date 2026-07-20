@@ -73,3 +73,4 @@ SzVariable* CreateDoubleVariable(char* varName, double varValue, SzVariableClass
 SzVariable* CreateBoolVariable(char* varName, bool varValue, SzVariableClass varClass);
 SzVariable* CreateStringVariable(char* varName, const char* varValue, SzVariableClass varClass);
 void DestroyVariable(SzVariable* firstPointer, char* varName);
+void AddVariable(SzVariable* firstPointer, SzVariable* var);

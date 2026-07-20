@@ -17,7 +17,9 @@ banned_types = [
     "ModelAnimation",
     "Ray",
     "RayCollision",
-    "BoundingBox"
+    "BoundingBox",
+    "VrDeviceInfo",
+    "VrStereoConfig"
 ]
 banned_functions = [
     "LoadModel",
@@ -71,7 +73,11 @@ banned_functions = [
     "GetRayCollisionBox",
     "GetRayCollisionMesh",
     "GetRayCollisionTriangle",
-    "GetRayCollisionQuad"
+    "GetRayCollisionQuad",
+    "BeginVrStereoMode",
+    "EndVrStereoMode",
+    "LoadVrStereoConfig",
+    "UnloadVrStereoConfig"
 ]
 
 

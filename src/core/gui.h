@@ -25,5 +25,5 @@ typedef struct _SzConstruct {
 } SzConstruct;
 
 SzConstruct* CreateConstruct(SzConstruct* parent);
-SzEntity* CreateVisualEntity(SzConstruct* parent, Texture2D texture, SzEntityType type);
+SzEntity* CreateVisualEntity(SzConstruct* parent, Texture2D texture, Rectangle sizeRect);
 void AttachEntity(SzConstruct* construct, SzEntity* entity);

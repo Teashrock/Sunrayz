@@ -1,8 +1,9 @@
 #include "gui.h"
-#include "raylib.h"
 
-SzConstruct* CreateConstruct(SzConstruct* parent)
-{
+#include "raylib.h"
+#include "runtime.h"
+
+SzConstruct* CreateConstruct(SzConstruct* parent) {
     SzConstruct* c = (SzConstruct*)MemAlloc(sizeof(SzConstruct));
     *c = (SzConstruct){
         .parent = parent,
@@ -13,18 +14,34 @@ SzConstruct* CreateConstruct(SzConstruct* parent)
     return c;
 }
 
-SzEntity* CreateVisualEntity(SzConstruct* parent, Texture2D texture, SzEntityType type) {
+SzEntity* CreateVisualEntity(SzConstruct* parent, Texture2D texture, Rectangle sizeRect) {
     SzEntity* e = (SzEntity*)MemAlloc(sizeof(SzEntity));
     *e = (SzEntity){
         .parent = parent,
         .essence = NULL,
-        .type = type,
+        .type = ENTITY_TYPE_TEXTURE,
         .next = NULL,
         .id = 0
     };
     Texture2D* ptr = (Texture2D*)MemAlloc(sizeof(Texture2D));
     *ptr = texture;
     e->essence = ptr;
+    AddVariable(
+        e->params,
+        CreateIntVariable("width", sizeRect.width, VAR_CLASS_SUNRAYZ)
+    );
+    AddVariable(
+        e->params,
+        CreateIntVariable("height", sizeRect.height, VAR_CLASS_SUNRAYZ)
+    );
+    AddVariable(
+        e->params,
+        CreateIntVariable("x", sizeRect.x, VAR_CLASS_SUNRAYZ)
+    );
+    AddVariable(
+        e->params,
+        CreateIntVariable("y", sizeRect.y, VAR_CLASS_SUNRAYZ)
+    );
     return e;
 }
 

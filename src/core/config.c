@@ -107,35 +107,43 @@ void WriteConfig(char* cfgName, SzConfig* section) {
         fprintf(cfg, "[%s]\n", currentSection->name);
         SzVariable* currentVar = currentSection->variables;
         while (currentVar != NULL) {
-            if (currentVar->type == VAR_TYPE_BOOLEAN || currentVar->type == VAR_TYPE_STRING) {
-                char* boolString = NULL;
+            switch (currentVar->type) {
+                case VAR_TYPE_BOOLEAN:
+                case VAR_TYPE_STRING:
                 if (currentVar->type == VAR_TYPE_BOOLEAN) {
                     if (*(bool*)currentVar->value)
-                        boolString = "true";
+                        fprintf(
+                            cfg,
+                            "%s=%s\n",
+                            currentVar->name,
+                            "true"
+                        );
                     else
-                        boolString = "false";
+                        fprintf(
+                            cfg,
+                            "%s=%s\n",
+                            currentVar->name,
+                            "false"
+                        );
                 }
-                fprintf(
-                    cfg,
-                    "%s=%s\n",
-                    currentVar->name,
-                    boolString
-                );
-            } else if (currentVar->type == VAR_TYPE_FLOAT) {
+                break;
+                case VAR_TYPE_FLOAT:
                 fprintf(
                     cfg,
                     "%s=%f\n",
                     currentVar->name,
                     *(float*)currentVar->value
                 );
-            } else if (currentVar->type == VAR_TYPE_DOUBLE) {
+                break;
+                case VAR_TYPE_DOUBLE:
                 fprintf(
                     cfg,
                     "%s=%f\n",
                     currentVar->name,
                     *(double*)currentVar->value
                 );
-            } else {
+                break;
+                default:
                 fprintf(
                     cfg,
                     "%s=%d\n",

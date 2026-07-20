@@ -568,10 +568,10 @@ def build(ctx):
             os.path.join(BUILD_DIR, "result", platform.system() + "-" + BUILD_TYPE, LIB_DIR),
             [os.path.join(_lualibpath, lualib_name)]
         )
-        if not os.path.exists(os.path.join(BUILD_DIR, "result", platform.system() + "-" + BUILD_TYPE, "system")):
-            os.makedirs(os.path.join(BUILD_DIR, "result", platform.system() + "-" + BUILD_TYPE, "system"))
+        if not os.path.exists(os.path.join(BUILD_DIR, "result", platform.system() + "-" + BUILD_TYPE, "scripts")):
+            os.makedirs(os.path.join(BUILD_DIR, "result", platform.system() + "-" + BUILD_TYPE, "scripts"))
         ctx.install_files(
-            os.path.join(BUILD_DIR, "result", platform.system() + "-" + BUILD_TYPE, "system"),
+            os.path.join(BUILD_DIR, "result", platform.system() + "-" + BUILD_TYPE, "scripts"),
             [
                 os.path.join("src", "base_project", "start.lua"),
                 os.path.join("build", "lua", "raylib.lua")

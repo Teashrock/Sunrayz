@@ -120,7 +120,7 @@ int main(int argc, char* argv[])
 
     // Lua script implementation
     char* scriptDir = TextJoin(
-        (char*[]){(char*)GetApplicationDirectory(), "system"},
+        (char*[]){(char*)GetApplicationDirectory(), "scripts"},
         2,
         pathDelimiter
     );

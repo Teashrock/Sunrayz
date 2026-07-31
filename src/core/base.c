@@ -4,6 +4,7 @@
 /// Reads a string from an opened file
 /// up to the provided character (char until),
 /// then writes it by a provided char* pointer (dest).
+/// Returns file position on the null char of the string.
 /// No need to allocate dest in advance.
 long StringReadUntil(FILE* f, char until, char** dest) {
     // Counting chars until the specific symbol is met

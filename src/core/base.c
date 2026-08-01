@@ -41,7 +41,7 @@ bool StringIsInteger(char* string) {
 bool StringIsFraction(char* string) {
     for (int i = 0; string[i] != '\0'; i++) {
         if (!(string[i] >= '0' && string[i] <= '9'))
-            if (string[i] == '.' && strchr(string, '.') == strrchr(string, '.'))
+            if (!(string[i] == '.' && strchr(string, '.') == strrchr(string, '.')))
                 return false;
     }
     return true;

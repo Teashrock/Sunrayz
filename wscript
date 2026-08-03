@@ -65,10 +65,12 @@ patch_list : list = list()
 global download_only
 download_only : bool = False
 
+
 def options(opt):
     #if platform.system() == "Windows":
     #    os.environ["PATH"] = "C:\\mingw32\\bin;C:\\mingw32\\libexec\\gcc\\x86_64-w64-mingw32\\8.1.0;" + os.environ["PATH"]
     opt.load('compiler_c')
+
 
 def configure(conf):
     delim : str = ""
@@ -327,10 +329,12 @@ def configure(conf):
             asset_transform(each, "font")
     Logs.info("Done!")
 
+
 def download(ctx):
     global download_only
     download_only = True
     configure(ctx)
+
 
 def purge(ctx):
     try:
@@ -377,12 +381,15 @@ def purge(ctx):
     with open(os.path.join("src", "generated", "assets", "fonts", "fonts.h"), "w") as fonts_h:
         fonts_h.write("#pragma once\n\n// This file only links static fonts with the engine.\n// Edit it only if you know what you're doing.\n")
 
+
 def distclean(ctx):
     purge(ctx)
+
 
 def uncache(ctx):
     shutil.rmtree(os.path.join(BUILD_DIR, ".cache"))
     shutil.rmtree(os.path.join(BUILD_DIR, "cache"))
+
 
 def build(ctx):
     os.chdir(BUILD_DIR)
@@ -581,6 +588,7 @@ exec "$SCRIPT_DIR/sunrayz"
                     "start.sh"
                 ), 0o755)
 
+
 def run(ctx):
     global EXE_NAME
     global DEBUGGER
@@ -595,15 +603,18 @@ def run(ctx):
     elif platform.system() == "Haiku":
         os.system(call_string)
 
+
 def debug(ctx):
     global DEBUGGER
     DEBUGGER = "gdb"
     run(ctx)
 
+
 def valgrind(ctx):
     global DEBUGGER
     DEBUGGER = "valgrind -s"
     run(ctx)
+
 
 def valgrind_detailed(ctx):
     global DEBUGGER

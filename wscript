@@ -7,13 +7,11 @@ DYNAMIC_RAYLIB_LINKAGE = True
 top = '.'
 out = "build"
 
-import glob
 import os
 import platform
 import shutil
 import subprocess
 import sys
-import json
 from src.codegen.asset2code import asset_transform
 from src.codegen.rl2lua import rl_parse
 from waflib.Tools.compiler_c import c_compiler

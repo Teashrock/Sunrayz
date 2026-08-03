@@ -77,6 +77,7 @@ class Patch:
     name: str
     contents: str
     string_patch: bool = False
+    patched_file
 
 
 def options(opt):
@@ -350,43 +351,33 @@ def download(ctx):
 
 
 def purge(ctx):
-    try:
-        shutil.rmtree(os.path.join(BUILD_DIR, "build"))
-    except: pass
-    try:
-        shutil.rmtree(os.path.join(BUILD_DIR, "deps"))
-    except:
-        if platform.system() == "Windows":
-            try:
-                subprocess.run(["rmdir", "/s", "/q", os.path.join(BUILD_DIR, "deps")], shell=True)
-            except: pass
-    try:
-        shutil.rmtree(os.path.join(BUILD_DIR, "result"))
-    except: pass
-    try:
-        os.remove(os.path.join(BUILD_DIR, ".lock-waf_" + sys.platform + "_build"))
-    except: pass
-    try:
-        os.remove(os.path.join(BUILD_DIR, "compiled.list"))
-    except: pass
-    try:
-        os.remove(os.path.join(BUILD_DIR, "compiler.path"))
-    except: pass
-    try:
-        os.remove(os.path.join(BUILD_DIR, "downloaded.list"))
-    except: pass
-    try:
-        os.remove(os.path.join(BUILD_DIR, "fonts_linked.list"))
-    except: pass
-    try:
-        os.remove(os.path.join(BUILD_DIR, ".clangd"))
-    except: pass
-    try:
-        shutil.rmtree(os.path.join(BUILD_DIR, "src", "generated", "assets"))
-    except: pass
-    try:
-        os.remove(os.path.join(BUILD_DIR, "src", "external", "raygui.c"))
-    except: pass
+    dirs_to_remove = [
+        os.path.join(BUILD_DIR, "build"),
+        os.path.join(BUILD_DIR, "deps"),
+        os.path.join(BUILD_DIR, "result"),
+        os.path.join(BUILD_DIR, "src", "generated", "assets")
+    ]
+    files_to_remove = [
+        os.path.join(BUILD_DIR, ".lock-waf_" + sys.platform + "_build"),
+        os.path.join(BUILD_DIR, "compiled.list"),
+        os.path.join(BUILD_DIR, "compiler.path"),
+        os.path.join(BUILD_DIR, "downloaded.list"),
+        os.path.join(BUILD_DIR, "fonts_linked.list"),
+        os.path.join(BUILD_DIR, ".clangd"),
+        os.path.join(BUILD_DIR, "src", "external", "raygui.c")
+    ]
+    for dir in dirs_to_remove:
+        try:
+            shutil.rmtree(dir)
+        except:
+            if platform.system() == "Windows":
+                try:
+                    subprocess.run(["rmdir", "/s", "/q", dir], shell=True)
+                except: pass
+    for file in files_to_remove:
+        try:
+            os.remove(file)
+        except: pass
     
     if not os.path.exists(os.path.join("src", "generated", "assets", "fonts")):
         os.makedirs(os.path.join("src", "generated", "assets", "fonts"))

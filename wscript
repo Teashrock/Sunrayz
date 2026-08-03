@@ -70,6 +70,8 @@ download_only : bool = False
 @dataclass
 class Application:
     name: str
+    prebuild_message: str
+    prebuild_commands: list[str]
 
 
 @dataclass

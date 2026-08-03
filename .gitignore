@@ -18,3 +18,5 @@ src/generated/assets
 log.txt
 .clangd
 rl2lua_test/raylib.lua
+requirements.txt
+.venv

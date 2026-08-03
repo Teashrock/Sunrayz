@@ -76,8 +76,8 @@ class Application:
 class Patch:
     name: str
     contents: str
+    patched_file: str
     string_patch: bool = False
-    patched_file
 
 
 def options(opt):

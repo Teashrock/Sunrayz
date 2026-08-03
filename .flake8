@@ -2,3 +2,5 @@
 inline-quotes = "
 multiline-quotes = "
 docstring-quotes = """
+per-file-ignores =
+    wscript: E221

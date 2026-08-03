@@ -12,6 +12,7 @@ import platform
 import shutil
 import subprocess
 import sys
+from dataclasses import dataclass
 from src.codegen.asset2code import asset_transform
 from src.codegen.rl2lua import rl_parse
 from waflib.Tools.compiler_c import c_compiler
@@ -64,6 +65,18 @@ patch_list : list = list()
 
 global download_only
 download_only : bool = False
+
+
+@dataclass
+class Application:
+    name: str
+
+
+@dataclass
+class Patch:
+    name: str
+    contents: str
+    string_patch: bool = False
 
 
 def options(opt):

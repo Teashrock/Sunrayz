@@ -133,32 +133,18 @@ def configure(conf):
                 if not os.path.exists(os.path.join(os.path.dirname(tar_path_name), tar_path_name.split(os.path.sep)[-1].split('.')[0].split('-')[0])):
                     if not os.path.exists(tar_path_name):
                         with open(tar_path_name, "wb") as tarar:
-                            if repo.split("://")[1].split('/')[0] == "github.com":
-                                Logs.warn("Downloading {}-{}.{}, this may take a while...".format(what, version, extension))
+                            Logs.warn("Downloading {}-{}.{}, this may take a while...".format(what, version, extension))
+                            try:
+                                import requests
+                                cnt = requests.get(repo + ("/archive/refs/tags/{}.{}".format(version, extension)), allow_redirects=True).content
+                                if cnt == b"404: Not Found":
+                                    cnt = requests.get(repo + ("/archive/refs/tags/v{}.{}".format(version, extension)), allow_redirects=True).content
+                            except ModuleNotFoundError:
+                                import urllib.request
                                 try:
-                                    import requests
-                                    cnt = requests.get(repo + ("/archive/refs/tags/{}.{}".format(version, extension)), allow_redirects=True).content
-                                    if cnt == b"404: Not Found":
-                                        cnt = requests.get(repo + ("/archive/refs/tags/v{}.{}".format(version, extension)), allow_redirects=True).content
-                                except ModuleNotFoundError:
-                                    import urllib.request
-                                    try:
-                                        cnt = urllib.request.urlopen(repo + ("/archive/refs/tags/{}.{}").format(version, extension)).read()
-                                    except urllib.error.HTTPError:
-                                        cnt = urllib.request.urlopen(repo + ("/archive/refs/tags/v{}.{}").format(version, extension)).read()
-                            elif repo.split("://")[1].split('/')[0] == "ftp.gnu.org" and repo == GETTEXT_REPO:
-                                Logs.warn("Downloading {}-{}.{}, this may take a while...".format(what, version, extension))
-                                try:
-                                    import requests
-                                    cnt = requests.get(repo + ("/pub/gnu/{}/{}-{}.{}").format(what, what, version, extension), allow_redirects=True).content
-                                    if cnt == b"404: Not Found":
-                                        pass
-                                except ModuleNotFoundError:
-                                    import urllib.request
-                                    try:
-                                        cnt = urllib.request.urlopen(repo + ("/pub/gnu/{}/{}-{}.{}").format(what, what, version, extension)).read()
-                                    except urllib.error.HTTPError:
-                                        pass
+                                    cnt = urllib.request.urlopen(repo + ("/archive/refs/tags/{}.{}").format(version, extension)).read()
+                                except urllib.error.HTTPError:
+                                    cnt = urllib.request.urlopen(repo + ("/archive/refs/tags/v{}.{}").format(version, extension)).read()
                             tarar.write(cnt)
                     if not os.path.exists(os.path.join(DEPS_DIR, what)):
                         if extension == "tar.gz":
@@ -196,7 +182,6 @@ def configure(conf):
     download("raylib", RAYLIB_VERSION, RAYLIB_REPO)
     download("raygui", RAYGUI_VERSION, RAYGUI_REPO)
     download("LuaJIT", LUAJIT_VERSION, LUAJIT_REPO, "zip")
-    #download("gettext", GETTEXT_VERSION, GETTEXT_REPO)
 
     if download_only:
         exit()

@@ -30,7 +30,7 @@ main_menu >>
             width:  280
             height: 40
             press: @lua(sz.loadGameScreen())
-            content: @lua(return rl.api.rectangle(0, 170, 0, 0))
+            content: @lua(return rl.types.color(0, 170, 0, 0))
         ]
         settings [
             x: 10

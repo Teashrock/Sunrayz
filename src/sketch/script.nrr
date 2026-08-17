@@ -1,3 +1,45 @@
-{
-    
-}
+main_menu >>
+    [
+        x: @lua(return (sz.screenWidth / 2) - this.width)
+        y: @lua(return (sz.screenHeight / 2) - this.height)
+        width:  300
+        height: 300
+    ]
+    >>
+        new_game [
+            x: 10
+            y: 10
+            width:  280
+            height: 40
+            press: @lua(sz.newGame())
+        ]
+        load_game [
+            x: 10
+            y: 60
+            width:  280
+            height: 40
+            press: @lua(sz.loadGameScreen())
+        ]
+        settings [
+            x: 10
+            y: 110
+            width:  280
+            height: 40
+            press: @lua(sz.settingsScreen())
+        ]
+        credits [
+            x: 10
+            y: 160
+            width:  280
+            height: 40
+            press: @lua(sz.creditsScreen())
+        ]
+        quit [
+            x: 10
+            y: 210
+            width:  280
+            height: 40
+            press: @lua(sz.quit())
+        ]
+    <<
+<<

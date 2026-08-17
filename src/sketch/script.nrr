@@ -1,9 +1,9 @@
 main_menu >>
     [
-        x: @lua(return (sz.screenWidth / 2) - this.width)
-        y: @lua(return (sz.screenHeight / 2) - this.height)
         width:  300
         height: 300
+        x: (&screenWidth / 2) - this.width                   ; It's possible like this
+        y: @lua(return (sz.screenHeight / 2) - this.height)  ; Or like this
     ]
     >>
         new_game [

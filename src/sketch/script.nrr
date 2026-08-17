@@ -1,9 +1,19 @@
+bg >>
+    [
+        x: 0
+        y: 0
+        width:   &screenWidth
+        screen:  &screenHeight
+        content: "assets/bg/start_screen.png"
+    ]
+<<
 main_menu >>
     [
         width:  300
         height: 300
-        x: (&screenWidth / 2) - this.width                   ; It's possible like this
-        y: @lua(return (sz.screenHeight / 2) - this.height)  ; Or like this
+        x: (&screenWidth / 2) - here.width                   ; It's possible like this
+        y: @lua(return (sz.screenHeight / 2) - here.height)  ; Or like this
+        content: "assets/gui/menu_frame.qoi"
     ]
     >>
         new_game [
@@ -12,6 +22,7 @@ main_menu >>
             width:  280
             height: 40
             press: @lua(sz.newGame())
+            content: "assets/gui/menu_button.jpg"
         ]
         load_game [
             x: 10
@@ -19,6 +30,7 @@ main_menu >>
             width:  280
             height: 40
             press: @lua(sz.loadGameScreen())
+            content: @lua(return rl.api.rectangle(0, 170, 0, 0))
         ]
         settings [
             x: 10
@@ -26,6 +38,7 @@ main_menu >>
             width:  280
             height: 40
             press: @lua(sz.settingsScreen())
+            content: "assets/gui/menu_button.jpg"
         ]
         credits [
             x: 10
@@ -33,6 +46,7 @@ main_menu >>
             width:  280
             height: 40
             press: @lua(sz.creditsScreen())
+            content: "assets/gui/menu_button.jpg"
         ]
         quit [
             x: 10
@@ -40,6 +54,7 @@ main_menu >>
             width:  280
             height: 40
             press: @lua(sz.quit())
+            content: "assets/gui/menu_button.jpg"
         ]
     <<
 <<

@@ -149,11 +149,19 @@ def rl_parse(paths: list[str]) -> None:
                         if type_name in banned_types:
                             buffer = ""
                             continue
-                        rl_types += f"\t\t{type_name.lower()} = ffi.metatype(\"{type_name}" + r'", {}),' + "\n"
                         buffer += ("\t" + result[len("RAYTYPE "):] + "\n")
+                        for banned_type in banned_types:
+                            if banned_type in [el.strip() for el in buffer.split(" ")]:
+                                buffer = ""
+                                continue
+                        rl_types += f"\t\t{type_name.lower()} = ffi.metatype(\"{type_name}" + r'", {}),' + "\n"
                         ready = True
                     else:
                         buffer += ("\t" + result + "\n")
+                        for banned_type in banned_types:
+                            if banned_type in [el.strip() for el in buffer.split(" ")]:
+                                buffer = ""
+                                continue
                 if ready:
                     rl_sheet += buffer
                     buffer = ""

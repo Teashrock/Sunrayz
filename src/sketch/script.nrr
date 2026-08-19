@@ -1,4 +1,4 @@
-bg >>
+bg {
     [
         x: 0
         y: 0
@@ -6,8 +6,8 @@ bg >>
         screen:  &screenHeight
         content: "assets/bg/start_screen.png"
     ]
-<<
-main_menu >>
+}
+main_menu {
     [
         width:  300
         height: 300
@@ -15,7 +15,7 @@ main_menu >>
         y: @lua(return (sz.screenHeight / 2) - here.height)  ; Or like this
         content: "assets/gui/menu_frame.qoi"
     ]
-    >>
+    {
         new_game [
             x: 10
             y: 10
@@ -56,5 +56,5 @@ main_menu >>
             press: @lua(sz.quit())
             content: "assets/gui/menu_button.jpg"
         ]
-    <<
-<<
+    }
+}

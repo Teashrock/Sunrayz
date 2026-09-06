@@ -13,6 +13,6 @@ static const char* pathDelimiter = "/";
 #endif
 
 long StringReadUntil(FILE* f, char until, char** dest);
-bool StringIsInteger(char* string);
-bool StringIsFraction(char* string);
-bool StringIsBool(char* string);
+bool StringIsInteger(const char* const string);
+bool StringIsFraction(const char* const string);
+bool StringIsBool(const char* const string);

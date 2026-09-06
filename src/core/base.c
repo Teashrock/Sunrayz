@@ -31,7 +31,7 @@ long StringReadUntil(FILE* f, char until, char** dest) {
 
 /// Checks if a string can be seamlessly converted into an integer.
 /// Warning: expects a zstring.
-bool StringIsInteger(char* string) {
+bool StringIsInteger(const char* const string) {
     for (int i = 0; string[i] != '\0'; i++) {
         if (!(string[i] >= '0' && string[i] <= '9'))
             return false;
@@ -41,7 +41,7 @@ bool StringIsInteger(char* string) {
 
 /// Checks if a string can be seamlessly converted into a float or double.
 /// Warning: expects a zstring.
-bool StringIsFraction(char* string) {
+bool StringIsFraction(const char* const string) {
     for (int i = 0; string[i] != '\0'; i++) {
         if (!(string[i] >= '0' && string[i] <= '9'))
             if (!(string[i] == '.' && strchr(string, '.') == strrchr(string, '.')))
@@ -52,7 +52,7 @@ bool StringIsFraction(char* string) {
 
 /// Checks if a string can be seamlessly converted into a boolean.
 /// Warning: expects a zstring.
-bool StringIsBool(char* string) {
+bool StringIsBool(const char* const string) {
     char* tokenTrue = "true";
     char* tokenFalse = "false";
     for (int i = 0; string[i] != '\0'; i++) {

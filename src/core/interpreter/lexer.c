@@ -47,7 +47,7 @@ SzToken* Tokenise(const char* fileName) {
             if (CharIsIgnored(*c)) {
                 fseek(f, filePosition - tokenLength, SEEK_SET);
                 currToken = (SzToken*)MemAlloc(sizeof(SzToken));
-                currToken->token = (char*)MemAlloc(sizeof(char) * tokenLength);
+                currToken->token = (char*)MemAlloc(sizeof(char) * (tokenLength + 1));
                 currToken->next = NULL;
                 if (tree != NULL) {
                     tree = currToken;
@@ -56,7 +56,7 @@ SzToken* Tokenise(const char* fileName) {
                 } else {
                     prevToken->next = currToken;
                 }
-                fread(currToken->token, sizeof(char), tokenLength, f);
+                fread(currToken->token, sizeof(char), tokenLength + 1, f);
                 prevToken = currToken;
                 tokenLength = 0;
                 onToken = false;
@@ -66,7 +66,7 @@ SzToken* Tokenise(const char* fileName) {
             }
         } else {
             filePosition++;
-            if (CharIsIgnored(*c)) {
+            if (!CharIsIgnored(*c)) {
                 onToken = true;
             }
         }

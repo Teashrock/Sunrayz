@@ -19,14 +19,6 @@ bool CharIsIgnored(char c) {
     return false;
 }
 
-__attribute__((always_inline))
-static inline void ToggleInWrite(bool* b) {
-    if (*b)
-        *b = false;
-    else
-        *b = true;
-}
-
 /// Called first in the process of parsing:
 /// picks up the tokens from the code,
 /// separating them from syntactic water;

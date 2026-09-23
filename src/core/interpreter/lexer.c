@@ -60,7 +60,7 @@ SzToken* Tokenise(const char* fileName) {
                 prevToken = currToken;
                 tokenLength = 0;
                 onToken = false;
-                fseek(f, filePosition, SEEK_SET);
+                fseek(f, filePosition + 1, SEEK_SET);
             } else {
                 tokenLength++;
             }

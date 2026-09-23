@@ -24,7 +24,7 @@ bool CharIsIgnored(char c) {
 /// separating them from syntactic water;
 /// takes opened file pointer as an argument
 SzToken* Tokenise(const char* fileName) {
-    FILE* f = fopen("start.nrr", "rt");
+    FILE* f = fopen(fileName, "rt");
     SzToken* currToken = NULL;
     SzToken* prevToken = NULL;
     SzToken* tree = NULL;

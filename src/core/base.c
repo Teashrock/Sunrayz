@@ -81,8 +81,8 @@ bool StringIsFraction(const char* const string) {
 /// Checks if a string can be seamlessly converted into a boolean.
 /// Warning: expects a zstring.
 bool StringIsBool(const char* const string) {
-    char* tokenTrue = "true";
-    char* tokenFalse = "false";
+    const char* tokenTrue = "true";
+    const char* tokenFalse = "false";
     for (int i = 0; string[i] != '\0'; i++) {
         if (string[i] != tokenTrue[i] || string[i] != tokenFalse[i])
             return false;

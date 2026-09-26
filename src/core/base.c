@@ -16,7 +16,7 @@ long StringReadUntil(FILE* f, char until, char** dest) {
     int charCount = 0;
     while (true) {
         fread(c, sizeof(char), 1, f);
-        if (c[0] == until) {
+        if (*c == until) {
             fseek(f, startPosition, SEEK_SET);
             break;
         }
@@ -26,6 +26,34 @@ long StringReadUntil(FILE* f, char until, char** dest) {
     *dest = (char*)MemAlloc(sizeof(char) * (charCount + 1));
     fread(*dest, sizeof(char), charCount, f);
     (*dest)[charCount + 1] = '\0';
+    return ftell(f);
+}
+
+/// Reads a string from an opened file
+/// up to a character in the provided string (char* until),
+/// then writes it by a provided char* pointer (dest).
+/// Returns file position on the null char of the string.
+/// No need to allocate dest in advance.
+long StringReadUntilArr(FILE* f, const char* const until, char** dest) {
+    // Counting chars until the specific symbol is met
+    char c[1];
+    int startPosition = ftell(f);
+    int charCount = 0;
+    bool write = true;
+    while (write) {
+        fread(c, sizeof(char), 1, f);
+        for (int i = 0; until[i] != '\0'; i++) {
+            if (*c == until[i]) {
+                write = false;
+            }
+        }
+        charCount++;
+    }
+    fseek(f, startPosition, SEEK_SET);
+    // Writing the string found into the destination
+    *dest = (char*)MemAlloc(sizeof(char) * (charCount));
+    fread(*dest, sizeof(char), charCount - 1, f);
+    (*dest)[charCount] = '\0';
     return ftell(f);
 }
 

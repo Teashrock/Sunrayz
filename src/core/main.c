@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: BSD 3-Clause
 // Copyright (c) 2021-2026 Teashrock
 
+#include "src/core/interpreter/lexer.h"
 #include <raylib.h>
 #include <raygui.h>
 #include <semaphore.h>
@@ -127,13 +128,26 @@ int main(int argc, char* argv[])
         2,
         pathDelimiter
     );
+
+    ChangeDirectory(scriptDir);
+    // Before lua is done, we're doing nrr files
+    FilePathList nrrFiles = LoadDirectoryFilesEx(scriptDir, ".nrr", true);
+    for (int i = 0; i < nrrFiles.count; i++) {
+        if (!strcmp(GetFileName(nrrFiles.paths[i]), "start.nrr")) { // Right now, start.nrr is our starting file
+            // Here we're doing tokenisation
+            SzToken* tokenTree = Tokenise("start.nrr");
+            while (tokenTree) {
+                //printf("Token: %s\n", tokenTree->token);
+                tokenTree = tokenTree->next;
+            }
+        }
+    }
     
     // Listing lua files
     FilePathList luaFiles = LoadDirectoryFilesEx(scriptDir, ".lua", true);
     for (int i = 0; i < luaFiles.count; i++) {
         if (!strcmp(GetFileName(luaFiles.paths[i]), "start.lua")) { // Right now, start.lua is our starting file
             luaL_loadfile(L, luaFiles.paths[i]);
-            ChangeDirectory(scriptDir);
             if (lua_pcall(L, 0, LUA_MULTRET, 0) != LUA_OK)
                 printf("Lua error: %s\n", lua_tostring(L, -1));
         }

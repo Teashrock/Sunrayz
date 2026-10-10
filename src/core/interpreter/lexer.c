@@ -2,12 +2,11 @@
 // Copyright (c) 2021-2026 Teashrock
 
 #include "lexer.h"
-#include "raylib.h"
+
+#include "../base.h"
 
 #include <stdbool.h>
-#include <stddef.h>
 #include <stdlib.h>
-#include <stdio.h>
 
 bool CharIsIgnored(char c) {
     const char ignored[] = {9, 10, 13, 32}; // Tab, whitespace, caret shift, and newline
@@ -17,6 +16,15 @@ bool CharIsIgnored(char c) {
         }
     }
     return false;
+}
+
+SzToken* CreateToken(void) {
+    SzToken* ptr = (SzToken*)MemAlloc(sizeof(SzToken));
+    *ptr = (SzToken){
+        .token = NULL,
+        .next = NULL
+    };
+    return ptr;
 }
 
 /// Called first in the process of parsing:
@@ -43,32 +51,20 @@ SzToken* Tokenise(const char* fileName) {
                 exit(1);
             }
         }
-        if (onToken) {
-            if (CharIsIgnored(*c)) {
-                fseek(f, filePosition - tokenLength, SEEK_SET);
-                currToken = (SzToken*)MemAlloc(sizeof(SzToken));
-                currToken->token = (char*)MemAlloc(sizeof(char) * (tokenLength + 1));
-                currToken->next = NULL;
-                if (tree != NULL) {
-                    tree = currToken;
-                } else if (prevToken == NULL) {
-                    prevToken = currToken;
-                } else {
-                    prevToken->next = currToken;
-                }
-                fread(currToken->token, sizeof(char), tokenLength + 1, f);
-                prevToken = currToken;
-                tokenLength = 0;
-                onToken = false;
-                fseek(f, filePosition + 1, SEEK_SET);
-            } else {
-                tokenLength++;
-            }
+        if (tree) { // Backing up current token pointer if tree exists
+            prevToken = currToken;
+        }
+        currToken = CreateToken();
+        if (!tree) { // Saving first token as the top of the tree
+            tree = currToken;
         } else {
-            filePosition++;
-            if (!CharIsIgnored(*c)) {
-                onToken = true;
-            }
+            prevToken->next = currToken; // Linking current token to the previous one
+        }
+        // Reading from the current position in file
+        // until we meet a tab, a whitespace, a caret shift, or a newline
+        StringReadUntilArr(f, (char[]){9, 10, 13, 32}, &currToken->token);
+        if (!prevToken) {
+            tree->next = currToken;
         }
     }
     return tree;

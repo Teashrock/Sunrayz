@@ -36,9 +36,6 @@ SzToken* Tokenise(const char* fileName) {
     SzToken* prevToken = NULL;
     SzToken* tree = NULL;
     char c[1];
-    size_t tokenLength = 0;
-    long filePosition = ftell(f);
-    bool onToken = false;
     while (true) {
         int readResult = fread(c, sizeof(char), 1, f);
         if (readResult < 1) {

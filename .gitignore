@@ -8,7 +8,7 @@ build
 .cache
 cache
 deps/*
-src/external
+src/core/external
 compiled.list
 compiler.path
 downloaded.list

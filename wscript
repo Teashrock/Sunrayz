@@ -262,12 +262,12 @@ def configure(conf):
         raygui_c.write("#include <raygui.h>\n")
         raygui_c.write(raygui_code)
     
-    #Logs.warn("Changing Raylib platform backend to PLATFORM_DESKTOP_RGFW...")
-    #with open("deps/raylib/src/Makefile", "r") as rf:
-    #    p = rf.read().replace("TARGET_PLATFORM   = PLATFORM_DESKTOP_GLFW", "TARGET_PLATFORM   = PLATFORM_DESKTOP_RGFW", 1)
+    Logs.warn("Changing Raylib platform backend to PLATFORM_DESKTOP_RGFW...")
+    with open("deps/raylib/src/Makefile", "r") as rf:
+        p = rf.read().replace("TARGET_PLATFORM   = PLATFORM_DESKTOP_GLFW", "TARGET_PLATFORM   = PLATFORM_DESKTOP_RGFW", 1)
 
-    #with open("deps/raylib/src/Makefile", "w") as rf:
-    #    rf.write(p)
+    with open("deps/raylib/src/Makefile", "w") as rf:
+        rf.write(p)
     if platform.system() == "Haiku":
         Logs.warn("Disabling audio backend in Raylib (because of Miniaudio)...")
         with open("deps/raylib/src/Makefile", "r") as rf:

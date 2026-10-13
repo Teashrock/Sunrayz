@@ -11,7 +11,11 @@ typedef struct _SzConfig {
     struct _SzConfig* next;
 } SzConfig;
 
+/// Reads a configuration file into the engine memory
 SzConfig* ReadConfig(char* cfgName);
+
+/// Writes variables from memory into config file
 void WriteConfig(char* cfgName, SzConfig* section);
+
 SzConfig* CreateConfig(char* cfgName);
 SzVariable* GetConfigVariable(SzConfig* cfg, char* varName);

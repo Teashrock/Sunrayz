@@ -75,5 +75,8 @@ SzVariable* CreateFloatVariable(char* varName, float varValue, SzVariableClass v
 SzVariable* CreateDoubleVariable(char* varName, double varValue, SzVariableClass varClass);
 SzVariable* CreateBoolVariable(char* varName, bool varValue, SzVariableClass varClass);
 SzVariable* CreateStringVariable(char* varName, const char* varValue, SzVariableClass varClass);
-void DestroyVariable(SzVariable* firstPointer, char* varName);
+
+/// Note: expects a pointer to the first variable of a sequence
+void DestroyVariable(SzVariable* firstPointer, char* varName); 
+
 void AddVariable(SzVariable** firstPointer, SzVariable* var);

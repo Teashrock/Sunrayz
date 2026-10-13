@@ -11,4 +11,8 @@ typedef struct _SzToken {
     struct _SzToken* next;
 } SzToken;
 
+/// Called first in the process of parsing:
+/// picks up the tokens from the code,
+/// separating them from syntactic water;
+/// takes opened file pointer as an argument
 SzToken* Tokenise(const char* fileName);

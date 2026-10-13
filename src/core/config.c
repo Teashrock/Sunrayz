@@ -12,7 +12,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-/// Reads a configuration file into the engine memory
 SzConfig* ReadConfig(char* cfgName) {
     FILE* cfg = fopen(cfgName, "rt");
     // Counting chars until a newline
@@ -102,7 +101,6 @@ SzConfig* ReadConfig(char* cfgName) {
     return section;
 }
 
-/// Writes variables from memory into config file
 void WriteConfig(char* cfgName, SzConfig* section) {
     FILE* cfg = fopen(cfgName, "wt");
     SzConfig* currentSection = section;

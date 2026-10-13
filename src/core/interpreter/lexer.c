@@ -6,6 +6,7 @@
 #include "../base.h"
 
 #include <stdbool.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 bool CharIsIgnored(char c) {
@@ -51,6 +52,7 @@ SzToken* Tokenise(const char* fileName) {
                 exit(1);
             }
         }
+        fseek(f, -1, SEEK_CUR);
         if (tree) { // Backing up current token pointer if tree exists
             prevToken = currToken;
         }
@@ -62,10 +64,7 @@ SzToken* Tokenise(const char* fileName) {
         }
         // Reading from the current position in file
         // until we meet a tab, a whitespace, a caret shift, or a newline
-        StringReadUntilArr(f, (char[]){9, 10, 13, 32}, &currToken->token);
-        if (!prevToken) {
-            tree->next = currToken;
-        }
+        fseek(f, StringReadUntilArr(f, (char[]){9, 10, 13, 32}, &currToken->token) + 1, SEEK_SET);
     }
     return tree;
 }

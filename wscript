@@ -23,14 +23,17 @@ from waflib.Tools.compiler_c import c_compiler
 from waflib import Logs
 c_compiler['win32'] = ['gcc']
 
-RAYLIB_REPO    = "https://github.com/raysan5/raylib"
-RAYLIB_VERSION = "6.0"
+RAYLIB_REPO        = "https://github.com/raysan5/raylib"
+RAYLIB_VERSION     = "6.0"
 
-RAYGUI_REPO    = "https://github.com/raysan5/raygui"
-RAYGUI_VERSION = "4.0"
+RAYGUI_REPO        = "https://github.com/raysan5/raygui"
+RAYGUI_VERSION     = "4.0"
 
-LUAJIT_REPO    = "https://github.com/LuaJIT/LuaJIT"
-LUAJIT_VERSION = "master"
+LUAJIT_REPO        = "https://github.com/LuaJIT/LuaJIT"
+LUAJIT_VERSION     = "master"
+
+TINY_REGEX_REPO    = "https://github.com/kokke/tiny-regex-c.git"
+TINY_REGEX_VERSION = "master"
 
 GETTEXT_REPO    = "https://ftp.gnu.org"
 GETTEXT_VERSION = "0.21.1"
@@ -185,9 +188,20 @@ def configure(conf):
     download("raylib", RAYLIB_VERSION, RAYLIB_REPO)
     download("raygui", RAYGUI_VERSION, RAYGUI_REPO)
     download("LuaJIT", LUAJIT_VERSION, LUAJIT_REPO, "zip")
+    download("tiny-regex-c", "master", LUAJIT_REPO, "zip")
 
     if download_only:
         exit()
+
+    os.makedirs(os.path.join(BUILD_DIR, "src", "core", "external"))
+    shutil.move(
+        os.path.join(BUILD_DIR, "deps", "tiny-regex-c", "re.h"),
+        os.path.join(BUILD_DIR, "src", "core", "external")
+    )
+    shutil.move(
+        os.path.join(BUILD_DIR, "deps", "tiny-regex-c", "re.c"),
+        os.path.join(BUILD_DIR, "src", "core", "external")
+    )
     
     # Patch zone
     for _, _, f in os.walk(os.path.join(BUILD_DIR, "patches")):

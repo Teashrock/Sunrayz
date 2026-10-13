@@ -9,7 +9,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-bool CharIsIgnored(char c) {
+__attribute__((always_inline))
+static inline bool CharIsIgnored(char c) {
     const char ignored[] = {9, 10, 13, 32}; // Tab, whitespace, caret shift, and newline
     for (int i = 0; i < 4; i++) { // The 4 here is the length of ignored array
         if (c == ignored[i]) {
@@ -19,7 +20,8 @@ bool CharIsIgnored(char c) {
     return false;
 }
 
-SzToken* CreateToken(void) {
+__attribute__((always_inline))
+static inline SzToken* CreateToken(void) {
     SzToken* ptr = (SzToken*)MemAlloc(sizeof(SzToken));
     *ptr = (SzToken){
         .token = NULL,

@@ -52,19 +52,21 @@ SzToken* Tokenise(const char* fileName) {
                 exit(1);
             }
         }
-        fseek(f, -1, SEEK_CUR);
-        if (tree) { // Backing up current token pointer if tree exists
-            prevToken = currToken;
+        if (!CharIsIgnored(*c)) {
+            fseek(f, -1, SEEK_CUR);
+            if (tree) { // Backing up current token pointer if tree exists
+                prevToken = currToken;
+            }
+            currToken = CreateToken();
+            if (!tree) { // Saving first token as the top of the tree
+                tree = currToken;
+            } else {
+                prevToken->next = currToken; // Linking current token to the previous one
+            }
+            // Reading from the current position in file
+            // until we meet a tab, a whitespace, a caret shift, or a newline
+            fseek(f, StringReadUntilArr(f, (char[]){9, 10, 13, 32}, &currToken->token) + 1, SEEK_SET);
         }
-        currToken = CreateToken();
-        if (!tree) { // Saving first token as the top of the tree
-            tree = currToken;
-        } else {
-            prevToken->next = currToken; // Linking current token to the previous one
-        }
-        // Reading from the current position in file
-        // until we meet a tab, a whitespace, a caret shift, or a newline
-        fseek(f, StringReadUntilArr(f, (char[]){9, 10, 13, 32}, &currToken->token) + 1, SEEK_SET);
     }
     return tree;
 }

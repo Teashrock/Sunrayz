@@ -68,11 +68,7 @@ bool StringIsFraction(const char* const string) {
 }
 
 bool StringIsBool(const char* const string) {
-    const char* tokenTrue = "true";
-    const char* tokenFalse = "false";
-    for (int i = 0; string[i] != '\0'; i++) {
-        if (string[i] != tokenTrue[i] || string[i] != tokenFalse[i])
-            return false;
-    }
+    if (strcmp(string, "true") && strcmp(string, "false"))
+        return false;
     return true;
 }

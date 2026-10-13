@@ -136,10 +136,10 @@ int main(int argc, char* argv[])
         if (!strcmp(GetFileName(nrrFiles.paths[i]), "start.nrr")) { // Right now, start.nrr is our starting file
             // Here we're doing tokenisation
             SzToken* tokenTree = Tokenise("start.nrr");
-            while (tokenTree) {
-                //printf("Token: %s\n", tokenTree->token);
+            /*while (tokenTree) {
+                printf("Token: %s\n", tokenTree->token);
                 tokenTree = tokenTree->next;
-            }
+            }*/
         }
     }
     

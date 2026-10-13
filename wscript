@@ -32,7 +32,7 @@ RAYGUI_VERSION     = "4.0"
 LUAJIT_REPO        = "https://github.com/LuaJIT/LuaJIT"
 LUAJIT_VERSION     = "master"
 
-TINY_REGEX_REPO    = "https://github.com/kokke/tiny-regex-c.git"
+TINY_REGEX_REPO    = "https://github.com/gyrovorbis/tiny-regex-c.git"
 TINY_REGEX_VERSION = "master"
 
 GETTEXT_REPO    = "https://ftp.gnu.org"

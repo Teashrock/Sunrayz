@@ -2,16 +2,18 @@
 // Copyright (c) 2021-2026 Teashrock
 
 #include "base.h"
+#include <stdio.h>
 #include <string.h>
 
 long StringReadUntil(FILE* f, char until, char** dest) {
     // Counting chars until the specific symbol is met
+    int readResult;
     char c[1];
     int startPosition = ftell(f);
     int charCount = 0;
     while (true) {
-        fread(c, sizeof(char), 1, f);
-        if (*c == until) {
+        readResult = fread(c, sizeof(char), 1, f);
+        if (*c == until || (readResult < 1 && feof(f))) {
             fseek(f, startPosition, SEEK_SET);
             break;
         }
@@ -26,14 +28,15 @@ long StringReadUntil(FILE* f, char until, char** dest) {
 
 long StringReadUntilArr(FILE* f, const char* const until, char** dest) {
     // Counting chars until the specific symbol is met
+    int readResult;
     char c[1];
     int startPosition = ftell(f);
     int charCount = 0;
     bool write = true;
     while (write) {
-        fread(c, sizeof(char), 1, f);
+        readResult = fread(c, sizeof(char), 1, f);
         for (int i = 0; until[i] != '\0'; i++) {
-            if (*c == until[i]) {
+            if (*c == until[i] || (readResult < 1 && feof(f))) {
                 write = false;
             }
         }

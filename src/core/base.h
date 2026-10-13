@@ -12,8 +12,8 @@ static const char* pathDelimiter = "\\";
 static const char* pathDelimiter = "/";
 #endif
 
-long StringReadUntil(FILE* f, char until, char** dest);
-long StringReadUntilArr(FILE* f, const char* const until, char** dest);
+long StringReadUntil(FILE* source, char until, char** dest);
+long StringReadUntilArr(FILE* source, const char* const until, char** dest);
 bool StringIsInteger(const char* const string);
 bool StringIsFraction(const char* const string);
 bool StringIsBool(const char* const string);

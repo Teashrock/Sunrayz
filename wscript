@@ -356,7 +356,8 @@ def purge(ctx):
         os.path.join(BUILD_DIR, "build"),
         os.path.join(BUILD_DIR, "deps"),
         os.path.join(BUILD_DIR, "result"),
-        os.path.join(BUILD_DIR, "src", "generated", "assets")
+        os.path.join(BUILD_DIR, "src", "generated", "assets"),
+        os.path.join(BUILD_DIR, "src", "core", "external")
     ]
     files_to_remove = [
         os.path.join(BUILD_DIR, ".lock-waf_" + sys.platform + "_build"),
@@ -364,8 +365,7 @@ def purge(ctx):
         os.path.join(BUILD_DIR, "compiler.path"),
         os.path.join(BUILD_DIR, "downloaded.list"),
         os.path.join(BUILD_DIR, "fonts_linked.list"),
-        os.path.join(BUILD_DIR, ".clangd"),
-        os.path.join(BUILD_DIR, "src", "external", "raygui.c")
+        os.path.join(BUILD_DIR, ".clangd")
     ]
     for dir in dirs_to_remove:
         try:

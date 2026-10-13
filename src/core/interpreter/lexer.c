@@ -4,10 +4,12 @@
 #include "lexer.h"
 
 #include "../base.h"
+#include "../external/re.h"
 
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 __attribute__((always_inline))
 static inline bool CharIsIgnored(char c) {
@@ -35,7 +37,12 @@ SzToken* Tokenise(const char* fileName) {
     SzToken* currToken = NULL;
     SzToken* prevToken = NULL;
     SzToken* tree = NULL;
+    // Regex for script execution and string quote marks syntax
+    re_t plRegex = re_compile("@(.*)\(");
+    re_t stringRegex = re_compile("\"(.*)\"");
+    int matchLength;
     char c[1];
+    char* workedString;
     while (true) {
         int readResult = fread(c, sizeof(char), 1, f);
         if (readResult < 1) {
@@ -60,7 +67,14 @@ SzToken* Tokenise(const char* fileName) {
             }
             // Reading from the current position in file
             // until we meet a tab, a whitespace, a caret shift, or a newline
-            fseek(f, StringReadUntilArr(f, (char[]){9, 10, 13, 32}, &currToken->token) + 1, SEEK_SET);
+            fseek(f, StringReadUntilArr(f, (char[]){9, 10, 13, 32}, &workedString) + 1, SEEK_SET);
+            // If we find a @xxx(-style pattern, we need to split the token to two
+            if (re_matchp(plRegex, workedString, &matchLength) != -1) {
+                char* tokenOne, tokenTwo;
+                char* ptr = strstr(workedString, "(");
+                strncpy(tokenOne, workedString, ptr - workedString);
+                strncpy(tokenTwo, workedString, size_t n);
+            }
         }
     }
     return tree;

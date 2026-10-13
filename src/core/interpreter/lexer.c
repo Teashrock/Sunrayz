@@ -37,9 +37,10 @@ SzToken* Tokenise(const char* fileName) {
     SzToken* currToken = NULL;
     SzToken* prevToken = NULL;
     SzToken* tree = NULL;
-    // Regex for script execution and string quote marks syntax
-    re_t plRegex = re_compile("@(.*)\(");
-    re_t stringRegex = re_compile("\"(.*)\"");
+    // Regex for various syntax
+    re_t plRegex = re_compile("@(.*)\("); // Script execution
+    re_t stringRegex = re_compile("\"(.*)\""); // String quote marks
+    re_t colonRegex = re_compile(".*:(.*)"); // Colon
     int matchLength;
     char c[1];
     char* workedString;
@@ -56,25 +57,52 @@ SzToken* Tokenise(const char* fileName) {
         }
         if (!CharIsIgnored(*c)) {
             fseek(f, -1, SEEK_CUR);
+            
             if (tree) { // Backing up current token pointer if tree exists
                 prevToken = currToken;
             }
-            currToken = CreateToken();
+            // Reading from the current position in file
+            // until we meet a tab, a whitespace, a caret shift, or a newline
+            fseek(f, StringReadUntilArr(f, (char[]){9, 10, 13, 32}, &workedString) + 1, SEEK_SET);
+
+            if (strcmp(workedString, ":")) {
+                int idx = re_matchp(colonRegex, workedString, &matchLength);
+                if (idx != -1) {
+                    char* tokenArr[3] = {NULL, ":", NULL};
+                    strncpy(tokenArr[0], workedString, idx);
+                    if (strcmp(strcat(tokenArr[0], tokenArr[1]), workedString)) {
+                        strncpy(tokenArr[2], workedString, idx + 1);
+                    }
+                    for (int i = 0; i < 3; i++) {
+                        if (tokenArr[i] != NULL) {
+                            currToken = CreateToken();
+                            currToken->token = tokenArr[i];
+                            prevToken->next = currToken;
+                            prevToken = currToken;
+                        }
+                    }
+                } else {
+                    currToken = CreateToken();
+                    currToken->token = workedString;
+                    workedString = NULL;
+                }
+            } else {
+                currToken = CreateToken();
+                currToken->token = workedString;
+                workedString = NULL;
+            }
             if (!tree) { // Saving first token as the top of the tree
                 tree = currToken;
             } else {
                 prevToken->next = currToken; // Linking current token to the previous one
             }
-            // Reading from the current position in file
-            // until we meet a tab, a whitespace, a caret shift, or a newline
-            fseek(f, StringReadUntilArr(f, (char[]){9, 10, 13, 32}, &workedString) + 1, SEEK_SET);
             // If we find a @xxx(-style pattern, we need to split the token to two
-            if (re_matchp(plRegex, workedString, &matchLength) != -1) {
+            /*if (re_matchp(plRegex, workedString, &matchLength) != -1) {
                 char* tokenOne, tokenTwo;
                 char* ptr = strstr(workedString, "(");
                 strncpy(tokenOne, workedString, ptr - workedString);
                 strncpy(tokenTwo, workedString, size_t n);
-            }
+            }*/
         }
     }
     return tree;

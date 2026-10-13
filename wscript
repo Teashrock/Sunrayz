@@ -188,7 +188,7 @@ def configure(conf):
     download("raylib", RAYLIB_VERSION, RAYLIB_REPO)
     download("raygui", RAYGUI_VERSION, RAYGUI_REPO)
     download("LuaJIT", LUAJIT_VERSION, LUAJIT_REPO, "zip")
-    download("tiny-regex-c", "master", LUAJIT_REPO, "zip")
+    download("tiny-regex-c", "master", TINY_REGEX_REPO)
 
     if download_only:
         exit()

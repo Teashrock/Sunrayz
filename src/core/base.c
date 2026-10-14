@@ -22,7 +22,7 @@ long StringReadUntil(FILE* f, char until, char** dest) {
     // Writing the string found into the destination
     *dest = (char*)MemAlloc(sizeof(char) * (charCount + 1));
     fread(*dest, sizeof(char), charCount, f);
-    (*dest)[charCount + 1] = '\0';
+    (*dest)[charCount] = '\0';
     return ftell(f);
 }
 

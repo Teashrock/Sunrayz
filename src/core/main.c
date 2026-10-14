@@ -36,11 +36,11 @@ char *strsep(char **stringp, const char *delim) {
 }
 #endif
 
-int testTask(void) {
+/*int testTask(void) {
     ClearBackground(WHITE);
 
     return 0;
-}
+}*/
 
 int main(int argc, char* argv[])
 {
@@ -154,9 +154,9 @@ int main(int argc, char* argv[])
     }
 
     // Test area
-    //SzReader* testReader = CreateReader("");
+    /*SzReader* testReader = CreateReader("");
     SzActor* actor = CreateActor();
-    SzTask* task = CreateTask(testTask);
+    SzTask* task = CreateTask(testTask);*/
 
     // Main game loop
     /*while (!WindowShouldClose())    // Detect window close button or ESC key

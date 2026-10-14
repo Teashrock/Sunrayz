@@ -187,3 +187,20 @@ SzVariable* GetConfigVariable(SzConfig* cfg, char* varName) {
     printf("Variable error: %s wasn't found!\n", varName);
     return NULL;
 }
+
+void DestroyConfig(SzConfig * cfg) {
+    SzVariable* current = cfg->variables;
+    SzVariable* next = NULL;
+    while (current != NULL) {
+        current->previous = NULL;
+        next = current->next;
+        current->next = NULL;
+        MemFree(current->name);
+        MemFree(current->value);
+        MemFree(current);
+        current = next;
+    }
+    cfg->variables = NULL;
+    MemFree(cfg->name);
+    MemFree(cfg);
+}

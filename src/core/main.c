@@ -173,6 +173,7 @@ int main(int argc, char* argv[])
 
     // De-Initialization
     lua_close(L);
+    DestroyConfig(cfg);
 
     //--------------------------------------------------------------------------------------
     CloseWindow();        // Close window and OpenGL context

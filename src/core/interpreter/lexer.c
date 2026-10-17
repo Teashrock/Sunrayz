@@ -122,13 +122,6 @@ SzToken* Tokenise(const char* fileName) {
             } else {
                 prevToken->next = currToken; // Linking current token to the previous one
             }
-            // If we find a @xxx(-style pattern, we need to split the token to two
-            /*if (re_matchp(plRegex, workedString, &matchLength) != -1) {
-                char* tokenOne, tokenTwo;
-                char* ptr = strstr(workedString, "(");
-                strncpy(tokenOne, workedString, ptr - workedString);
-                strncpy(tokenTwo, workedString, size_t n);
-            }*/
         }
     }
     return tree;

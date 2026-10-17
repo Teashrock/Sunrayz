@@ -2,7 +2,7 @@ bg {
     x: 0
     y: 0
     width:   &screenWidth
-    screen:  &screenHeight
+    height:  &screenHeight
     content: "assets/bg/start_screen.png"
 }
 main_menu {

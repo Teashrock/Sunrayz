@@ -5,8 +5,10 @@
 
 #include "../base.h"
 #include "../external/re.h"
+#include "raylib.h"
 
 #include <stdbool.h>
+#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -40,7 +42,7 @@ SzToken* Tokenise(const char* fileName) {
     // Regex for various syntax
     re_t plRegex = re_compile("@(.*)\("); // Script execution
     re_t stringRegex = re_compile("\"(.*)\""); // String quote marks
-    re_t colonRegex = re_compile(".*:(.*)"); // Colon
+    re_t colonRegex = re_compile(":"); // Colon
     int matchLength;
     char c[1];
     char* workedString;
@@ -66,13 +68,41 @@ SzToken* Tokenise(const char* fileName) {
             fseek(f, StringReadUntilArr(f, (char[]){9, 10, 13, 32}, &workedString) + 1, SEEK_SET);
 
             if (strcmp(workedString, ":")) {
-                int idx = re_matchp(colonRegex, workedString, &matchLength);
-                if (idx != -1) {
-                    char* tokenArr[3] = {NULL, ":", NULL};
-                    strncpy(tokenArr[0], workedString, idx);
-                    if (strcmp(strcat(tokenArr[0], tokenArr[1]), workedString)) {
-                        strncpy(tokenArr[2], workedString, idx + 1);
+                int idx;
+                size_t workedStringLength = strlen(workedString);
+                if (workedString[0] == ':') {
+                    char* tokenArr[2] = {":", NULL};
+                    tokenArr[1] = (char*)MemAlloc(sizeof(char) * workedStringLength);
+                    strncpy(tokenArr[1], workedString + 1, workedStringLength - 1);
+                    printf("----\nworkedString|%s\ntokenArr[1]|%s\n----\n", workedString, tokenArr[1]);
+                    for (int i = 0; i < 2; i++) {
+                        if (tokenArr[i] != NULL) {
+                            currToken = CreateToken();
+                            currToken->token = tokenArr[i];
+                            prevToken->next = currToken;
+                            prevToken = currToken;
+                        }
                     }
+                } else if (workedString[workedStringLength - 1] == ':') {
+                    char* tokenArr[2] = {NULL, ":"};
+                    tokenArr[0] = (char*)MemAlloc(sizeof(char) * workedStringLength);
+                    strncpy(tokenArr[0], workedString, workedStringLength - 1);
+                    printf("----\nworkedString|%s\ntokenArr[0]|%s\n----\n", workedString, tokenArr[0]);
+                    for (int i = 0; i < 2; i++) {
+                        if (tokenArr[i] != NULL) {
+                            currToken = CreateToken();
+                            currToken->token = tokenArr[i];
+                            prevToken->next = currToken;
+                            prevToken = currToken;
+                        }
+                    }
+                } else if ((idx = re_matchp(colonRegex, workedString, &matchLength)) != -1) {
+                    char* tokenArr[3] = {NULL, ":", NULL};
+                    tokenArr[0] = (char*)MemAlloc(sizeof(char) * idx + 1);
+                    tokenArr[2] = (char*)MemAlloc(sizeof(char) * workedStringLength - idx - 1);
+                    strncpy(tokenArr[0], workedString, idx);
+                    strncpy(tokenArr[2], workedString, idx + 1);
+                    printf("----\nworkedString|%s\nidx|%i\ntokenArr[0]|%s\ntokenArr[2]|%s\n----\n", workedString, idx, tokenArr[0], tokenArr[2]);
                     for (int i = 0; i < 3; i++) {
                         if (tokenArr[i] != NULL) {
                             currToken = CreateToken();

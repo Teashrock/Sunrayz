@@ -115,11 +115,11 @@ SzToken* Tokenise(const char* fileName) {
                 int idx; // idx == -1 is when it's not needed; TODO: refactor this later
                 size_t workedStringLength = strlen(workedString);
                 if (workedString[0] == ':') {
-                    CreateMultipleTokens(-1, 2, (char*[]){":", NULL}, workedStringLength, workedString, &currToken, &prevToken);
+                    CreateMultipleTokens(-1, 2, (char*[]){":", NULL}, MTOKEN_METHOD_XO, workedStringLength, workedString, &currToken, &prevToken);
                 } else if (workedString[workedStringLength - 1] == ':') {
-                    CreateMultipleTokens(-1, 2, (char*[]){NULL, ":"}, workedStringLength, workedString, &currToken, &prevToken);
+                    CreateMultipleTokens(-1, 2, (char*[]){NULL, ":"}, MTOKEN_METHOD_OX, workedStringLength, workedString, &currToken, &prevToken);
                 } else if ((idx = re_matchp(colonRegex, workedString, &matchLength)) != -1) {
-                    CreateMultipleTokens(idx, 3, (char*[]){NULL, ":", NULL}, workedStringLength, workedString, &currToken, &prevToken);
+                    CreateMultipleTokens(idx, 3, (char*[]){NULL, ":", NULL}, MTOKEN_METHOD_OXO, workedStringLength, workedString, &currToken, &prevToken);
                 } else {
                     goto singleToken;
                 }

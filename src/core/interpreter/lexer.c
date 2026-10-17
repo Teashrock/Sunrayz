@@ -53,10 +53,10 @@ static void CreateMultipleTokens(
     SzToken** currToken,
     SzToken** prevToken
 ) {
-    int tokenArrl;
+    int tokenArrLength;
     switch (method) {
         case MTOKEN_METHOD_OXO: // {NULL, "X", NULL}
-        tokenArrl = 3;
+        tokenArrLength = 3;
         tokenArrv[0] = (char*)MemAlloc(sizeof(char) * idx + 1);
         tokenArrv[2] = (char*)MemAlloc(sizeof(char) * workedStringLength - idx - 1);
         strncpy(tokenArrv[0], workedString, idx);
@@ -64,18 +64,18 @@ static void CreateMultipleTokens(
         printf("----\nworkedString|%s\nidx|%i\ntokenArr[0]|%s\ntokenArr[2]|%s\n----\n", workedString, idx, tokenArrv[0], tokenArrv[2]);
         break;
         case MTOKEN_METHOD_XO: // {"X", NULL}
-        tokenArrl = 2;
+        tokenArrLength = 2;
         tokenArrv[1] = (char*)MemAlloc(sizeof(char) * workedStringLength);
         strncpy(tokenArrv[1], workedString + 1, workedStringLength - 1);
         printf("----\nworkedString|%s\ntokenArr[1]|%s\n----\n", workedString, tokenArrv[1]);
         break;
         case MTOKEN_METHOD_OX: // {NULL, "X"}
-        tokenArrl = 2;
+        tokenArrLength = 2;
         tokenArrv[0] = (char*)MemAlloc(sizeof(char) * workedStringLength);
         strncpy(tokenArrv[0], workedString, workedStringLength - 1);
         printf("----\nworkedString|%s\ntokenArr[0]|%s\n----\n", workedString, tokenArrv[0]);
     }
-    for (int i = 0; i < tokenArrl; i++) {
+    for (int i = 0; i < tokenArrLength; i++) {
         if (tokenArrv[i] != NULL) {
             *currToken = CreateToken();
             (*currToken)->token = tokenArrv[i];

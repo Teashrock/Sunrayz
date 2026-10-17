@@ -46,7 +46,6 @@ typedef enum {
 
 static void CreateMultipleTokens(
     int idx,
-    int tokenArrl,
     char* tokenArrv[],
     SzTokenArrayMethod method,
     size_t workedStringLength,
@@ -54,8 +53,10 @@ static void CreateMultipleTokens(
     SzToken** currToken,
     SzToken** prevToken
 ) {
+    int tokenArrl;
     switch (method) {
         case MTOKEN_METHOD_OXO: // {NULL, "X", NULL}
+        tokenArrl = 3;
         tokenArrv[0] = (char*)MemAlloc(sizeof(char) * idx + 1);
         tokenArrv[2] = (char*)MemAlloc(sizeof(char) * workedStringLength - idx - 1);
         strncpy(tokenArrv[0], workedString, idx);
@@ -63,11 +64,13 @@ static void CreateMultipleTokens(
         printf("----\nworkedString|%s\nidx|%i\ntokenArr[0]|%s\ntokenArr[2]|%s\n----\n", workedString, idx, tokenArrv[0], tokenArrv[2]);
         break;
         case MTOKEN_METHOD_XO: // {"X", NULL}
+        tokenArrl = 2;
         tokenArrv[1] = (char*)MemAlloc(sizeof(char) * workedStringLength);
         strncpy(tokenArrv[1], workedString + 1, workedStringLength - 1);
         printf("----\nworkedString|%s\ntokenArr[1]|%s\n----\n", workedString, tokenArrv[1]);
         break;
         case MTOKEN_METHOD_OX: // {NULL, "X"}
+        tokenArrl = 2;
         tokenArrv[0] = (char*)MemAlloc(sizeof(char) * workedStringLength);
         strncpy(tokenArrv[0], workedString, workedStringLength - 1);
         printf("----\nworkedString|%s\ntokenArr[0]|%s\n----\n", workedString, tokenArrv[0]);
@@ -119,11 +122,11 @@ SzToken* Tokenise(const char* fileName) {
                 int idx; // idx == -1 is when it's not needed; TODO: refactor this later
                 size_t workedStringLength = strlen(workedString);
                 if (workedString[0] == ':') {
-                    CreateMultipleTokens(-1, 2, (char*[]){":", NULL}, MTOKEN_METHOD_XO, workedStringLength, workedString, &currToken, &prevToken);
+                    CreateMultipleTokens(-1, (char*[]){":", NULL}, MTOKEN_METHOD_XO, workedStringLength, workedString, &currToken, &prevToken);
                 } else if (workedString[workedStringLength - 1] == ':') {
-                    CreateMultipleTokens(-1, 2, (char*[]){NULL, ":"}, MTOKEN_METHOD_OX, workedStringLength, workedString, &currToken, &prevToken);
+                    CreateMultipleTokens(-1, (char*[]){NULL, ":"}, MTOKEN_METHOD_OX, workedStringLength, workedString, &currToken, &prevToken);
                 } else if ((idx = re_matchp(colonRegex, workedString, &matchLength)) != -1) {
-                    CreateMultipleTokens(idx, 3, (char*[]){NULL, ":", NULL}, MTOKEN_METHOD_OXO, workedStringLength, workedString, &currToken, &prevToken);
+                    CreateMultipleTokens(idx, (char*[]){NULL, ":", NULL}, MTOKEN_METHOD_OXO, workedStringLength, workedString, &currToken, &prevToken);
                 } else {
                     goto singleToken;
                 }

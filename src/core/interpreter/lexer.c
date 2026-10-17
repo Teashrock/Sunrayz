@@ -34,6 +34,36 @@ static inline SzToken* CreateToken(void) {
     return ptr;
 }
 
+void CreateMultipleTokens(
+    int idx,
+    int tokenArrl,
+    char* tokenArrv[],
+    size_t workedStringLength,
+    char* workedString,
+    SzToken** currToken,
+    SzToken** prevToken
+) {
+    if (tokenArrl == 3) {
+        tokenArrv[0] = (char*)MemAlloc(sizeof(char) * idx + 1);
+        tokenArrv[2] = (char*)MemAlloc(sizeof(char) * workedStringLength - idx - 1);
+        strncpy(tokenArrv[0], workedString, idx);
+        strncpy(tokenArrv[2], workedString, idx + 1);
+        printf("----\nworkedString|%s\nidx|%i\ntokenArr[0]|%s\ntokenArr[2]|%s\n----\n", workedString, idx, tokenArrv[0], tokenArrv[2]);
+    } else {
+        tokenArrv[1] = (char*)MemAlloc(sizeof(char) * workedStringLength);
+        strncpy(tokenArrv[1], workedString + 1, workedStringLength - 1);
+        printf("----\nworkedString|%s\ntokenArr[1]|%s\n----\n", workedString, tokenArrv[1]);
+    }
+    for (int i = 0; i < tokenArrl; i++) {
+        if (tokenArrv[i] != NULL) {
+            *currToken = CreateToken();
+            (*currToken)->token = tokenArrv[i];
+            (*prevToken)->next = *currToken;
+            *prevToken = *currToken;
+        }
+    }
+}
+
 SzToken* Tokenise(const char* fileName) {
     FILE* f = fopen(fileName, "rt");
     SzToken* currToken = NULL;

@@ -44,7 +44,7 @@ typedef enum {
     MTOKEN_METHOD_OXO
 } SzTokenArrayMethod;
 
-void CreateMultipleTokens(
+static void CreateMultipleTokens(
     int idx,
     int tokenArrl,
     char* tokenArrv[],

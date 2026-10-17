@@ -100,49 +100,14 @@ SzToken* Tokenise(const char* fileName) {
             fseek(f, StringReadUntilArr(f, (char[]){9, 10, 13, 32}, &workedString) + 1, SEEK_SET);
 
             if (strcmp(workedString, ":")) {
-                int idx;
+                int idx; // idx == -1 is when it's not needed; TODO: refactor this later
                 size_t workedStringLength = strlen(workedString);
                 if (workedString[0] == ':') {
-                    char* tokenArr[2] = {":", NULL};
-                    tokenArr[1] = (char*)MemAlloc(sizeof(char) * workedStringLength);
-                    strncpy(tokenArr[1], workedString + 1, workedStringLength - 1);
-                    printf("----\nworkedString|%s\ntokenArr[1]|%s\n----\n", workedString, tokenArr[1]);
-                    for (int i = 0; i < 2; i++) {
-                        if (tokenArr[i] != NULL) {
-                            currToken = CreateToken();
-                            currToken->token = tokenArr[i];
-                            prevToken->next = currToken;
-                            prevToken = currToken;
-                        }
-                    }
+                    CreateMultipleTokens(-1, 2, (char*[]){":", NULL}, workedStringLength, workedString, &currToken, &prevToken);
                 } else if (workedString[workedStringLength - 1] == ':') {
-                    char* tokenArr[2] = {NULL, ":"};
-                    tokenArr[0] = (char*)MemAlloc(sizeof(char) * workedStringLength);
-                    strncpy(tokenArr[0], workedString, workedStringLength - 1);
-                    printf("----\nworkedString|%s\ntokenArr[0]|%s\n----\n", workedString, tokenArr[0]);
-                    for (int i = 0; i < 2; i++) {
-                        if (tokenArr[i] != NULL) {
-                            currToken = CreateToken();
-                            currToken->token = tokenArr[i];
-                            prevToken->next = currToken;
-                            prevToken = currToken;
-                        }
-                    }
+                    CreateMultipleTokens(-1, 2, (char*[]){NULL, ":"}, workedStringLength, workedString, &currToken, &prevToken);
                 } else if ((idx = re_matchp(colonRegex, workedString, &matchLength)) != -1) {
-                    char* tokenArr[3] = {NULL, ":", NULL};
-                    tokenArr[0] = (char*)MemAlloc(sizeof(char) * idx + 1);
-                    tokenArr[2] = (char*)MemAlloc(sizeof(char) * workedStringLength - idx - 1);
-                    strncpy(tokenArr[0], workedString, idx);
-                    strncpy(tokenArr[2], workedString, idx + 1);
-                    printf("----\nworkedString|%s\nidx|%i\ntokenArr[0]|%s\ntokenArr[2]|%s\n----\n", workedString, idx, tokenArr[0], tokenArr[2]);
-                    for (int i = 0; i < 3; i++) {
-                        if (tokenArr[i] != NULL) {
-                            currToken = CreateToken();
-                            currToken->token = tokenArr[i];
-                            prevToken->next = currToken;
-                            prevToken = currToken;
-                        }
-                    }
+                    CreateMultipleTokens(idx, 3, (char*[]){NULL, ":", NULL}, workedStringLength, workedString, &currToken, &prevToken);
                 } else {
                     currToken = CreateToken();
                     currToken->token = workedString;

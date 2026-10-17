@@ -109,11 +109,10 @@ SzToken* Tokenise(const char* fileName) {
                 } else if ((idx = re_matchp(colonRegex, workedString, &matchLength)) != -1) {
                     CreateMultipleTokens(idx, 3, (char*[]){NULL, ":", NULL}, workedStringLength, workedString, &currToken, &prevToken);
                 } else {
-                    currToken = CreateToken();
-                    currToken->token = workedString;
-                    workedString = NULL;
+                    goto singleToken;
                 }
             } else {
+                singleToken:
                 currToken = CreateToken();
                 currToken->token = workedString;
                 workedString = NULL;

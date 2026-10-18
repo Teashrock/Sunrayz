@@ -24,8 +24,7 @@ static inline bool CharIsIgnored(char c) {
     return false;
 }
 
-__attribute__((always_inline))
-static inline SzToken* CreateToken(void) {
+static SzToken* CreateToken(void) {
     SzToken* ptr = (SzToken*)MemAlloc(sizeof(SzToken));
     *ptr = (SzToken){
         .token = NULL,

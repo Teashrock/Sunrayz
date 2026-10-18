@@ -57,9 +57,9 @@ static void CreateMultipleTokens(
         case MTOKEN_METHOD_OXO: // {NULL, "X", NULL}
         tokenArrLength = 3;
         tokenArrv[0] = (char*)MemAlloc(sizeof(char) * idx + 1);
-        tokenArrv[2] = (char*)MemAlloc(sizeof(char) * workedStringLength - idx - 1);
+        tokenArrv[2] = (char*)MemAlloc(sizeof(char) * workedStringLength - idx);
         strncpy(tokenArrv[0], workedString, idx);
-        strncpy(tokenArrv[2], workedString, idx + 1);
+        strncpy(tokenArrv[2], workedString + idx + 1, workedStringLength - idx - 1);
         break;
         case MTOKEN_METHOD_XO: // {"X", NULL}
         tokenArrLength = 2;

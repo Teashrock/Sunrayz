@@ -139,5 +139,6 @@ SzToken* Tokenise(const char* fileName) {
             }
         }
     }
+    fclose(f);
     return tree;
 }

@@ -26,18 +26,23 @@ long StringReadUntil(FILE* f, char until, char** dest) {
     return ftell(f);
 }
 
-long StringReadUntilArr(FILE* f, const char* const until, char** dest) {
+struct StringReadResult StringReadUntilArr(FILE* f, const char* const until, char** dest) {
     // Counting chars until the specific symbol is met
     int readResult;
     char c[1];
     int startPosition = ftell(f);
     int charCount = 0;
     bool write = true;
+    char terminator;
     while (write) {
         readResult = fread(c, sizeof(char), 1, f);
         for (int i = 0; until[i] != '\0'; i++) {
-            if (*c == until[i] || (readResult < 1 && feof(f))) {
+            bool end = (readResult < 1 && feof(f));
+            if (*c == until[i] || end) {
                 write = false;
+		if (!end) {
+		    terminator = *c;
+		}
             }
         }
         charCount++;
@@ -47,7 +52,7 @@ long StringReadUntilArr(FILE* f, const char* const until, char** dest) {
     *dest = (char*)MemAlloc(sizeof(char) * (charCount));
     fread(*dest, sizeof(char), charCount - 1, f);
     (*dest)[charCount] = '\0';
-    return ftell(f);
+    return (struct StringReadResult){terminator, ftell(f)};
 }
 
 bool StringIsInteger(const char* const string) {

@@ -12,19 +12,27 @@ static const char* pathDelimiter = "\\";
 static const char* pathDelimiter = "/";
 #endif
 
+/// Is returned by StringReadUntilArr
+/// terminator is the exact symbol string ended with
+/// position is the file position on the terminator of the string
+struct StringReadResult{
+    char terminator;
+    long position;
+};
+
 /// Reads a string from an opened file
 /// up to the provided character (char until),
 /// then writes it by a provided char* pointer (dest).
-/// Returns file position on the null char of the string.
+/// Returns file position on the terminator of the string.
 /// No need to allocate dest in advance.
 long StringReadUntil(FILE* source, char until, char** dest);
 
 /// Reads a string from an opened file
 /// up to a character in the provided string (char* until),
 /// then writes it by a provided char* pointer (dest).
-/// Returns file position on the null char of the string.
+/// Returns struct StringReadResult.
 /// No need to allocate dest in advance.
-long StringReadUntilArr(FILE* source, const char* const until, char** dest);
+struct StringReadResult StringReadUntilArr(FILE* source, const char* const until, char** dest);
 
 /// Checks if a string can be seamlessly converted into an integer.
 /// Warning: expects a zstring.

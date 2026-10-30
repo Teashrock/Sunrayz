@@ -112,7 +112,8 @@ SzToken* Tokenise(const char* fileName) {
             }
             // Reading from the current position in file
             // until we meet a tab, a whitespace, a caret shift, or a newline
-            fseek(f, StringReadUntilArr(f, (char[]){9, 10, 13, 32}, &workedString) + 1, SEEK_SET);
+            struct StringReadResult result = StringReadUntilArr(f, (char[]){9, 10, 13, 32}, &workedString);
+            fseek(f, result.position + 1, SEEK_SET);
 
             if (strcmp(workedString, ":")) {
                 int idx; // idx == -1 is when it's not needed; TODO: refactor this later

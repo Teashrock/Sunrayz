@@ -13,6 +13,18 @@
 #include <stdlib.h>
 #include <string.h>
 
+static const char* tokenStrings[] = {
+    ":",
+    "&",
+    "=",
+    "!=",
+    "<",
+    "<=",
+    ">",
+    ">=",
+    "=="
+};
+
 __attribute__((always_inline))
 static inline bool CharIsIgnored(char c) {
     const char ignored[] = {9, 10, 13, 32}; // Tab, whitespace, caret shift, and newline

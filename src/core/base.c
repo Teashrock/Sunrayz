@@ -40,9 +40,9 @@ struct StringReadResult StringReadUntilArr(FILE* f, const char* const until, cha
             bool end = (readResult < 1 && feof(f));
             if (*c == until[i] || end) {
                 write = false;
-		if (!end) {
-		    terminator = *c;
-		}
+		        if (!end) {
+		            terminator = *c;
+		        }
             }
         }
         charCount++;

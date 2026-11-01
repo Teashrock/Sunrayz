@@ -28,11 +28,11 @@ struct StringReadResult{
 long StringReadUntil(FILE* source, char until, char** dest);
 
 /// Reads a string from an opened file
-/// up to a character in the provided string (char* until),
+/// up to a character in of the provided strings (const char* const until[]),
 /// then writes it by a provided char* pointer (dest).
 /// Returns struct StringReadResult.
 /// No need to allocate dest in advance.
-struct StringReadResult StringReadUntilArr(FILE* source, const char* const until, char** dest);
+struct StringReadResult StringReadUntilArr(FILE* source, const char* const until[], size_t arrAmount, char** dest);
 
 /// Checks if a string can be seamlessly converted into an integer.
 /// Warning: expects a zstring.

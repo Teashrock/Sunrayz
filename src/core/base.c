@@ -2,6 +2,7 @@
 // Copyright (c) 2021-2026 Teashrock
 
 #include "base.h"
+#include <stddef.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -26,7 +27,7 @@ long StringReadUntil(FILE* f, char until, char** dest) {
     return ftell(f);
 }
 
-struct StringReadResult StringReadUntilArr(FILE* f, const char* const until, char** dest) {
+struct StringReadResult StringReadUntilArr(FILE* f, const char* const until[], size_t arrAmount, char** dest) {
     // Counting chars until the specific symbol is met
     int readResult;
     char c[1];
@@ -36,13 +37,16 @@ struct StringReadResult StringReadUntilArr(FILE* f, const char* const until, cha
     char terminator;
     while (write) {
         readResult = fread(c, sizeof(char), 1, f);
-        for (int i = 0; until[i] != '\0'; i++) {
-            bool end = (readResult < 1 && feof(f));
-            if (*c == until[i] || end) {
-                write = false;
-		        if (!end) {
-		            terminator = *c;
-		        }
+        for (int arrNum = 0; arrNum < arrAmount; arrNum++) {
+            const char* currentArr = until[arrNum];
+            for (int i = 0; currentArr[i] != '\0'; i++) {
+                bool end = (readResult < 1 && feof(f));
+                if (*c == currentArr[i] || end) {
+                    write = false;
+		            if (!end) {
+		                terminator = *c;
+		            }
+                }
             }
         }
         charCount++;
